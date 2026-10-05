@@ -13,6 +13,7 @@ namespace FoF\ScavengerHunt\Tests\integration;
 
 use Carbon\Carbon;
 use Flarum\Group\Group;
+use Flarum\Locale\LocaleManager;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -23,6 +24,17 @@ use Psr\Http\Message\ResponseInterface;
  */
 trait InteractsWithHunts
 {
+    /**
+     * flarum/testing enables the extension before applying its extenders, and enabling runs
+     * Locales::onEnable(), which resolves the LocaleManager. Extend\Locales registers its
+     * translations in a `resolving` hook, which therefore never fires, so extension strings
+     * stay untranslated in integration tests. Load ours by hand. Call after any extend().
+     */
+    protected function loadTranslations(): void
+    {
+        $this->app()->getContainer()->make(LocaleManager::class)->addTranslations('en', __DIR__.'/../../resources/locale/en.yml');
+    }
+
     protected function moderatorUser(): array
     {
         return ['id' => 3, 'username' => 'moderator', 'email' => 'moderator@machine.local', 'is_email_confirmed' => 1];

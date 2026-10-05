@@ -6,3 +6,17 @@ fof-scavenger-hunt:
   api:
     ends_before_start: The hunt must end after it starts.
     image_invalid: That image reference isn't valid.
+    template_unknown: That template doesn't exist.
+  lib:
+    templates:
+      winter:
+        title: Build a Snowman
+        occasion: Winter
+        parts:
+          body: Snowball body
+          head: Snowball head
+          eyes: Coal eyes
+          nose: Carrot nose
+          arms: Stick arms
+          scarf: Woolly scarf
+          hat: Top hat

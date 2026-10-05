@@ -24,6 +24,7 @@ use FoF\ScavengerHunt\Hunt;
 use FoF\ScavengerHunt\Image\ImageReference;
 use FoF\ScavengerHunt\Permission;
 use FoF\ScavengerHunt\Progress\ActorProgress;
+use FoF\ScavengerHunt\Template\TemplateRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Tobyz\JsonApiServer\Context as OriginalContext;
@@ -38,6 +39,7 @@ class HuntResource extends AbstractDatabaseResource
         protected ImageReference $images,
         protected ActorProgress $progress,
         protected TranslatorInterface $translator,
+        protected TemplateRepository $templates,
     ) {
     }
 
@@ -145,6 +147,27 @@ class HuntResource extends AbstractDatabaseResource
                 ->visible($manages)
                 ->writable()
                 ->maxLength(255),
+            Schema\Str::make('template')
+                ->nullable()
+                ->visible($manages)
+                ->writableOnCreate()
+                ->maxLength(50)
+                ->set(function (Hunt $hunt, ?string $key) {
+                    if ($key === null) {
+                        return;
+                    }
+
+                    $template = $this->templates->get($key);
+
+                    if (! $template) {
+                        throw new ValidationException(['template' => $this->translator->trans('fof-scavenger-hunt.api.template_unknown')]);
+                    }
+
+                    $hunt->template = $template->key;
+                    $hunt->image ??= $template->reference($template->image);
+                    $hunt->completed_image ??= $template->reference($template->completedImage);
+                    $hunt->afterSave(fn (Hunt $hunt) => $this->templates->copyParts($template, $hunt));
+                }),
 
             Schema\Relationship\ToMany::make('parts')
                 ->type('scavenger-hunt-parts')

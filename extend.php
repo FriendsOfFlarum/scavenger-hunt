@@ -37,4 +37,5 @@ return [
         ->scope(Access\ScopeHuntVisibility::class),
 
     new Extend\ApiResource(Api\Resource\HuntResource::class),
+    new Extend\ApiResource(Api\Resource\TemplateResource::class),
 ];
