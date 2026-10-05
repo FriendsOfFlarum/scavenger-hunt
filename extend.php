@@ -17,6 +17,7 @@ use Flarum\Extend;
 use Flarum\Post\Post;
 use Flarum\User\User;
 use FoF\ScavengerHunt\Extend\HidingSpots;
+use Illuminate\Console\Scheduling\Event as ScheduledEvent;
 
 return [
     (new Extend\Frontend('forum'))
@@ -34,6 +35,10 @@ return [
 
     (new Extend\Event())
         ->subscribe(HuntMap\ClearHuntMap::class),
+
+    (new Extend\Console())
+        ->command(Console\PruneEncountersCommand::class)
+        ->schedule(Console\PruneEncountersCommand::class, fn (ScheduledEvent $event) => $event->daily()),
 
     (new HidingSpots())
         ->context('discussion', Discussion::class)
