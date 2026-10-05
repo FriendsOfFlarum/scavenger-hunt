@@ -20,6 +20,8 @@ fof-scavenger-hunt:
       title: Hide it here
       help: Click a highlighted spot to hide the part there.
       done: Done
+      cancel: Cancel
+      stop: Stop hiding parts
       target: "Hide the part in: {spot}"
       modal_title: "Hide the {part}"
       spot: "Hiding spot: {spot}"
@@ -38,6 +40,7 @@ fof-scavenger-hunt:
       denied: You don't have permission to manage scavenger hunts.
       empty: No hunts yet. Start one from a template!
       new_hunt: New hunt
+      all_hunts: All hunts
       back: ← All hunts
       save: Save
       saved: Saved.
@@ -85,7 +88,12 @@ fof-scavenger-hunt:
         hint_help: Shown to members who haven't found this part yet.
         wander_chance: Chance per page view (%)
         image: Image
-        layer: Position on the collectable (x %, y %, width %, layer)
+        appearance: Image and position on the collectable
+        layer_x: Left (%)
+        layer_y: Top (%)
+        layer_width: Width (%)
+        layer_z: Layer
+        layer_help: Where the part sits when the collectable is assembled, as percentages of the canvas. Higher layers are drawn on top.
         sort: Order
         delete: Delete part
         delete_confirm: "Delete the {part}? Members who found it keep their find."

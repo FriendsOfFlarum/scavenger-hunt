@@ -57,15 +57,19 @@ app.initializers.add('fof-scavenger-hunt', () => {
         75
       );
 
-      if (!placement.active) {
-        items.add(
-          'scavengerHuntPlace',
+      items.add(
+        'scavengerHuntPlace',
+        placement.active ? (
+          <Button icon="fas fa-times" onclick={() => placement.stop()}>
+            {app.translator.trans('fof-scavenger-hunt.forum.placement_mode.stop')}
+          </Button>
+        ) : (
           <Button icon="fas fa-map-pin" onclick={() => placement.start()}>
             {app.translator.trans('fof-scavenger-hunt.forum.placement_mode.start')}
-          </Button>,
-          74
-        );
-      }
+          </Button>
+        ),
+        74
+      );
     }
   });
 

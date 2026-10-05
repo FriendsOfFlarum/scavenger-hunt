@@ -28,6 +28,12 @@ class Placement {
     await controller.start(target);
   }
 
+  async stop(): Promise<void> {
+    const { default: controller } = await import('../placement/PlacementController');
+
+    controller.stop();
+  }
+
   saved(): PlacementTarget | null {
     try {
       const value = window.sessionStorage.getItem(PLACEMENT_STORAGE_KEY);

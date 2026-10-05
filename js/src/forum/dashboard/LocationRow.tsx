@@ -1,4 +1,6 @@
 import app from 'flarum/forum/app';
+import toast from '../utils/toast';
+import routeLabel from '../utils/routeLabel';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import Button from 'flarum/common/components/Button';
 import Select from 'flarum/common/components/Select';
@@ -47,9 +49,7 @@ export default class LocationRow extends Component<LocationRowAttrs> {
     this.attrs.spots.forEach((candidate) => (spotOptions[candidate.id()!] = candidate.label()));
 
     const routeOptions: Record<string, string> = { [ANY]: app.translator.trans('fof-scavenger-hunt.forum.dashboard.locations.any_page', {}, true) };
-    this.attrs.routes
-      .filter((route) => !spot || spot.allowsRoute(route.name))
-      .forEach((route) => (routeOptions[route.name] = `${route.name} — ${route.path}`));
+    this.attrs.routes.filter((route) => !spot || spot.allowsRoute(route.name)).forEach((route) => (routeOptions[route.name] = routeLabel(route)));
 
     return (
       <div className="LocationRow">
@@ -109,7 +109,7 @@ export default class LocationRow extends Component<LocationRowAttrs> {
 
     location
       .save(attributes)
-      .then(() => app.alerts.show({ type: 'success' }, app.translator.trans('fof-scavenger-hunt.forum.dashboard.saved')))
+      .then(() => toast(app.translator.trans('fof-scavenger-hunt.forum.dashboard.saved')))
       .catch(() => {})
       .finally(() => {
         this.saving = false;

@@ -1,4 +1,5 @@
 import app from 'flarum/forum/app';
+import toast from '../utils/toast';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import Icon from 'flarum/common/components/Icon';
 import Tooltip from 'flarum/common/components/Tooltip';
@@ -87,8 +88,7 @@ export default class HiddenPart extends Component<HiddenPartAttrs> {
       if (part && hunt) {
         updateProgress(Number(hunt.id()), hunt.foundCount() ?? 0);
 
-        app.alerts.show(
-          { type: 'success' },
+        toast(
           hunt.completedAt()
             ? app.translator.trans('fof-scavenger-hunt.forum.part.hunt_completed', { hunt: hunt.title() })
             : app.translator.trans('fof-scavenger-hunt.forum.part.found', {

@@ -1,4 +1,5 @@
 import app from 'flarum/forum/app';
+import toast from '../utils/toast';
 import FormModal, { type IFormModalAttrs } from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 import type Mithril from 'mithril';
@@ -62,6 +63,9 @@ export default class PlaceHereModal extends FormModal<PlaceHereModalAttrs> {
         <div className="Form-group">
           <Button type="submit" className="Button Button--primary" loading={this.loading}>
             {app.translator.trans('fof-scavenger-hunt.forum.placement_mode.hide_here')}
+          </Button>{' '}
+          <Button className="Button" onclick={() => this.hide()}>
+            {app.translator.trans('fof-scavenger-hunt.forum.placement_mode.cancel')}
           </Button>
         </div>
       </div>
@@ -89,7 +93,7 @@ export default class PlaceHereModal extends FormModal<PlaceHereModalAttrs> {
       )
       .then(() => {
         this.hide();
-        app.alerts.show({ type: 'success' }, app.translator.trans('fof-scavenger-hunt.forum.placement_mode.hidden', { part: part.name() }));
+        toast(app.translator.trans('fof-scavenger-hunt.forum.placement_mode.hidden', { part: part.name() }));
       })
       .catch(() => {
         this.loading = false;

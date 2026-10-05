@@ -1,4 +1,5 @@
 import app from 'flarum/forum/app';
+import toast from '../utils/toast';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import Button from 'flarum/common/components/Button';
 import Icon from 'flarum/common/components/Icon';
@@ -79,6 +80,17 @@ export default class PartEditor extends Component<PartEditorAttrs> {
             <Icon name="fas fa-puzzle-piece" className="PartEditor-image" />
           )}
           <h4 className="PartEditor-title">{part.name()}</h4>
+          <div className="PartEditor-actions">
+            <Button className="Button Button--primary" icon="fas fa-check" loading={this.saving} onclick={() => this.save()}>
+              {app.translator.trans('fof-scavenger-hunt.forum.dashboard.save')}
+            </Button>
+            <Button
+              className="Button Button--icon Button--danger"
+              icon="fas fa-trash"
+              aria-label={app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.delete', {}, true)}
+              onclick={() => this.delete()}
+            />
+          </div>
         </header>
 
         <div className="PartEditor-fields">
@@ -90,16 +102,12 @@ export default class PartEditor extends Component<PartEditorAttrs> {
           <div className="Form-group">
             <label>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.mode')}</label>
             <Select options={modeOptions} value={this.mode()} onchange={(value: PlacementMode) => this.mode(value)} />
-            {this.mode() !== 'fixed' && (
-              <div className="helpText">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.random_recommended')}</div>
-            )}
           </div>
 
           {this.mode() === 'fixed' && (
             <div className="Form-group PartEditor-hint">
               <label>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.hint')}</label>
               <input className="FormControl" bidi={this.hint} maxlength={255} />
-              <div className="helpText">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.hint_help')}</div>
             </div>
           )}
 
@@ -111,33 +119,36 @@ export default class PartEditor extends Component<PartEditorAttrs> {
           )}
 
           <div className="Form-group">
-            <label>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.image')}</label>
-            <input className="FormControl" bidi={this.image} placeholder="template:winter/hat.svg" />
-          </div>
-
-          <div className="Form-group PartEditor-layer">
-            <label>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.layer')}</label>
-            <div className="PartEditor-layerFields">
-              {(['x', 'y', 'width', 'z'] as const).map((key) => (
-                <input className="FormControl" type="number" step="any" min="0" aria-label={key} placeholder={key} bidi={this.layer[key]} />
-              ))}
-            </div>
-          </div>
-
-          <div className="Form-group">
             <label>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.sort')}</label>
             <input className="FormControl" type="number" min="0" bidi={this.sort} />
           </div>
 
-          <div className="PartEditor-actions">
-            <Button className="Button Button--primary" loading={this.saving} onclick={() => this.save()}>
-              {app.translator.trans('fof-scavenger-hunt.forum.dashboard.save')}
-            </Button>
-            <Button className="Button Button--danger" icon="fas fa-trash" onclick={() => this.delete()}>
-              {app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.delete')}
-            </Button>
+          <div className="helpText PartEditor-modeHelp">
+            {this.mode() === 'fixed'
+              ? app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.hint_help')
+              : app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.random_recommended')}
           </div>
         </div>
+
+        <details className="PartEditor-appearance">
+          <summary>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.appearance')}</summary>
+
+          <div className="PartEditor-fields">
+            <div className="Form-group PartEditor-imageField">
+              <label>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.image')}</label>
+              <input className="FormControl" bidi={this.image} placeholder="template:winter/hat.svg" />
+            </div>
+
+            {(['x', 'y', 'width', 'z'] as const).map((key) => (
+              <div className="Form-group PartEditor-layerField">
+                <label>{app.translator.trans(`fof-scavenger-hunt.forum.dashboard.parts.layer_${key}`)}</label>
+                <input className="FormControl" type="number" step="any" min="0" bidi={this.layer[key]} />
+              </div>
+            ))}
+          </div>
+
+          <div className="helpText">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.layer_help')}</div>
+        </details>
 
         <div className="PartEditor-locations">
           <h5>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.locations.heading')}</h5>
@@ -185,7 +196,7 @@ export default class PartEditor extends Component<PartEditorAttrs> {
         sort: Number(this.sort()) || 0,
         layer: hasLayer ? { x: Number(layer.x()), y: Number(layer.y()), width: Number(layer.width()), z: Number(layer.z()) } : null,
       })
-      .then(() => app.alerts.show({ type: 'success' }, app.translator.trans('fof-scavenger-hunt.forum.dashboard.saved')))
+      .then(() => toast(app.translator.trans('fof-scavenger-hunt.forum.dashboard.saved')))
       .catch(() => {})
       .finally(() => {
         this.saving = false;

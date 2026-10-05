@@ -3,7 +3,10 @@ import Page from 'flarum/common/components/Page';
 import PageStructure from 'flarum/forum/components/PageStructure';
 import Button from 'flarum/common/components/Button';
 import Link from 'flarum/common/components/Link';
+import LinkButton from 'flarum/common/components/LinkButton';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
+import listItems from 'flarum/common/helpers/listItems';
+import ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 import type Hunt from '../../common/models/Hunt';
 import { canManageHunts } from '../utils/activeHunts';
@@ -30,7 +33,7 @@ export default class DashboardPage extends Page {
 
   view() {
     return (
-      <PageStructure className="ScavengerDashboard" hero={() => this.hero()}>
+      <PageStructure className="ScavengerDashboard" hero={() => this.hero()} sidebar={() => this.sidebar()}>
         {this.content()}
       </PageStructure>
     );
@@ -47,6 +50,43 @@ export default class DashboardPage extends Page {
     );
   }
 
+  protected sidebar(): Mithril.Children {
+    if (!canManageHunts()) return null;
+
+    return (
+      <nav className="ScavengerDashboard-nav sideNav">
+        <ul>{listItems(this.sidebarItems().toArray())}</ul>
+      </nav>
+    );
+  }
+
+  sidebarItems(): ItemList<Mithril.Children> {
+    const items = new ItemList<Mithril.Children>();
+
+    items.add(
+      'newHunt',
+      <Button
+        className="Button Button--primary ScavengerDashboard-newHunt"
+        itemClassName="App-primaryControl"
+        icon="fas fa-plus"
+        onclick={() => app.modal.show(() => import('./TemplateGalleryModal'))}
+      >
+        {app.translator.trans('fof-scavenger-hunt.forum.dashboard.new_hunt')}
+      </Button>,
+      100
+    );
+
+    items.add(
+      'allHunts',
+      <LinkButton href={app.route('fof-scavenger-hunt.dashboard')} icon="fas fa-binoculars" active>
+        {app.translator.trans('fof-scavenger-hunt.forum.dashboard.all_hunts')}
+      </LinkButton>,
+      90
+    );
+
+    return items;
+  }
+
   protected content(): Mithril.Children {
     if (!canManageHunts()) {
       return <p className="ScavengerDashboard-denied">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.denied')}</p>;
@@ -58,12 +98,6 @@ export default class DashboardPage extends Page {
 
     return (
       <div className="ScavengerDashboard-hunts">
-        <div className="ScavengerDashboard-toolbar">
-          <Button className="Button Button--primary" icon="fas fa-plus" onclick={() => app.modal.show(() => import('./TemplateGalleryModal'))}>
-            {app.translator.trans('fof-scavenger-hunt.forum.dashboard.new_hunt')}
-          </Button>
-        </div>
-
         {this.hunts.length ? (
           <table className="Table ScavengerDashboard-table">
             <thead>

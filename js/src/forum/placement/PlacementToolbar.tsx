@@ -30,6 +30,12 @@ export default class PlacementToolbar extends Component<PlacementToolbarAttrs> {
         <Button className="Button Button--primary" icon="fas fa-check" onclick={() => controller.stop()}>
           {app.translator.trans('fof-scavenger-hunt.forum.placement_mode.done')}
         </Button>
+        <Button
+          className="Button Button--icon Button--flat"
+          icon="fas fa-times"
+          aria-label={app.translator.trans('fof-scavenger-hunt.forum.placement_mode.cancel', {}, true)}
+          onclick={() => controller.stop()}
+        />
       </div>
     );
   }

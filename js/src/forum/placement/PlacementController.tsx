@@ -22,6 +22,13 @@ export class PlacementController {
 
   protected toolbar: HTMLElement | null = null;
 
+  protected onKeydown = (e: KeyboardEvent): void => {
+    // Escape closes an open modal first; only a bare Escape leaves the mode.
+    if (e.key === 'Escape' && !app.modal.isModalOpen()) {
+      this.stop();
+    }
+  };
+
   async start(target: PlacementTarget): Promise<void> {
     if (!this.hunts.length) {
       const [hunts, spots] = await Promise.all([
@@ -47,6 +54,7 @@ export class PlacementController {
       this.toolbar.className = 'PlacementToolbar-mount';
       document.body.append(this.toolbar);
       m.mount(this.toolbar, { view: () => <PlacementToolbar controller={this} /> });
+      document.addEventListener('keydown', this.onKeydown);
     }
 
     m.redraw();
@@ -60,6 +68,7 @@ export class PlacementController {
       m.mount(this.toolbar, null);
       this.toolbar.remove();
       this.toolbar = null;
+      document.removeEventListener('keydown', this.onKeydown);
     }
 
     try {

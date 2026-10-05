@@ -1,4 +1,5 @@
 import app from 'flarum/forum/app';
+import toast from '../utils/toast';
 import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import Button from 'flarum/common/components/Button';
 import Switch from 'flarum/common/components/Switch';
@@ -121,7 +122,7 @@ export default class HuntForm extends Component<HuntFormAttrs> {
 
     this.attrs.hunt
       .save(attributes)
-      .then(() => app.alerts.show({ type: 'success' }, app.translator.trans('fof-scavenger-hunt.forum.dashboard.saved')))
+      .then(() => toast(app.translator.trans('fof-scavenger-hunt.forum.dashboard.saved')))
       .catch(() => {})
       .finally(() => {
         this.saving = false;

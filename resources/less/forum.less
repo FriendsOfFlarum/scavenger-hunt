@@ -162,13 +162,6 @@
   color: var(--muted-color);
 }
 
-.PartEditor-locationActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-
 // ── Header indicator ─────────────────────────────────────────────────────
 
 .HuntIndicator-count {
@@ -280,6 +273,24 @@
 
 // ── Hunt dashboard ───────────────────────────────────────────────────────
 
+// Core only stretches Select inside .FormSection; the dashboard's grids need it everywhere.
+.ScavengerDashboard .Select {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  select {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+.ScavengerDashboard-hero .Hero-title .HuntStatusPill {
+  font-size: 12px;
+  vertical-align: middle;
+}
+
 .ScavengerDashboard-back {
   display: inline-block;
   margin-bottom: 10px;
@@ -287,12 +298,23 @@
   opacity: 0.8;
 }
 
-.ScavengerDashboard-toolbar {
-  margin-bottom: 20px;
+.ScavengerDashboard-newHunt {
+  width: 100%;
 }
 
 .ScavengerDashboard-table {
+  .Table();
   width: 100%;
+
+  thead th {
+    text-align: start;
+    padding: 12px 15px;
+  }
+
+  td:last-child,
+  th:last-child {
+    text-align: end;
+  }
 }
 
 .HuntStatusPill {
@@ -323,14 +345,20 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .PartEditor-title {
+  flex: 1;
+  min-width: 0;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .PartEditor-image {
+  flex-shrink: 0;
   width: 40px;
   height: 40px;
   object-fit: contain;
@@ -338,22 +366,44 @@
   color: var(--muted-color);
 }
 
+.PartEditor-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
 .PartEditor-fields {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 0 15px;
+
+  > * {
+    min-width: 0;
+  }
+
+  .Form-group {
+    margin-bottom: 12px;
+  }
 }
 
-.PartEditor-layerFields {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
-}
-
-.PartEditor-actions {
+.PartEditor-modeHelp {
   grid-column: 1 / -1;
-  display: flex;
-  gap: 10px;
+  margin-top: -4px;
+}
+
+.PartEditor-appearance {
+  margin-top: 10px;
+
+  summary {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: var(--muted-color);
+    cursor: pointer;
+  }
+}
+
+.PartEditor-imageField {
+  grid-column: 1 / -1;
 }
 
 .PartEditor-locations {
@@ -363,18 +413,25 @@
 }
 
 .LocationRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(180px, 2fr) minmax(110px, 1fr) auto;
+  align-items: end;
   gap: 10px;
   padding: 10px 0;
   border-bottom: 1px dashed var(--control-bg);
+
+  > * {
+    min-width: 0;
+  }
+
+  @media @phone {
+    grid-template-columns: 1fr;
+  }
 }
 
 .LocationRow-field {
   display: flex;
   flex-direction: column;
-  min-width: 180px;
 
   label {
     font-size: 12px;
@@ -383,6 +440,7 @@
 }
 
 .LocationRow-warning {
+  grid-column: 1 / -1;
   color: var(--error-color);
   font-size: 13px;
 }
@@ -390,6 +448,14 @@
 .LocationRow-actions {
   display: flex;
   gap: 5px;
+  grid-column: -2;
+}
+
+.PartEditor-locationActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .TemplateGallery {
