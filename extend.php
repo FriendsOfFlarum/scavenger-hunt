@@ -27,6 +27,7 @@ return [
         ->jsDirectory(__DIR__.'/js/dist/forum')
         ->css(__DIR__.'/resources/less/forum.less')
         ->route('/hunts/{slug}', 'fof-scavenger-hunt.hunt')
+        ->route('/u/{username}/trophies', 'fof-scavenger-hunt.user.trophies')
         ->route('/scavenger-hunt/dashboard', 'fof-scavenger-hunt.dashboard')
         ->route('/scavenger-hunt/dashboard/{id:\d+}', 'fof-scavenger-hunt.dashboard.hunt'),
 
@@ -74,6 +75,7 @@ return [
         ->routeAlias('user.posts', 'user')
         ->routeAlias('user.discussions', 'user')
         ->routeAlias('user.security', 'user')
+        ->routeAlias('fof-scavenger-hunt.user.trophies', 'user')
         ->excludeRoute('logoutPage', 'globalLogout', 'notifications.unsubscribe', 'confirmEmail', 'resetPassword', 'maintenance.login')
         ->excludeRoute('fof-scavenger-hunt.dashboard', 'fof-scavenger-hunt.dashboard.hunt')
         // The frontend gives the home page the default action's own route name, never `default`.

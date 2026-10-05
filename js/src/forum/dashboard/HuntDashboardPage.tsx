@@ -11,11 +11,12 @@ import type Hunt from '../../common/models/Hunt';
 import type Part from '../../common/models/Part';
 import { canManageHunts } from '../utils/activeHunts';
 import HuntForm from './HuntForm';
+import HuntRewardsForm from './HuntRewardsForm';
 import HuntStatusPill from './HuntStatusPill';
 import type { PageRoute } from './LocationRow';
 import PartEditor from './PartEditor';
 
-type Tab = 'details' | 'schedule' | 'parts';
+type Tab = 'details' | 'schedule' | 'rewards' | 'parts';
 
 export default class HuntDashboardPage extends Page {
   protected hunt: Hunt | null = null;
@@ -29,7 +30,7 @@ export default class HuntDashboardPage extends Page {
     super.oninit(vnode);
 
     const tab = m.route.param('tab');
-    this.tab = tab === 'schedule' || tab === 'parts' ? tab : 'details';
+    this.tab = tab === 'schedule' || tab === 'rewards' || tab === 'parts' ? tab : 'details';
 
     if (!canManageHunts()) {
       return;
@@ -38,7 +39,7 @@ export default class HuntDashboardPage extends Page {
     const id = m.route.param('id');
 
     Promise.all([
-      app.store.find<Hunt>('scavenger-hunts', id, { include: 'parts,parts.locations' }),
+      app.store.find<Hunt>('scavenger-hunts', id, { include: 'parts,parts.locations,rewardGroup' }),
       app.store.find<HidingSpotDefinition[]>('scavenger-hunt-spots'),
     ]).then(([hunt, spots]) => {
       this.hunt = hunt;
@@ -76,7 +77,7 @@ export default class HuntDashboardPage extends Page {
   }
 
   protected sidebar(): Mithril.Children {
-    const tabs: Tab[] = ['details', 'schedule', 'parts'];
+    const tabs: Tab[] = ['details', 'schedule', 'rewards', 'parts'];
 
     return (
       <nav className="sideNav ScavengerDashboard-nav">
@@ -119,6 +120,10 @@ export default class HuntDashboardPage extends Page {
           </Button>
         </div>
       );
+    }
+
+    if (this.tab === 'rewards') {
+      return <HuntRewardsForm hunt={this.hunt} />;
     }
 
     return <HuntForm key={this.tab} hunt={this.hunt} section={this.tab} />;

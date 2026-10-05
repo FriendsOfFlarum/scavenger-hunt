@@ -271,6 +271,126 @@
   color: var(--muted-color);
 }
 
+// ── Completion, Hunt page, Trophies ──────────────────────────────────────
+
+.CompletionSummary {
+  text-align: center;
+
+  .CollectionView-canvas {
+    max-width: 260px;
+  }
+}
+
+.CompletionSummary-position {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.CompletionSummary-reward {
+  margin: 15px 0;
+  padding: 12px 15px;
+  text-align: start;
+  background: var(--control-bg);
+  border-radius: var(--border-radius);
+
+  h4 {
+    margin: 0 0 6px;
+  }
+}
+
+.CompletionSummary-rewardMessage {
+  word-break: break-word;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.HuntPage-schedule {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.HuntPage-finishers {
+  margin-top: 30px;
+}
+
+.FirstFinishers {
+  list-style: none;
+  margin: 0 0 15px;
+  padding: 0;
+}
+
+.FirstFinishers-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--control-bg);
+}
+
+.FirstFinishers-position {
+  min-width: 2em;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted-color);
+}
+
+.FirstFinishers-user {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--text-color);
+
+  .Avatar {
+    --size: 24px;
+  }
+}
+
+.FirstFinishers-time {
+  font-size: 13px;
+  color: var(--muted-color);
+}
+
+.TrophiesPage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
+}
+
+.TrophyCard {
+  padding: 12px;
+  text-align: center;
+  background: var(--body-bg);
+  border: 1px solid var(--control-bg);
+  border-radius: var(--border-radius);
+
+  .CollectionView-canvas {
+    margin-bottom: 10px;
+  }
+}
+
+.TrophyCard-title {
+  margin: 0 0 4px;
+}
+
+.TrophyCard-meta {
+  font-size: 12px;
+  color: var(--muted-color);
+}
+
+.TrophyCard-reward {
+  margin-top: 8px;
+  text-align: start;
+}
+
 // ── Hunt dashboard ───────────────────────────────────────────────────────
 
 // Core only stretches Select inside .FormSection; the dashboard's grids need it everywhere.

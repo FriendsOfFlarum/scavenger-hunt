@@ -1,4 +1,5 @@
 import Model from 'flarum/common/Model';
+import type Group from 'flarum/common/models/Group';
 import type Part from './Part';
 
 export default class Hunt extends Model {
@@ -64,6 +65,25 @@ export default class Hunt extends Model {
 
   template() {
     return Model.attribute<string | null | undefined>('template').call(this);
+  }
+
+  finishingPosition() {
+    return Model.attribute<number | null | undefined>('finishingPosition').call(this);
+  }
+
+  rewardMessage() {
+    return Model.attribute<string | null | undefined>('rewardMessage').call(this);
+  }
+
+  /**
+   * Only present for Hunt managers and for members who have earned the Completion.
+   */
+  rewardMessageHtml() {
+    return Model.attribute<string | null | undefined>('rewardMessageHtml').call(this);
+  }
+
+  rewardGroup() {
+    return Model.hasOne<Group | null>('rewardGroup').call(this);
   }
 
   parts() {

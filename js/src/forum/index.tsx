@@ -120,6 +120,26 @@ app.initializers.add('fof-scavenger-hunt', () => {
     ];
   });
 
+  extend('flarum/forum/components/UserPage', 'navItems', function (this: any, items: ItemList<Mithril.Children>) {
+    if (this.user) {
+      items.add(
+        'scavengerHuntTrophies',
+        <LinkButton href={app.route('fof-scavenger-hunt.user.trophies', { username: this.user.slug() })} icon="fas fa-trophy">
+          {app.translator.trans('fof-scavenger-hunt.forum.trophies.nav')}
+        </LinkButton>,
+        50
+      );
+    }
+  });
+
+  extend('flarum/forum/components/NotificationGrid', 'notificationTypes', function (items: ItemList<unknown>) {
+    items.add('scavengerHuntCompleted', {
+      name: 'scavengerHuntCompleted',
+      icon: 'fas fa-trophy',
+      label: app.translator.trans('fof-scavenger-hunt.forum.settings.notify_hunt_completed'),
+    });
+  });
+
   if (activeHunts().length) {
     app.prefetch.add('fof-scavenger-hunt.collection', () => import('./components/CollectionModal'));
   }

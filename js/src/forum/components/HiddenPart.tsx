@@ -88,15 +88,17 @@ export default class HiddenPart extends Component<HiddenPartAttrs> {
       if (part && hunt) {
         updateProgress(Number(hunt.id()), hunt.foundCount() ?? 0);
 
-        toast(
-          hunt.completedAt()
-            ? app.translator.trans('fof-scavenger-hunt.forum.part.hunt_completed', { hunt: hunt.title() })
-            : app.translator.trans('fof-scavenger-hunt.forum.part.found', {
-                part: part.name(),
-                found: hunt.foundCount() ?? 0,
-                total: hunt.partCount(),
-              })
-        );
+        if (hunt.completedAt()) {
+          app.modal.show(() => import('./CompletionModal'), { huntId: hunt.id() });
+        } else {
+          toast(
+            app.translator.trans('fof-scavenger-hunt.forum.part.found', {
+              part: part.name(),
+              found: hunt.foundCount() ?? 0,
+              total: hunt.partCount(),
+            })
+          );
+        }
       }
     } catch {
       // The API's own message ("This part has slipped away") is shown by the default handler.

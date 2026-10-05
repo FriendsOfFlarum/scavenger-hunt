@@ -15,6 +15,29 @@ fof-scavenger-hunt:
       random_part: This part could turn up anywhere. Keep exploring!
       no_hint: Somewhere on the forum…
       empty: There are no scavenger hunts running right now.
+    completion_modal:
+      title: "You completed {hunt}!"
+      loading_title: Well done!
+      position: "You were finisher number {position}."
+      reward: Your reward
+      view_hunt: See all finishers
+    notifications:
+      hunt_completed: "You completed {hunt}!"
+    settings:
+      notify_hunt_completed: I complete a scavenger hunt
+    hunt_page:
+      first_finishers: First finishers
+      no_finishers: Nobody has finished this hunt yet. Will you be first?
+      load_more: Load more
+      starts: "Starts {time}"
+      ends: "Ends {time}"
+      not_running: This hunt isn't running right now.
+      not_found: This hunt doesn't exist, or isn't open yet.
+    trophies:
+      nav: Trophies
+      empty: No trophies yet.
+      finished: "Finisher #{position}"
+      show_reward: Show reward
     placement_mode:
       start: Hide parts on this page
       title: Hide it here
@@ -56,7 +79,14 @@ fof-scavenger-hunt:
       tabs:
         details: Details
         schedule: Schedule & audience
+        rewards: Rewards
         parts: Parts & locations
+      rewards:
+        group: Reward group
+        group_help: Finishers join this group automatically. Removing a finisher from the group later is up to you.
+        no_group: No group
+        message: Reward message
+        message_help: Revealed only to members who complete the hunt — a thank-you, a promo code, a link. Formatting works as in posts.
       gallery:
         title: Start a new hunt
         blank: Blank

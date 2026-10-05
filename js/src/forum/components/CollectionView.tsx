@@ -6,6 +6,9 @@ import ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 import type Hunt from '../../common/models/Hunt';
 import type Part from '../../common/models/Part';
+import CollectableCanvas from './CollectableCanvas';
+import Link from 'flarum/common/components/Link';
+import huntUrl from '../utils/huntUrl';
 
 export interface CollectionViewAttrs extends ComponentAttrs {
   hunt: Hunt;
@@ -28,7 +31,7 @@ export default class CollectionView extends Component<CollectionViewAttrs> {
     items.add(
       'header',
       <h3 className="CollectionView-title">
-        {hunt.title()}
+        {huntUrl(hunt.slug()) ? <Link href={huntUrl(hunt.slug())!}>{hunt.title()}</Link> : hunt.title()}
         <span className="CollectionView-progress">
           {app.translator.trans('fof-scavenger-hunt.forum.collection.progress', { found, total: parts.length })}
         </span>
@@ -36,14 +39,7 @@ export default class CollectionView extends Component<CollectionViewAttrs> {
       100
     );
 
-    items.add(
-      'canvas',
-      <div className="CollectionView-canvas">
-        {hunt.imageUrl() && <img className="CollectionView-base" src={hunt.imageUrl()!} alt="" decoding="async" />}
-        {parts.filter((part) => part.layer()).map((part) => this.layer(part))}
-      </div>,
-      80
-    );
+    items.add('canvas', <CollectableCanvas hunt={hunt} parts={parts} />, 80);
 
     items.add('parts', <ul className="CollectionView-parts">{parts.map((part) => this.partItem(part))}</ul>, 60);
 
@@ -52,31 +48,6 @@ export default class CollectionView extends Component<CollectionViewAttrs> {
 
   protected parts(): Part[] {
     return ((this.attrs.hunt.parts() || []).filter(Boolean) as Part[]).sort((a, b) => a.sort() - b.sort());
-  }
-
-  protected layer(part: Part): Mithril.Children {
-    const layer = part.layer()!;
-    const imageUrl = part.imageUrl();
-    const position = { left: `${layer.x}%`, top: `${layer.y}%`, width: `${layer.width}%`, zIndex: String(layer.z) };
-
-    if (!imageUrl) {
-      return null;
-    }
-
-    if (part.isFound()) {
-      return <img className="CollectionView-layer" src={imageUrl} alt={part.name()} style={position} decoding="async" />;
-    }
-
-    // The hidden image sizes the box; the mask paints its shape in the theme's silhouette colour.
-    return (
-      <span
-        className="CollectionView-layer CollectionView-layer--silhouette"
-        aria-hidden="true"
-        style={{ ...position, maskImage: `url("${imageUrl}")`, WebkitMaskImage: `url("${imageUrl}")` }}
-      >
-        <img src={imageUrl} alt="" decoding="async" />
-      </span>
-    );
   }
 
   protected partItem(part: Part): Mithril.Children {
