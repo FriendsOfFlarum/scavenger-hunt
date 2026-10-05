@@ -68,6 +68,7 @@ return [
     new Extend\ApiResource(Api\Resource\HidingSpotResource::class),
     new Extend\ApiResource(Api\Resource\LocationResource::class),
     new Extend\ApiResource(Api\Resource\EncounterResource::class),
+    new Extend\ApiResource(Api\Resource\FindResource::class),
 
     (new Extend\ThrottleApi())
         ->set('fof-scavenger-hunt.lookups', Lookup\LookupThrottler::class),
