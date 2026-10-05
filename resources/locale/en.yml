@@ -1,0 +1,5 @@
+fof-scavenger-hunt:
+  admin:
+    permissions:
+      play: Collect scavenger hunt parts
+      manage: Manage scavenger hunts

@@ -1,0 +1,8 @@
+.github export-ignore
+tests export-ignore
+doc export-ignore
+js/src export-ignore
+js/tests export-ignore
+.git* export-ignore
+CONTEXT.md export-ignore
+phpstan.neon export-ignore
