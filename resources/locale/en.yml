@@ -194,6 +194,10 @@ fof-scavenger-hunt:
           arms: Stick arms
           scarf: Woolly scarf
           hat: Top hat
+  gamification:
+    metric:
+      parts_found: Scavenger hunt parts found
+      hunts_completed: Scavenger hunts completed
   email:
     hunt_completed:
       subject: "You completed {hunt}!"

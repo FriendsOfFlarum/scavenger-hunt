@@ -18,6 +18,7 @@ use Flarum\Post\Post;
 use Flarum\Search\Database\DatabaseSearchDriver;
 use Flarum\Tags\Tag;
 use Flarum\User\User;
+use FoF\Gamification\Extend\LeaderboardMetric;
 use FoF\ScavengerHunt\Extend\HidingSpots;
 use Illuminate\Console\Scheduling\Event as ScheduledEvent;
 
@@ -80,6 +81,13 @@ return [
         ->excludeRoute('fof-scavenger-hunt.dashboard', 'fof-scavenger-hunt.dashboard.hunt')
         // The frontend gives the home page the default action's own route name, never `default`.
         ->excludeRoute('default'),
+
+    (new Extend\Conditional())
+        ->whenExtensionEnabled('fof-gamification', fn () => [
+            (new LeaderboardMetric())
+                ->add(Gamification\PartsFound::class)
+                ->add(Gamification\HuntsCompleted::class),
+        ]),
 
     (new Extend\Conditional())
         ->whenExtensionEnabled('flarum-tags', fn () => [
