@@ -25,10 +25,9 @@ use Psr\Http\Message\ResponseInterface;
 trait InteractsWithHunts
 {
     /**
-     * flarum/testing enables the extension before applying its extenders, and enabling runs
-     * Locales::onEnable(), which resolves the LocaleManager. Extend\Locales registers its
-     * translations in a `resolving` hook, which therefore never fires, so extension strings
-     * stay untranslated in integration tests. Load ours by hand. Call after any extend().
+     * Extension strings come back as raw keys in flarum/testing 2.0 integration tests (FND-132,
+     * a known issue fixed in Flarum 2.1), so tests that assert real wording load ours by hand.
+     * Remove once the extension requires 2.1. Call after any extend().
      */
     protected function loadTranslations(): void
     {
