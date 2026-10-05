@@ -22,7 +22,10 @@ use Illuminate\Console\Scheduling\Event as ScheduledEvent;
 return [
     (new Extend\Frontend('forum'))
         ->js(__DIR__.'/js/dist/forum.js')
-        ->css(__DIR__.'/resources/less/forum.less'),
+        ->jsDirectory(__DIR__.'/js/dist/forum')
+        ->css(__DIR__.'/resources/less/forum.less')
+        ->route('/scavenger-hunt/dashboard', 'fof-scavenger-hunt.dashboard')
+        ->route('/scavenger-hunt/dashboard/{id:\d+}', 'fof-scavenger-hunt.dashboard.hunt'),
 
     (new Extend\Frontend('admin'))
         ->js(__DIR__.'/js/dist/admin.js')
@@ -50,7 +53,8 @@ return [
         ->add('page.footer', 'fof-scavenger-hunt.admin.spots.page_footer')
         ->add('page.corner', 'fof-scavenger-hunt.admin.spots.page_corner')
         ->add('page.sidebar', 'fof-scavenger-hunt.admin.spots.page_sidebar')
-        ->excludeRoute('logoutPage', 'globalLogout', 'notifications.unsubscribe', 'confirmEmail', 'resetPassword', 'maintenance.login'),
+        ->excludeRoute('logoutPage', 'globalLogout', 'notifications.unsubscribe', 'confirmEmail', 'resetPassword', 'maintenance.login')
+        ->excludeRoute('fof-scavenger-hunt.dashboard', 'fof-scavenger-hunt.dashboard.hunt'),
 
     // AbstractModel takes defaults from this registry, not from Eloquent's $attributes.
     (new Extend\Model(Hunt::class))
