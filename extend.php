@@ -65,6 +65,10 @@ return [
         ->default('mode', PlacementMode::Fixed->value)
         ->default('sort', 0),
 
+    (new Extend\Model(User::class))
+        ->hasMany('scavengerFinds', Find::class, 'user_id')
+        ->hasMany('scavengerCompletions', Completion::class, 'user_id'),
+
     (new Extend\ModelVisibility(Hunt::class))
         ->scope(Access\ScopeHuntVisibility::class),
 

@@ -82,4 +82,13 @@ class ThrottleTest extends TestCase
 
         $this->assertEquals(200, $this->lookup(2, 'index', [])->getStatusCode());
     }
+
+    #[Test]
+    public function claims_beyond_the_per_minute_limit_are_refused(): void
+    {
+        $this->setting(Setting::LOOKUP_RATE_LIMIT, 1);
+
+        $this->assertEquals(422, $this->claim(2, str_repeat('a', 64))->getStatusCode());
+        $this->assertEquals(429, $this->claim(2, str_repeat('a', 64))->getStatusCode());
+    }
 }

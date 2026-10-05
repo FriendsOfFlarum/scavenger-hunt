@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Flarum\Group\Group;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
+use Flarum\User\User;
 use FoF\ScavengerHunt\Hunt;
 use FoF\ScavengerHunt\Permission;
 use FoF\ScavengerHunt\PlacementMode;
@@ -71,6 +72,10 @@ class SchemaTest extends TestCase
         $this->assertEquals(['x' => 10, 'y' => 20, 'width' => 30, 'z' => 1], $hunt->parts[0]->layer);
         $this->assertSame('page.corner', $hunt->parts[0]->locations[0]->spot);
         $this->assertSame(2, $hunt->parts[0]->finds[0]->user_id);
+
+        $member = User::query()->findOrFail(2);
+        $this->assertCount(1, $member->scavengerFinds);
+        $this->assertCount(1, $member->scavengerCompletions);
     }
 
     #[Test]

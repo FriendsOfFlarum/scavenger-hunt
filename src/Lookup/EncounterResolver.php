@@ -344,6 +344,14 @@ class EncounterResolver
             ->get()
             ->keyBy('id');
 
+        $map = $this->maps->get();
+
+        // The response includes each Part's Hunt; its part count is already in the map, which
+        // saves a count query per Hunt when the Hunts are serialized as includes.
+        foreach ($parts as $part) {
+            $part->hunt?->setAttribute('part_count', $map->partCount($part->hunt_id));
+        }
+
         $now = Carbon::now();
         $lifetime = max(1, (int) $this->settings->get(Setting::TOKEN_LIFETIME));
         $resolved = [];

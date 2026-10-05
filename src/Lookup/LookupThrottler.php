@@ -22,11 +22,12 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Holds a lookup script to roughly human browsing speed: a per-minute limit for everyone and a
- * daily limit for members. Counters live in the cache, so the limit costs no database queries.
+ * daily limit for members. Claims get the same per-minute limit, so junk tokens cannot be flooded. Counters live in the cache, so the limit costs no database queries.
  */
 class LookupThrottler
 {
     public const ROUTE = 'scavenger-hunt-encounters.lookup';
+    public const CLAIM_ROUTE = 'scavenger-hunt-finds.claim';
 
     public function __construct(
         protected Repository $cache,
@@ -37,7 +38,9 @@ class LookupThrottler
 
     public function __invoke(ServerRequestInterface $request): ?bool
     {
-        if ($request->getAttribute('routeName') !== self::ROUTE) {
+        $route = $request->getAttribute('routeName');
+
+        if ($route !== self::ROUTE && $route !== self::CLAIM_ROUTE) {
             return null;
         }
 
@@ -48,13 +51,13 @@ class LookupThrottler
             ? 'ip:'.($request->getAttribute('ipAddress') ?? $request->getServerParams()['REMOTE_ADDR'] ?? '')
             : 'user:'.$actor->id;
 
-        $perMinute = $this->hit('fof-scavenger-hunt.lookups.'.sha1($who).'.'.$now->format('YmdHi'), 120);
+        $perMinute = $this->hit("fof-scavenger-hunt.throttle.$route.".sha1($who).'.'.$now->format('YmdHi'), 120);
 
         if ($perMinute > max(1, (int) $this->settings->get(Setting::LOOKUP_RATE_LIMIT))) {
             return true;
         }
 
-        if ($actor->isGuest()) {
+        if ($actor->isGuest() || $route === self::CLAIM_ROUTE) {
             return null;
         }
 
