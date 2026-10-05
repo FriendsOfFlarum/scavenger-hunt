@@ -150,6 +150,7 @@ fof-scavenger-hunt:
     context_mismatch: That item doesn't fit this hiding spot.
     context_not_found: That item doesn't exist.
     claim_failed: This part has slipped away. Keep looking!
+    reward_group_invalid: That group can't be a reward.
   lib:
     templates:
       winter:
@@ -163,3 +164,17 @@ fof-scavenger-hunt:
           arms: Stick arms
           scarf: Woolly scarf
           hat: Top hat
+  email:
+    hunt_completed:
+      subject: "You completed {hunt}!"
+      plain:
+        body: |
+          Congratulations — you found every part of {hunt}!
+
+          See your collectable and the other finishers:
+          {url}
+      html:
+        body: |
+          Congratulations — you found every part of **{hunt}**!
+
+          [See your collectable and the other finishers]({url})

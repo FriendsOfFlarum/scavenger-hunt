@@ -25,6 +25,7 @@ return [
         ->js(__DIR__.'/js/dist/forum.js')
         ->jsDirectory(__DIR__.'/js/dist/forum')
         ->css(__DIR__.'/resources/less/forum.less')
+        ->route('/hunts/{slug}', 'fof-scavenger-hunt.hunt')
         ->route('/scavenger-hunt/dashboard', 'fof-scavenger-hunt.dashboard')
         ->route('/scavenger-hunt/dashboard/{id:\d+}', 'fof-scavenger-hunt.dashboard.hunt'),
 
@@ -38,7 +39,15 @@ return [
         ->register(ScavengerHuntServiceProvider::class),
 
     (new Extend\Event())
-        ->subscribe(HuntMap\ClearHuntMap::class),
+        ->subscribe(HuntMap\ClearHuntMap::class)
+        ->listen(Event\HuntCompleted::class, Listener\AwardRewardGroup::class)
+        ->listen(Event\HuntCompleted::class, Listener\SendCompletionNotification::class),
+
+    (new Extend\Notification())
+        ->type(Notification\HuntCompletedBlueprint::class, ['alert', 'email']),
+
+    (new Extend\View())
+        ->namespace('fof-scavenger-hunt', __DIR__.'/views'),
 
     (new Extend\Console())
         ->command(Console\PruneEncountersCommand::class)

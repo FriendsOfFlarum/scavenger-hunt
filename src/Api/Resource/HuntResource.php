@@ -16,7 +16,9 @@ use Flarum\Api\Endpoint;
 use Flarum\Api\Resource\AbstractDatabaseResource;
 use Flarum\Api\Schema;
 use Flarum\Api\Sort\SortColumn;
+use Flarum\Formatter\Formatter;
 use Flarum\Foundation\ValidationException;
+use Flarum\Group\Group;
 use Flarum\Locale\TranslatorInterface;
 use FoF\ScavengerHunt\Access\HuntAccess;
 use FoF\ScavengerHunt\Event;
@@ -40,6 +42,7 @@ class HuntResource extends AbstractDatabaseResource
         protected ActorProgress $progress,
         protected TranslatorInterface $translator,
         protected TemplateRepository $templates,
+        protected Formatter $formatter,
     ) {
     }
 
@@ -182,6 +185,32 @@ class HuntResource extends AbstractDatabaseResource
                     $hunt->afterSave(fn (Hunt $hunt) => $this->templates->copyParts($template, $hunt));
                 }),
 
+            Schema\Integer::make('finishingPosition')
+                ->nullable()
+                ->visible($registered)
+                ->get(fn (Hunt $hunt, Context $context) => $this->progress->position($context, $hunt->id)),
+            Schema\Str::make('rewardMessage')
+                ->nullable()
+                ->visible($manages)
+                ->writable()
+                ->maxLength(10000)
+                ->get(fn (Hunt $hunt) => $this->formatter->unparse($hunt->reward_message))
+                ->set(function (Hunt $hunt, ?string $value, Context $context) {
+                    $hunt->reward_message = filled($value) ? $this->formatter->parse($value, null, $context->getActor()) : null;
+                }),
+            // Revealed only to managers and to members who have earned the Completion.
+            Schema\Str::make('rewardMessageHtml')
+                ->nullable()
+                ->visible(fn (Hunt $hunt, Context $context) => $hunt->reward_message !== null
+                    && ($this->access->canManage($context->getActor()) || $this->progress->completedAt($context, $hunt->id) !== null))
+                ->get(fn (Hunt $hunt, Context $context) => $this->formatter->render($hunt->reward_message, null, $context->request)),
+
+            Schema\Relationship\ToOne::make('rewardGroup')
+                ->type('groups')
+                ->includable()
+                ->nullable()
+                ->visible($manages)
+                ->writable(),
             Schema\Relationship\ToMany::make('parts')
                 ->type('scavenger-hunt-parts')
                 ->includable(),
@@ -212,6 +241,10 @@ class HuntResource extends AbstractDatabaseResource
     {
         if ($model->starts_at && $model->ends_at && $model->ends_at->lte($model->starts_at)) {
             throw new ValidationException(['endsAt' => $this->translator->trans('fof-scavenger-hunt.api.ends_before_start')]);
+        }
+
+        if (in_array($model->reward_group_id, [Group::ADMINISTRATOR_ID, Group::GUEST_ID], true)) {
+            throw new ValidationException(['rewardGroup' => $this->translator->trans('fof-scavenger-hunt.api.reward_group_invalid')]);
         }
 
         foreach (['image' => 'image', 'completed_image' => 'completedImage'] as $column => $field) {
