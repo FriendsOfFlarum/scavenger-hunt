@@ -124,7 +124,10 @@ return [
     (new Extend\SearchDriver(DatabaseSearchDriver::class))
         ->addSearcher(Completion::class, Search\Completion\CompletionSearcher::class)
         ->addFilter(Search\Completion\CompletionSearcher::class, Search\Completion\HuntFilter::class)
-        ->addFilter(Search\Completion\CompletionSearcher::class, Search\Completion\UserFilter::class),
+        ->addFilter(Search\Completion\CompletionSearcher::class, Search\Completion\UserFilter::class)
+        ->addSearcher(Find::class, Search\Find\FindSearcher::class)
+        ->addFilter(Search\Find\FindSearcher::class, Search\Find\HuntFilter::class)
+        ->addFilter(Search\Find\FindSearcher::class, Search\Find\UserFilter::class),
 
     new Extend\ApiResource(Api\Resource\HuntResource::class),
     new Extend\ApiResource(Api\Resource\TemplateResource::class),
@@ -134,6 +137,8 @@ return [
     new Extend\ApiResource(Api\Resource\EncounterResource::class),
     new Extend\ApiResource(Api\Resource\FindResource::class),
     new Extend\ApiResource(Api\Resource\CompletionResource::class),
+    new Extend\ApiResource(Api\Resource\StatsResource::class),
+    new Extend\ApiResource(Api\Resource\ParticipantResource::class),
 
     (new Extend\ApiResource(ForumResource::class))
         ->fields(Api\ForumAttributes::class),

@@ -18,7 +18,9 @@ use Flarum\Api\Schema;
 use Flarum\Api\Serializer;
 use FoF\ScavengerHunt\Access\HuntAccess;
 use FoF\ScavengerHunt\Claim\ClaimService;
+use Flarum\Api\Sort\SortColumn;
 use FoF\ScavengerHunt\Find;
+use FoF\ScavengerHunt\Permission;
 use FoF\ScavengerHunt\Progress\ActorProgress;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
@@ -60,6 +62,11 @@ class FindResource extends AbstractDatabaseResource
     public function endpoints(): array
     {
         return [
+            Endpoint\Index::make()
+                ->authenticated()
+                ->can(Permission::MANAGE)
+                ->defaultSort('foundAt')
+                ->paginate(50, 100),
             Endpoint\Endpoint::make('claim')
                 ->route('POST', '/')
                 ->authenticated()
@@ -91,6 +98,13 @@ class FindResource extends AbstractDatabaseResource
             Schema\Relationship\ToOne::make('user')
                 ->type('users')
                 ->includable(),
+        ];
+    }
+
+    public function sorts(): array
+    {
+        return [
+            SortColumn::make('foundAt'),
         ];
     }
 }

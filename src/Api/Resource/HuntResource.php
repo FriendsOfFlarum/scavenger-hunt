@@ -20,6 +20,7 @@ use Flarum\Formatter\Formatter;
 use Flarum\Foundation\ValidationException;
 use Flarum\Group\Group;
 use Flarum\Locale\TranslatorInterface;
+use Flarum\User\User;
 use FoF\ScavengerHunt\Access\HuntAccess;
 use FoF\ScavengerHunt\Event;
 use FoF\ScavengerHunt\Hunt;
@@ -27,8 +28,11 @@ use FoF\ScavengerHunt\Image\ImageReference;
 use FoF\ScavengerHunt\Permission;
 use FoF\ScavengerHunt\Progress\ActorProgress;
 use FoF\ScavengerHunt\Template\TemplateRepository;
+use FoF\ScavengerHunt\Tracking\ProgressResetter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Laminas\Diactoros\Response\EmptyResponse;
 use Tobyz\JsonApiServer\Context as OriginalContext;
 
 /**
@@ -43,6 +47,7 @@ class HuntResource extends AbstractDatabaseResource
         protected TranslatorInterface $translator,
         protected TemplateRepository $templates,
         protected Formatter $formatter,
+        protected ProgressResetter $resetter,
     ) {
     }
 
@@ -99,6 +104,16 @@ class HuntResource extends AbstractDatabaseResource
             Endpoint\Delete::make()
                 ->authenticated()
                 ->can(Permission::MANAGE),
+            Endpoint\Endpoint::make('resetProgress')
+                ->route('POST', '/{id}/reset-progress')
+                ->authenticated()
+                ->can(Permission::MANAGE)
+                ->action(function (Context $context) {
+                    $user = User::query()->findOrFail((int) Arr::get($context->body(), 'data.attributes.userId'));
+
+                    $this->resetter->reset($context->model, $user, $context->getActor());
+                })
+                ->response(fn () => new EmptyResponse(204)),
         ];
     }
 
