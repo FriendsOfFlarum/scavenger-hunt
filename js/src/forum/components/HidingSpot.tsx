@@ -2,6 +2,7 @@ import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import classList from 'flarum/common/utils/classList';
 import type Mithril from 'mithril';
 import { encounters, reportKey, type SpotReport } from '../states/EncounterState';
+import { placement } from '../states/placement';
 import HiddenPart from './HiddenPart';
 
 export interface HidingSpotAttrs extends ComponentAttrs {
@@ -47,6 +48,10 @@ export default class HidingSpot extends Component<HidingSpotAttrs> {
   }
 
   view() {
+    if (placement.renderer) {
+      return placement.renderer(this.attrs, this.report);
+    }
+
     const encounter = encounters.encounterAt(this.report);
 
     if (!encounter) {

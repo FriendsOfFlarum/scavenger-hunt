@@ -95,6 +95,80 @@
   color: var(--scavenger-part-glow);
 }
 
+.HidingSpot-postBody,
+.HidingSpot-tagTile {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+// ── "Hide it here" mode ──────────────────────────────────────────────────
+
+.PlacementTarget {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 2px 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--primary-color);
+  background: var(--body-bg);
+  border: 2px dashed var(--primary-color);
+  border-radius: var(--border-radius);
+  cursor: crosshair;
+  white-space: nowrap;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--body-bg);
+    background: var(--primary-color);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.PlacementTarget-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.PlacementToolbar {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: var(--zindex-alerts);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  color: var(--text-color);
+  background: var(--body-bg);
+  border-top: 2px solid var(--primary-color);
+  box-shadow: 0 -2px 12px var(--shadow-color);
+
+  .Select {
+    width: auto;
+  }
+}
+
+.PlacementToolbar-help {
+  flex: 1;
+  font-size: 13px;
+  color: var(--muted-color);
+}
+
+.PartEditor-locationActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
 // ── Header indicator ─────────────────────────────────────────────────────
 
 .HuntIndicator-count {

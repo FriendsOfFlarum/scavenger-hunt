@@ -15,6 +15,22 @@ fof-scavenger-hunt:
       random_part: This part could turn up anywhere. Keep exploring!
       no_hint: Somewhere on the forum…
       empty: There are no scavenger hunts running right now.
+    placement_mode:
+      start: Hide parts on this page
+      title: Hide it here
+      help: Click a highlighted spot to hide the part there.
+      done: Done
+      target: "Hide the part in: {spot}"
+      modal_title: "Hide the {part}"
+      spot: "Hiding spot: {spot}"
+      which_item: Which item?
+      exact_item: "Only this {type} (#{id})"
+      any_item: "Any {type}"
+      which_page: Which page?
+      this_page: "Only this page ({route})"
+      any_page: Any page
+      hide_here: Hide it here
+      hidden: "The {part} is hidden."
     dashboard:
       nav: Scavenger hunts
       title: Scavenger hunts
@@ -84,6 +100,7 @@ fof-scavenger-hunt:
         any_item: Any
         unavailable: This hiding spot isn't available any more, so the part won't appear here.
         delete: Delete hiding place
+        place_on_forum: Place on the forum
   admin:
     permissions:
       play: Collect scavenger hunt parts

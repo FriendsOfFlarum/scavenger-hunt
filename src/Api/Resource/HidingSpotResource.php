@@ -53,6 +53,8 @@ class HidingSpotResource extends AbstractResource implements Listable
                 ->meta([
                     Schema\Arr::make('routes')
                         ->get(fn () => $this->spots->pageRoutes()),
+                    Schema\Arr::make('routeAliases')
+                        ->get(fn () => (object) $this->spots->routeAliases()),
                 ]),
         ];
     }

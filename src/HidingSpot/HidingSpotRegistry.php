@@ -78,6 +78,14 @@ class HidingSpotRegistry
         return $this->routeAliases[$route] ?? $route;
     }
 
+    /**
+     * @return array<string, string>
+     */
+    public function routeAliases(): array
+    {
+        return $this->routeAliases;
+    }
+
     public function get(string $key): ?HidingSpot
     {
         return $this->spots[$key] ?? null;

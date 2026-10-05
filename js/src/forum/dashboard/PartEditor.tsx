@@ -10,6 +10,7 @@ import type Location from '../../common/models/Location';
 import type Part from '../../common/models/Part';
 import type { PlacementMode } from '../../common/models/Part';
 import LocationRow, { type PageRoute } from './LocationRow';
+import { placement } from '../states/placement';
 
 export interface PartEditorAttrs extends ComponentAttrs {
   part: Part;
@@ -151,13 +152,18 @@ export default class PartEditor extends Component<PartEditorAttrs> {
               ondeleted={(deleted: Location) => (this.locations = this.locations.filter((candidate) => candidate !== deleted))}
             />
           ))}
-          <Button
-            className="Button"
-            icon="fas fa-map-pin"
-            onclick={() => this.locations.push(app.store.createRecord<Location>('scavenger-hunt-locations'))}
-          >
-            {app.translator.trans('fof-scavenger-hunt.forum.dashboard.locations.add')}
-          </Button>
+          <div className="PartEditor-locationActions">
+            <Button
+              className="Button"
+              icon="fas fa-plus"
+              onclick={() => this.locations.push(app.store.createRecord<Location>('scavenger-hunt-locations'))}
+            >
+              {app.translator.trans('fof-scavenger-hunt.forum.dashboard.locations.add')}
+            </Button>
+            <Button className="Button" icon="fas fa-map-pin" onclick={() => this.placeOnForum()}>
+              {app.translator.trans('fof-scavenger-hunt.forum.dashboard.locations.place_on_forum')}
+            </Button>
+          </div>
         </div>
       </section>
     );
@@ -185,6 +191,13 @@ export default class PartEditor extends Component<PartEditorAttrs> {
         this.saving = false;
         m.redraw();
       });
+  }
+
+  protected placeOnForum(): void {
+    const part = this.attrs.part;
+    const hunt = part.hunt();
+
+    placement.start({ huntId: hunt ? hunt.id() : undefined, partId: part.id() }).then(() => m.route.set(app.route('index')));
   }
 
   protected delete(): void {

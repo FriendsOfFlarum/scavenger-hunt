@@ -111,5 +111,6 @@ class PreciseSpotsTest extends TestCase
 
         $this->assertNotContains('tags.tile', $spots);
         $this->assertNotContains('default', array_column($body['meta']['routes'], 'name'));
+        $this->assertSame('discussion', $body['meta']['routeAliases']['discussion.near']);
     }
 }

@@ -75,6 +75,14 @@ export default class EncounterState {
     this.schedule();
   }
 
+  currentRoute(): string {
+    return this.route;
+  }
+
+  currentParams(): Record<string, unknown> {
+    return this.params;
+  }
+
   encounterAt(report: SpotReport): Encounter | undefined {
     return this.encounters.get(reportKey(report));
   }
