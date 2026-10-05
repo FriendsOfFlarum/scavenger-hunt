@@ -148,4 +148,18 @@ class HuntMapTest extends TestCase
 
         $this->assertNull($repository->get()->hunt(1));
     }
+
+    #[Test]
+    public function the_summary_follows_the_map(): void
+    {
+        $repository = $this->repository();
+
+        $this->assertSame([1, 4], array_column($repository->summary(), 'id'));
+        $this->assertSame(2, $repository->summary()[0]['part_count']);
+
+        $this->database()->table('fof_scavenger_hunts')->where('id', 1)->update(['is_enabled' => false]);
+        $repository->forget();
+
+        $this->assertSame([4], array_column($repository->summary(), 'id'));
+    }
 }

@@ -28,6 +28,12 @@ class HuntMapRepository
     public const GENERATION_KEY = 'fof-scavenger-hunt.map.generation';
 
     /**
+     * What the forum payload needs on every page load, cached apart from the full map so that
+     * seeds and Locations are never deserialized just to say which Hunts are running.
+     */
+    public const SUMMARY_KEY = 'fof-scavenger-hunt.summary.v1';
+
+    /**
      * An upper bound on staleness for changes made outside the API (a direct DB edit, tinker).
      */
     protected const MAX_TTL = 3600;
@@ -40,20 +46,34 @@ class HuntMapRepository
 
     public function get(): HuntMap
     {
+        return $this->load()[0];
+    }
+
+    /**
+     * @return list<array{id: int, slug: string, title: string, guests_can_see: bool, part_count: int}>
+     */
+    public function summary(): array
+    {
         $generation = $this->generation();
-        $cached = $this->cache->get(self::CACHE_KEY);
+        $cached = $this->cache->get(self::SUMMARY_KEY);
 
         if (is_array($cached) && ($cached['generation'] ?? null) === $generation) {
-            return HuntMap::fromArray($cached['map']);
+            return $cached['hunts'];
         }
 
-        [$map, $ttl] = $this->build(Carbon::now());
+        [$map, $expiresAt] = $this->load();
 
-        // Stamped with the generation read before building: if a change lands mid-build, this copy
-        // is already stale, and the next reader rebuilds instead of trusting it.
-        $this->cache->put(self::CACHE_KEY, ['generation' => $generation, 'map' => $map->toArray()], $ttl);
+        $hunts = array_values(array_map(fn (array $hunt) => [
+            'id' => $hunt['id'],
+            'slug' => $hunt['slug'],
+            'title' => $hunt['title'],
+            'guests_can_see' => $hunt['guests_can_see'],
+            'part_count' => $map->partCount($hunt['id']),
+        ], $map->hunts));
 
-        return $map;
+        $this->cache->put(self::SUMMARY_KEY, ['generation' => $generation, 'hunts' => $hunts], max(1, $expiresAt - Carbon::now()->getTimestamp()));
+
+        return $hunts;
     }
 
     public function forget(): void
@@ -61,6 +81,30 @@ class HuntMapRepository
         $this->cache->add(self::GENERATION_KEY, 0);
         $this->cache->increment(self::GENERATION_KEY);
         $this->cache->forget(self::CACHE_KEY);
+        $this->cache->forget(self::SUMMARY_KEY);
+    }
+
+    /**
+     * @return array{0: HuntMap, 1: int} the map and when it stops being true (unix time)
+     */
+    protected function load(): array
+    {
+        $generation = $this->generation();
+        $cached = $this->cache->get(self::CACHE_KEY);
+
+        if (is_array($cached) && ($cached['generation'] ?? null) === $generation) {
+            return [HuntMap::fromArray($cached['map']), (int) $cached['expires_at']];
+        }
+
+        $now = Carbon::now();
+        [$map, $ttl] = $this->build($now);
+        $expiresAt = $now->getTimestamp() + $ttl;
+
+        // Stamped with the generation read before building: if a change lands mid-build, this copy
+        // is already stale, and the next reader rebuilds instead of trusting it.
+        $this->cache->put(self::CACHE_KEY, ['generation' => $generation, 'expires_at' => $expiresAt, 'map' => $map->toArray()], $ttl);
+
+        return [$map, $expiresAt];
     }
 
     protected function generation(): int

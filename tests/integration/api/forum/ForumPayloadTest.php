@@ -14,7 +14,9 @@ namespace FoF\ScavengerHunt\Tests\integration\api\forum;
 use Carbon\Carbon;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
+use FoF\ScavengerHunt\HuntMap\HuntMapRepository;
 use FoF\ScavengerHunt\Tests\integration\InteractsWithHunts;
+use Illuminate\Contracts\Cache\Repository;
 use PHPUnit\Framework\Attributes\Test;
 
 class ForumPayloadTest extends TestCase
@@ -85,5 +87,18 @@ class ForumPayloadTest extends TestCase
 
         $this->assertTrue($attributes['scavengerHuntCanManage']);
         $this->assertFalse($attributes['scavengerHunts'][0]['canClaim']);
+    }
+
+    #[Test]
+    public function the_payload_is_built_from_a_slim_summary_without_secrets(): void
+    {
+        $this->forum(2);
+
+        $summary = $this->app()->getContainer()->make(Repository::class)->get(HuntMapRepository::SUMMARY_KEY);
+
+        $this->assertIsArray($summary);
+        $this->assertSame(['snowman', 'members-only', 'empty'], array_column($summary['hunts'], 'slug'));
+        $this->assertSame([2, 1, 0], array_column($summary['hunts'], 'part_count'));
+        $this->assertArrayNotHasKey('seed', $summary['hunts'][0]);
     }
 }

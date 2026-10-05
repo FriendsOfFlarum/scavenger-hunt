@@ -19,6 +19,7 @@ use Flarum\Api\Serializer;
 use FoF\ScavengerHunt\Access\HuntAccess;
 use FoF\ScavengerHunt\Claim\ClaimService;
 use FoF\ScavengerHunt\Find;
+use FoF\ScavengerHunt\Progress\ActorProgress;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Tobyz\JsonApiServer\Context as OriginalContext;
@@ -33,6 +34,7 @@ class FindResource extends AbstractDatabaseResource
     public function __construct(
         protected ClaimService $claims,
         protected HuntAccess $access,
+        protected ActorProgress $progress,
     ) {
     }
 
@@ -67,6 +69,8 @@ class FindResource extends AbstractDatabaseResource
                     return $this->claims->claim($context->getActor(), is_string($token) ? $token : '');
                 })
                 ->response(function (Context $context, Find $find) {
+                    $this->progress->scope($context, [$find->part->hunt_id]);
+
                     $serializer = new Serializer($context);
                     $serializer->addPrimary($this, $find, ['part' => ['hunt' => []]]);
 

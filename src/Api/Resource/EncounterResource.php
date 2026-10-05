@@ -20,6 +20,7 @@ use FoF\ScavengerHunt\HidingSpot\HidingSpotRegistry;
 use FoF\ScavengerHunt\HidingSpot\ReportedPage;
 use FoF\ScavengerHunt\Lookup\EncounterResolver;
 use FoF\ScavengerHunt\Lookup\ResolvedEncounter;
+use FoF\ScavengerHunt\Progress\ActorProgress;
 use Illuminate\Support\Arr;
 use Tobyz\JsonApiServer\Context as OriginalContext;
 
@@ -34,6 +35,7 @@ class EncounterResource extends AbstractResource
     public function __construct(
         protected EncounterResolver $resolver,
         protected HidingSpotRegistry $spots,
+        protected ActorProgress $progress,
     ) {
     }
 
@@ -62,6 +64,8 @@ class EncounterResource extends AbstractResource
                     );
                 })
                 ->response(function (Context $context, array $encounters) {
+                    $this->progress->scope($context, array_map(fn (ResolvedEncounter $encounter) => $encounter->part->hunt_id, $encounters));
+
                     $serializer = new Serializer($context);
 
                     foreach ($encounters as $encounter) {

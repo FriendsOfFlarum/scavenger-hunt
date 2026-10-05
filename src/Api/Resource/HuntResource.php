@@ -73,8 +73,20 @@ class HuntResource extends AbstractDatabaseResource
         return [
             Endpoint\Index::make()
                 ->defaultSort('-createdAt')
-                ->paginate(20, 50),
-            Endpoint\Show::make(),
+                ->paginate(20, 50)
+                ->beforeSerialization(function (Context $context, array $results) {
+                    /** @var iterable<Hunt> $hunts */
+                    $hunts = $results['models'];
+                    $ids = [];
+
+                    foreach ($hunts as $hunt) {
+                        $ids[] = $hunt->id;
+                    }
+
+                    $this->progress->scope($context, $ids);
+                }),
+            Endpoint\Show::make()
+                ->beforeSerialization(fn (Context $context, Hunt $hunt) => $this->progress->scope($context, [$hunt->id])),
             Endpoint\Create::make()
                 ->authenticated()
                 ->can(Permission::MANAGE),

@@ -102,11 +102,11 @@ class PartResource extends AbstractDatabaseResource
                 ->get(fn (Part $part) => $part->mode->isRandom()),
             Schema\Boolean::make('isFound')
                 ->visible($registered)
-                ->get(fn (Part $part, Context $context) => $this->progress->isFound($context, $part->id)),
+                ->get(fn (Part $part, Context $context) => $this->progress->isFound($context, $part->hunt_id, $part->id)),
             Schema\DateTime::make('foundAt')
                 ->nullable()
                 ->visible($registered)
-                ->get(fn (Part $part, Context $context) => $this->progress->foundAt($context, $part->id)),
+                ->get(fn (Part $part, Context $context) => $this->progress->foundAt($context, $part->hunt_id, $part->id)),
 
             Schema\Str::make('mode')
                 ->visible($manages)

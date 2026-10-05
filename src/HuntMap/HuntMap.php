@@ -27,11 +27,19 @@ final class HuntMap
      * @param array<int, PartEntry> $parts
      * @param array<int, list<LocationEntry>> $locations keyed by Part id
      */
+    /**
+     * @var array<int, list<int>>
+     */
+    protected array $partIdsByHunt = [];
+
     public function __construct(
         public readonly array $hunts,
         public readonly array $parts,
         public readonly array $locations,
     ) {
+        foreach ($parts as $part) {
+            $this->partIdsByHunt[$part['hunt_id']][] = $part['id'];
+        }
     }
 
     public function isEmpty(): bool
@@ -60,15 +68,12 @@ final class HuntMap
      */
     public function partIdsOf(int $huntId): array
     {
-        return array_values(array_map(
-            fn (array $part) => $part['id'],
-            array_filter($this->parts, fn (array $part) => $part['hunt_id'] === $huntId)
-        ));
+        return $this->partIdsByHunt[$huntId] ?? [];
     }
 
     public function partCount(int $huntId): int
     {
-        return count($this->partIdsOf($huntId));
+        return count($this->partIdsByHunt[$huntId] ?? []);
     }
 
     /**

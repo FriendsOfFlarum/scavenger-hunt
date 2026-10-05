@@ -53,11 +53,9 @@ class ForumAttributes
             return [];
         }
 
-        $map = $this->maps->get();
-
         $hunts = array_filter(
-            $map->hunts,
-            fn (array $hunt) => $map->partCount($hunt['id']) > 0 && (! $actor->isGuest() || $hunt['guests_can_see'])
+            $this->maps->summary(),
+            fn (array $hunt) => $hunt['part_count'] > 0 && (! $actor->isGuest() || $hunt['guests_can_see'])
         );
 
         if ($hunts === []) {
@@ -70,7 +68,7 @@ class ForumAttributes
             $found = $this->db->table('fof_scavenger_finds')
                 ->join('fof_scavenger_parts', 'fof_scavenger_parts.id', '=', 'fof_scavenger_finds.part_id')
                 ->where('fof_scavenger_finds.user_id', $actor->id)
-                ->whereIn('fof_scavenger_parts.hunt_id', array_keys($hunts))
+                ->whereIn('fof_scavenger_parts.hunt_id', array_column($hunts, 'id'))
                 ->groupBy('fof_scavenger_parts.hunt_id')
                 ->select('fof_scavenger_parts.hunt_id')
                 ->selectRaw('count(*) as found')
@@ -84,7 +82,7 @@ class ForumAttributes
             'id' => $hunt['id'],
             'slug' => $hunt['slug'],
             'title' => $hunt['title'],
-            'partCount' => $map->partCount($hunt['id']),
+            'partCount' => $hunt['part_count'],
             'foundCount' => (int) ($found[$hunt['id']] ?? 0),
             'canClaim' => $canClaim,
         ], $hunts));

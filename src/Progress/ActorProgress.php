@@ -14,66 +14,105 @@ namespace FoF\ScavengerHunt\Progress;
 use Carbon\Carbon;
 use Flarum\Api\Context;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\Query\Builder;
 use Psr\Http\Message\ServerRequestInterface;
 use WeakMap;
 
 /**
- * The actor's Finds and Completions, loaded once per request for every field that needs them.
+ * The actor's Finds and Completions for the Hunts in the current response, loaded once per
+ * request. Endpoints scope it to their Hunts up front so a whole page loads in one go; asking
+ * about a Hunt outside the scope widens it and reloads.
  *
- * Resources are container singletons that serve many requests, so the memo is keyed by the
- * request object (FND-124): it dies with the request instead of leaking another actor's progress.
+ * Resources are container singletons that serve many requests, so state is keyed by the request
+ * object (FND-124): it dies with the request instead of leaking another actor's progress.
+ *
+ * @phpstan-type Progress array{hunts: list<int>, found: array<int, Carbon>, huntCounts: array<int, int>, completed: array<int, array{at: Carbon, position: int}>}
  */
 class ActorProgress
 {
     /**
-     * @var WeakMap<ServerRequestInterface, array{found: array<int, Carbon>, huntCounts: array<int, int>, completed: array<int, Carbon>}>
+     * @var WeakMap<ServerRequestInterface, list<int>>
+     */
+    protected WeakMap $scopes;
+
+    /**
+     * @var WeakMap<ServerRequestInterface, Progress>
      */
     protected WeakMap $memo;
 
     public function __construct(
         protected ConnectionInterface $db
     ) {
+        $this->scopes = new WeakMap();
         $this->memo = new WeakMap();
     }
 
-    public function isFound(Context $context, int $partId): bool
+    /**
+     * @param iterable<int|string> $huntIds
+     */
+    public function scope(Context $context, iterable $huntIds): void
     {
-        return isset($this->load($context)['found'][$partId]);
+        $scope = $this->scopes[$context->request] ?? [];
+
+        foreach ($huntIds as $huntId) {
+            if (! in_array((int) $huntId, $scope, true)) {
+                $scope[] = (int) $huntId;
+            }
+        }
+
+        $this->scopes[$context->request] = $scope;
     }
 
-    public function foundAt(Context $context, int $partId): ?Carbon
+    public function isFound(Context $context, int $huntId, int $partId): bool
     {
-        return $this->load($context)['found'][$partId] ?? null;
+        return isset($this->load($context, $huntId)['found'][$partId]);
+    }
+
+    public function foundAt(Context $context, int $huntId, int $partId): ?Carbon
+    {
+        return $this->load($context, $huntId)['found'][$partId] ?? null;
     }
 
     public function foundCount(Context $context, int $huntId): int
     {
-        return $this->load($context)['huntCounts'][$huntId] ?? 0;
+        return $this->load($context, $huntId)['huntCounts'][$huntId] ?? 0;
     }
 
     public function completedAt(Context $context, int $huntId): ?Carbon
     {
-        return $this->load($context)['completed'][$huntId] ?? null;
+        return $this->load($context, $huntId)['completed'][$huntId]['at'] ?? null;
     }
 
     /**
-     * @return array{found: array<int, Carbon>, huntCounts: array<int, int>, completed: array<int, Carbon>}
+     * The actor's place among the Hunt's finishers, or null if they haven't finished it.
      */
-    protected function load(Context $context): array
+    public function position(Context $context, int $huntId): ?int
+    {
+        return $this->load($context, $huntId)['completed'][$huntId]['position'] ?? null;
+    }
+
+    /**
+     * @return Progress
+     */
+    protected function load(Context $context, int $huntId): array
     {
         $request = $context->request;
 
-        if (isset($this->memo[$request])) {
+        $this->scope($context, [$huntId]);
+        $scope = $this->scopes[$request];
+
+        if (isset($this->memo[$request]) && $this->memo[$request]['hunts'] === $scope) {
             return $this->memo[$request];
         }
 
         $actor = $context->getActor();
-        $progress = ['found' => [], 'huntCounts' => [], 'completed' => []];
+        $progress = ['hunts' => $scope, 'found' => [], 'huntCounts' => [], 'completed' => []];
 
         if (! $actor->isGuest()) {
             $finds = $this->db->table('fof_scavenger_finds')
                 ->join('fof_scavenger_parts', 'fof_scavenger_parts.id', '=', 'fof_scavenger_finds.part_id')
                 ->where('fof_scavenger_finds.user_id', $actor->id)
+                ->whereIn('fof_scavenger_parts.hunt_id', $scope)
                 ->get(['fof_scavenger_finds.part_id', 'fof_scavenger_finds.found_at', 'fof_scavenger_parts.hunt_id']);
 
             foreach ($finds as $find) {
@@ -81,15 +120,38 @@ class ActorProgress
                 $progress['huntCounts'][(int) $find->hunt_id] = ($progress['huntCounts'][(int) $find->hunt_id] ?? 0) + 1;
             }
 
-            $completions = $this->db->table('fof_scavenger_completions')
-                ->where('user_id', $actor->id)
-                ->get(['hunt_id', 'completed_at']);
+            $completions = $this->db->table('fof_scavenger_completions as c')
+                ->where('c.user_id', $actor->id)
+                ->whereIn('c.hunt_id', $scope)
+                ->select('c.hunt_id', 'c.completed_at')
+                ->selectSub(fn (Builder $query) => self::positionQuery($query), 'position')
+                ->get();
 
             foreach ($completions as $completion) {
-                $progress['completed'][(int) $completion->hunt_id] = Carbon::parse($completion->completed_at);
+                $progress['completed'][(int) $completion->hunt_id] = [
+                    'at' => Carbon::parse($completion->completed_at),
+                    'position' => (int) $completion->position,
+                ];
             }
         }
 
         return $this->memo[$request] = $progress;
+    }
+
+    /**
+     * A correlated subquery counting the Completions of the same Hunt earned up to and including
+     * the outer row `c`: its finishing position. Portable, and served by (hunt_id, completed_at).
+     */
+    public static function positionQuery(Builder $query): Builder
+    {
+        return $query->from('fof_scavenger_completions as c2')
+            ->selectRaw('count(*)')
+            ->whereColumn('c2.hunt_id', 'c.hunt_id')
+            ->where(function (Builder $query) {
+                $query->whereColumn('c2.completed_at', '<', 'c.completed_at')
+                    ->orWhere(function (Builder $query) {
+                        $query->whereColumn('c2.completed_at', 'c.completed_at')->whereColumn('c2.id', '<=', 'c.id');
+                    });
+            });
     }
 }
