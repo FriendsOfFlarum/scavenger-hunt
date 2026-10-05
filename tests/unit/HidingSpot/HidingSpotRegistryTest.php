@@ -15,12 +15,16 @@ use Flarum\Http\RouteCollection;
 use Flarum\Post\Post;
 use FoF\ScavengerHunt\HidingSpot\HidingSpot;
 use FoF\ScavengerHunt\HidingSpot\HidingSpotRegistry;
-use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class HidingSpotRegistryTest extends TestCase
 {
+    /**
+     * @var list<string>
+     */
+    protected array $reported = [];
+
     protected function registry(array $definitions, array $contexts = [], array $excluded = []): HidingSpotRegistry
     {
         $routes = (new RouteCollection())
@@ -29,7 +33,9 @@ class HidingSpotRegistryTest extends TestCase
             ->get('/logout', 'logoutPage', 'handler')
             ->post('/logout', 'logout', 'handler');
 
-        return new HidingSpotRegistry($definitions, $contexts, $excluded, fn () => $routes);
+        return new HidingSpotRegistry($definitions, $contexts, $excluded, fn () => $routes, function (string $message) {
+            $this->reported[] = $message;
+        });
     }
 
     protected function spot(string $key, ?array $routes = null, ?string $context = null): array
@@ -52,19 +58,23 @@ class HidingSpotRegistryTest extends TestCase
     }
 
     #[Test]
-    public function duplicate_keys_are_rejected(): void
+    public function a_duplicate_key_keeps_the_first_registration_and_is_reported(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $registry = $this->registry([$this->spot('page.corner', null), $this->spot('page.corner', ['index'])]);
 
-        $this->registry([$this->spot('page.corner'), $this->spot('page.corner')]);
+        $this->assertNull($registry->get('page.corner')?->routes);
+        $this->assertCount(1, $this->reported);
+        $this->assertStringContainsString('page.corner', $this->reported[0]);
     }
 
     #[Test]
-    public function spots_must_use_a_registered_context(): void
+    public function a_spot_with_an_unregistered_context_is_skipped_and_reported(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $registry = $this->registry([$this->spot('post.footer', ['discussion'], 'post'), $this->spot('page.corner')]);
 
-        $this->registry([$this->spot('post.footer', ['discussion'], 'post')]);
+        $this->assertNull($registry->get('post.footer'));
+        $this->assertNotNull($registry->get('page.corner'));
+        $this->assertCount(1, $this->reported);
     }
 
     #[Test]

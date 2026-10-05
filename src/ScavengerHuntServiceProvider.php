@@ -16,7 +16,12 @@ use FoF\ScavengerHunt\HidingSpot\HidingSpotRegistry;
 use FoF\ScavengerHunt\Lookup\NativeRandomSource;
 use FoF\ScavengerHunt\Lookup\RandomSource;
 use Illuminate\Contracts\Container\Container;
+use Psr\Log\LoggerInterface;
 
+/**
+ * Hiding spots are a registry other extensions add to, and no core extender builds container
+ * registries, so the empty lists and the registry itself are bound here.
+ */
 class ScavengerHuntServiceProvider extends AbstractServiceProvider
 {
     public function register(): void
@@ -30,6 +35,7 @@ class ScavengerHuntServiceProvider extends AbstractServiceProvider
             $container->make('fof-scavenger-hunt.contexts'),
             $container->make('fof-scavenger-hunt.excluded-routes'),
             fn () => $container->make('flarum.forum.routes'),
+            fn (string $message) => $container->make(LoggerInterface::class)->warning("[fof/scavenger-hunt] $message"),
         ));
 
         $this->container->bind(RandomSource::class, NativeRandomSource::class);

@@ -14,7 +14,6 @@ namespace FoF\ScavengerHunt\HidingSpot;
 use Closure;
 use Flarum\Http\RouteCollection;
 use Illuminate\Database\Eloquent\Model;
-use InvalidArgumentException;
 
 class HidingSpotRegistry
 {
@@ -33,23 +32,38 @@ class HidingSpotRegistry
      * @param array<string, class-string<Model>> $contexts
      * @param list<string> $excludedRoutes
      * @param Closure(): RouteCollection $forumRoutes resolved lazily: building the forum routes is only needed by the spots endpoint and Location validation
+     * @param (Closure(string): void)|null $reportInvalid receives a message for each skipped definition
      */
     public function __construct(
         array $definitions,
         protected array $contexts,
         protected array $excludedRoutes,
         protected Closure $forumRoutes,
+        protected ?Closure $reportInvalid = null,
     ) {
+        // A bad registration from another extension is skipped, never thrown: the registry is
+        // resolved on every lookup, and throwing would take the whole forum down with it.
         foreach ($definitions as $definition) {
             if (isset($this->spots[$definition['key']])) {
-                throw new InvalidArgumentException("Hiding spot [{$definition['key']}] is registered twice.");
+                $this->invalid("Hiding spot [{$definition['key']}] is registered twice; the first registration is kept.");
+
+                continue;
             }
 
             if ($definition['context'] !== null && ! isset($contexts[$definition['context']])) {
-                throw new InvalidArgumentException("Hiding spot [{$definition['key']}] uses the unregistered context [{$definition['context']}].");
+                $this->invalid("Hiding spot [{$definition['key']}] uses the unregistered context [{$definition['context']}] and is ignored.");
+
+                continue;
             }
 
             $this->spots[$definition['key']] = new HidingSpot(...$definition);
+        }
+    }
+
+    protected function invalid(string $message): void
+    {
+        if ($this->reportInvalid) {
+            ($this->reportInvalid)($message);
         }
     }
 

@@ -79,6 +79,24 @@ class HidingSpotsTest extends TestCase
     }
 
     #[Test]
+    public function a_broken_registration_from_another_extension_does_not_take_the_forum_down(): void
+    {
+        $this->extend(
+            (new HidingSpots())
+                ->add('page.corner', 'acme.duplicate', ['index'])
+                ->add('acme.mystery', 'acme.mystery', null, 'no-such-context')
+        );
+
+        $this->assertEquals(200, $this->send($this->request('GET', '/api'))->getStatusCode());
+
+        $response = $this->send($this->request('GET', '/api/scavenger-hunt-spots', ['authenticatedAs' => 3]));
+        $spots = collect($this->body($response)['data'])->keyBy('id');
+
+        $this->assertNull($spots['page.corner']['attributes']['routes'], 'the first registration wins');
+        $this->assertFalse($spots->has('acme.mystery'));
+    }
+
+    #[Test]
     public function players_cannot_list_spots(): void
     {
         $this->assertEquals(403, $this->send($this->request('GET', '/api/scavenger-hunt-spots', ['authenticatedAs' => 2]))->getStatusCode());
