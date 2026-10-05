@@ -56,8 +56,12 @@ return [
     (new Extend\ModelVisibility(Part::class))
         ->scope(Access\ScopePartVisibility::class),
 
+    (new Extend\ModelVisibility(Location::class))
+        ->scope(Access\ScopeLocationVisibility::class),
+
     new Extend\ApiResource(Api\Resource\HuntResource::class),
     new Extend\ApiResource(Api\Resource\TemplateResource::class),
     new Extend\ApiResource(Api\Resource\PartResource::class),
     new Extend\ApiResource(Api\Resource\HidingSpotResource::class),
+    new Extend\ApiResource(Api\Resource\LocationResource::class),
 ];

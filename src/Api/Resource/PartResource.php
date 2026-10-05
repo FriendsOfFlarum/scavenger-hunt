@@ -131,6 +131,10 @@ class PartResource extends AbstractDatabaseResource
                 ->includable()
                 ->writableOnCreate()
                 ->requiredOnCreate(),
+            Schema\Relationship\ToMany::make('locations')
+                ->type('scavenger-hunt-locations')
+                ->includable()
+                ->visible($manages),
         ];
     }
 

@@ -15,6 +15,10 @@ fof-scavenger-hunt:
     hint_requires_fixed: Only parts in a fixed location can have a hint.
     wander_chance_required: Wandering parts need a chance between 1 and 100.
     layer_invalid: The layer position isn't valid.
+    spot_unknown: That hiding spot doesn't exist.
+    route_not_allowed: That hiding spot can't appear on that page.
+    context_mismatch: That item doesn't fit this hiding spot.
+    context_not_found: That item doesn't exist.
   lib:
     templates:
       winter:
