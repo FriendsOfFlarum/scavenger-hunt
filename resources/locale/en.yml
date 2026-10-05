@@ -106,6 +106,13 @@ fof-scavenger-hunt:
       page_footer: Page footer
       page_corner: Page corner (floating)
       page_sidebar: Page sidebar
+      discussion_hero: Discussion header
+      post_body_end: End of a post
+      post_footer: Post footer
+      discussion_list_item: Discussion list item
+      user_card: User card
+      user_sidebar: User profile sidebar
+      tags_tile: Tag tile (tags page)
   api:
     ends_before_start: The hunt must end after it starts.
     image_invalid: That image reference isn't valid.

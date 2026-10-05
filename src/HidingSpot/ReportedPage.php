@@ -11,6 +11,8 @@
 
 namespace FoF\ScavengerHunt\HidingSpot;
 
+use Flarum\User\User;
+
 /**
  * What the browser says is on its page. Untrusted: it is only ever used to narrow what the
  * server would show anyway, and every item it names is re-checked before it counts.
@@ -34,6 +36,7 @@ final class ReportedPage
         public readonly string $route,
         public readonly array $params,
         public readonly array $spots,
+        public readonly ?User $actor = null,
     ) {
     }
 
@@ -43,9 +46,9 @@ final class ReportedPage
      *
      * @param array<string, mixed> $attributes
      */
-    public static function fromRequest(array $attributes, HidingSpotRegistry $registry): self
+    public static function fromRequest(array $attributes, HidingSpotRegistry $registry, ?User $actor = null): self
     {
-        $route = is_string($attributes['route'] ?? null) ? substr($attributes['route'], 0, 100) : '';
+        $route = is_string($attributes['route'] ?? null) ? $registry->canonicalRoute(substr($attributes['route'], 0, 100)) : '';
 
         $params = [];
 
@@ -101,7 +104,7 @@ final class ReportedPage
             $spots[] = new ReportedSpot($spot->key, $spot->context, $contextId);
         }
 
-        return new self($route, $params, $spots);
+        return new self($route, $params, $spots, $actor);
     }
 
     /**

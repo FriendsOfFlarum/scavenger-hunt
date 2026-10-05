@@ -43,6 +43,11 @@ class HidingSpots implements ExtenderInterface
     protected array $excludedRoutes = [];
 
     /**
+     * @var array<string, string>
+     */
+    protected array $routeAliases = [];
+
+    /**
      * @param string $label translation key shown to Hunt managers
      * @param list<string>|null $routes forum route names the spot is drawn on; null for any. A trailing `*` matches by prefix.
      * @param string|null $context alias registered with context(), for spots drawn once per item (a post, a user)
@@ -75,10 +80,22 @@ class HidingSpots implements ExtenderInterface
         return $this;
     }
 
+    /**
+     * Map a frontend-only route name to the forum route it renders, e.g. `discussion.near` to
+     * `discussion`, so a Location saved for the forum route also matches the alias.
+     */
+    public function routeAlias(string $alias, string $route): self
+    {
+        $this->routeAliases[$alias] = $route;
+
+        return $this;
+    }
+
     public function extend(Container $container, ?Extension $extension = null): void
     {
         $container->extend('fof-scavenger-hunt.spots', fn (array $spots) => array_merge($spots, $this->spots));
         $container->extend('fof-scavenger-hunt.contexts', fn (array $contexts) => array_merge($contexts, $this->contexts));
         $container->extend('fof-scavenger-hunt.excluded-routes', fn (array $routes) => array_merge($routes, $this->excludedRoutes));
+        $container->extend('fof-scavenger-hunt.route-aliases', fn (array $aliases) => array_merge($aliases, $this->routeAliases));
     }
 }

@@ -33,6 +33,7 @@ class HidingSpotRegistry
      * @param list<string> $excludedRoutes
      * @param Closure(): RouteCollection $forumRoutes resolved lazily: building the forum routes is only needed by the spots endpoint and Location validation
      * @param (Closure(string): void)|null $reportInvalid receives a message for each skipped definition
+     * @param array<string, string> $routeAliases frontend-only route name => forum route name
      */
     public function __construct(
         array $definitions,
@@ -40,6 +41,7 @@ class HidingSpotRegistry
         protected array $excludedRoutes,
         protected Closure $forumRoutes,
         protected ?Closure $reportInvalid = null,
+        protected array $routeAliases = [],
     ) {
         // A bad registration from another extension is skipped, never thrown: the registry is
         // resolved on every lookup, and throwing would take the whole forum down with it.
@@ -65,6 +67,15 @@ class HidingSpotRegistry
         if ($this->reportInvalid) {
             ($this->reportInvalid)($message);
         }
+    }
+
+    /**
+     * The forum route a reported route name stands for: the frontend has route names of its own
+     * for some pages (`discussion.near`, `user.posts`) that the forum knows as one route.
+     */
+    public function canonicalRoute(string $route): string
+    {
+        return $this->routeAliases[$route] ?? $route;
     }
 
     public function get(string $key): ?HidingSpot

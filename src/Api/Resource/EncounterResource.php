@@ -58,7 +58,7 @@ class EncounterResource extends AbstractResource
 
                     return $this->resolver->resolve(
                         $context->getActor(),
-                        ReportedPage::fromRequest(is_array($attributes) ? $attributes : [], $this->spots)
+                        ReportedPage::fromRequest(is_array($attributes) ? $attributes : [], $this->spots, $context->getActor())
                     );
                 })
                 ->response(function (Context $context, array $encounters) {

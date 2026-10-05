@@ -29,6 +29,7 @@ class ScavengerHuntServiceProvider extends AbstractServiceProvider
         $this->container->singleton('fof-scavenger-hunt.spots', fn () => []);
         $this->container->singleton('fof-scavenger-hunt.contexts', fn () => []);
         $this->container->singleton('fof-scavenger-hunt.excluded-routes', fn () => []);
+        $this->container->singleton('fof-scavenger-hunt.route-aliases', fn () => []);
 
         $this->container->singleton(HidingSpotRegistry::class, fn (Container $container) => new HidingSpotRegistry(
             $container->make('fof-scavenger-hunt.spots'),
@@ -36,6 +37,7 @@ class ScavengerHuntServiceProvider extends AbstractServiceProvider
             $container->make('fof-scavenger-hunt.excluded-routes'),
             fn () => $container->make('flarum.forum.routes'),
             fn (string $message) => $container->make(LoggerInterface::class)->warning("[fof/scavenger-hunt] $message"),
+            $container->make('fof-scavenger-hunt.route-aliases'),
         ));
 
         $this->container->bind(RandomSource::class, NativeRandomSource::class);

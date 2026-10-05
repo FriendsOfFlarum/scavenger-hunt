@@ -15,6 +15,7 @@ use Flarum\Api\Resource\ForumResource;
 use Flarum\Discussion\Discussion;
 use Flarum\Extend;
 use Flarum\Post\Post;
+use Flarum\Tags\Tag;
 use Flarum\User\User;
 use FoF\ScavengerHunt\Extend\HidingSpots;
 use Illuminate\Console\Scheduling\Event as ScheduledEvent;
@@ -53,8 +54,27 @@ return [
         ->add('page.footer', 'fof-scavenger-hunt.admin.spots.page_footer')
         ->add('page.corner', 'fof-scavenger-hunt.admin.spots.page_corner')
         ->add('page.sidebar', 'fof-scavenger-hunt.admin.spots.page_sidebar')
+        ->add('discussion.hero', 'fof-scavenger-hunt.admin.spots.discussion_hero', ['discussion'], 'discussion', HidingSpot\Constraint\IsPageDiscussion::class)
+        ->add('post.body-end', 'fof-scavenger-hunt.admin.spots.post_body_end', ['discussion'], 'post', HidingSpot\Constraint\PostInPageDiscussion::class)
+        ->add('post.footer', 'fof-scavenger-hunt.admin.spots.post_footer', ['discussion'], 'post', HidingSpot\Constraint\PostInPageDiscussion::class)
+        ->add('discussionList.item', 'fof-scavenger-hunt.admin.spots.discussion_list_item', null, 'discussion')
+        ->add('user.card', 'fof-scavenger-hunt.admin.spots.user_card', null, 'user')
+        ->add('user.sidebar', 'fof-scavenger-hunt.admin.spots.user_sidebar', ['user*'], 'user', HidingSpot\Constraint\IsPageUser::class)
+        ->routeAlias('discussion.near', 'discussion')
+        ->routeAlias('user.posts', 'user')
+        ->routeAlias('user.discussions', 'user')
+        ->routeAlias('user.security', 'user')
         ->excludeRoute('logoutPage', 'globalLogout', 'notifications.unsubscribe', 'confirmEmail', 'resetPassword', 'maintenance.login')
-        ->excludeRoute('fof-scavenger-hunt.dashboard', 'fof-scavenger-hunt.dashboard.hunt'),
+        ->excludeRoute('fof-scavenger-hunt.dashboard', 'fof-scavenger-hunt.dashboard.hunt')
+        // The frontend gives the home page the default action's own route name, never `default`.
+        ->excludeRoute('default'),
+
+    (new Extend\Conditional())
+        ->whenExtensionEnabled('flarum-tags', fn () => [
+            (new HidingSpots())
+                ->context('tag', Tag::class)
+                ->add('tags.tile', 'fof-scavenger-hunt.admin.spots.tags_tile', ['tags'], 'tag'),
+        ]),
 
     // AbstractModel takes defaults from this registry, not from Eloquent's $attributes.
     (new Extend\Model(Hunt::class))
