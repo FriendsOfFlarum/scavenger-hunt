@@ -453,6 +453,64 @@
   max-width: 600px;
 }
 
+.HuntOverview-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 25px;
+
+  .InfoTile-text {
+    font-size: 22px;
+    font-weight: bold;
+
+    .helpText {
+      display: block;
+      font-size: 12px;
+      font-weight: normal;
+    }
+  }
+}
+
+.HuntParticipants-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+
+  input[type='search'] {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .Select {
+    width: auto;
+  }
+}
+
+.HuntParticipants-member {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .Avatar {
+    --size: 24px;
+  }
+}
+
+.HuntParticipants-flag {
+  background: var(--control-warning-bg);
+  color: var(--control-warning-color);
+}
+
+.HuntParticipants-actions {
+  white-space: nowrap;
+}
+
+.ParticipantFindsModal-list {
+  margin: 0;
+  padding-inline-start: 18px;
+}
+
 .PartEditor {
   margin-bottom: 20px;
   padding: 15px;

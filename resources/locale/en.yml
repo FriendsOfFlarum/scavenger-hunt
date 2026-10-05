@@ -77,10 +77,42 @@ fof-scavenger-hunt:
         live: Live
         ended: Ended
       tabs:
+        overview: Overview
         details: Details
         schedule: Schedule & audience
         rewards: Rewards
         parts: Parts & locations
+        participants: Participants
+      overview:
+        participants: participants
+        finds: parts found
+        completions: completions
+        find_rate: found when shown
+        parts_heading: Parts
+        part: Part
+        shown: Shown
+        found: Found
+        average_claim: Average time to claim
+        shown_help: “Shown” counts every time a part appeared for a member. Unclaimed appearances are cleared a week after they expire; guests and hunt managers are never counted.
+        completions_heading: Completions per day
+        no_completions: Nobody has completed this hunt yet.
+      participants:
+        search: Search by username
+        sort_found: Most parts found
+        sort_completed: First to finish
+        sort_recent: Most recently active
+        member: Member
+        found: Found
+        completed: Completed
+        average_claim: Average claim time
+        none: Nobody has found a part yet.
+        fast_claims: Instant claims
+        fast_claims_help: This member has claimed parts in under a second at least three times, which is quicker than most people can react. Worth a closer look before awarding prizes.
+        view_finds: View finds
+        finds_title: "Parts found by {user}"
+        reset: Reset progress
+        reset_confirm: "Reset {user}'s progress in this hunt? Their finds and completion are removed. Their reward group isn't."
+        reset_done: "{user}'s progress has been reset."
       rewards:
         group: Reward group
         group_help: Finishers join this group automatically. Removing a finisher from the group later is up to you.

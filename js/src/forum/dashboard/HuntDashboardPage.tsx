@@ -11,12 +11,16 @@ import type Hunt from '../../common/models/Hunt';
 import type Part from '../../common/models/Part';
 import { canManageHunts } from '../utils/activeHunts';
 import HuntForm from './HuntForm';
+import HuntOverview from './HuntOverview';
+import HuntParticipants from './HuntParticipants';
 import HuntRewardsForm from './HuntRewardsForm';
 import HuntStatusPill from './HuntStatusPill';
 import type { PageRoute } from './LocationRow';
 import PartEditor from './PartEditor';
 
-type Tab = 'details' | 'schedule' | 'rewards' | 'parts';
+type Tab = 'overview' | 'details' | 'schedule' | 'rewards' | 'parts' | 'participants';
+
+const TABS: Tab[] = ['overview', 'details', 'schedule', 'rewards', 'parts', 'participants'];
 
 export default class HuntDashboardPage extends Page {
   protected hunt: Hunt | null = null;
@@ -30,7 +34,7 @@ export default class HuntDashboardPage extends Page {
     super.oninit(vnode);
 
     const tab = m.route.param('tab');
-    this.tab = tab === 'schedule' || tab === 'rewards' || tab === 'parts' ? tab : 'details';
+    this.tab = TABS.includes(tab as Tab) ? (tab as Tab) : 'overview';
 
     if (!canManageHunts()) {
       return;
@@ -77,7 +81,7 @@ export default class HuntDashboardPage extends Page {
   }
 
   protected sidebar(): Mithril.Children {
-    const tabs: Tab[] = ['details', 'schedule', 'rewards', 'parts'];
+    const tabs = TABS;
 
     return (
       <nav className="sideNav ScavengerDashboard-nav">
@@ -120,6 +124,14 @@ export default class HuntDashboardPage extends Page {
           </Button>
         </div>
       );
+    }
+
+    if (this.tab === 'overview') {
+      return <HuntOverview hunt={this.hunt} />;
+    }
+
+    if (this.tab === 'participants') {
+      return <HuntParticipants hunt={this.hunt} />;
     }
 
     if (this.tab === 'rewards') {

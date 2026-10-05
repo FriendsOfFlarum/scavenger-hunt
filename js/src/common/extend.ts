@@ -4,6 +4,8 @@ import Encounter from './models/Encounter';
 import Find from './models/Find';
 import HidingSpotDefinition from './models/HidingSpotDefinition';
 import Hunt from './models/Hunt';
+import HuntStats from './models/HuntStats';
+import Participant from './models/Participant';
 import HuntTemplate from './models/HuntTemplate';
 import Location from './models/Location';
 import Part from './models/Part';
@@ -17,5 +19,7 @@ export default [
     .add('scavenger-hunt-finds', Find)
     .add('scavenger-hunt-templates', HuntTemplate)
     .add('scavenger-hunt-spots', HidingSpotDefinition)
-    .add('scavenger-hunt-completions', Completion),
+    .add('scavenger-hunt-completions', Completion)
+    .add('scavenger-hunt-stats', HuntStats)
+    .add('scavenger-hunt-participants', Participant),
 ] satisfies object[];
