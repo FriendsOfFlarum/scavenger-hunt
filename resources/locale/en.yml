@@ -1,8 +1,106 @@
 fof-scavenger-hunt:
+  forum:
+    part:
+      collect: "Collect the {part}"
+      sign_up_prompt: "Log in or sign up to collect the {part}!"
+      manager_preview: You can see this part because you manage scavenger hunts.
+      found: "You found the {part}! {found} of {total} collected."
+      hunt_completed: "You found every part of {hunt}! Well done!"
+    indicator:
+      label: "Scavenger hunt: {found} of {total} parts found"
+    collection:
+      title: Your collection
+      progress: "{found} of {total} found"
+      found: Found!
+      random_part: This part could turn up anywhere. Keep exploring!
+      no_hint: Somewhere on the forum…
+      empty: There are no scavenger hunts running right now.
+    dashboard:
+      nav: Scavenger hunts
+      title: Scavenger hunts
+      subtitle: Hide parts around the forum and watch members hunt them down.
+      denied: You don't have permission to manage scavenger hunts.
+      empty: No hunts yet. Start one from a template!
+      new_hunt: New hunt
+      back: ← All hunts
+      save: Save
+      saved: Saved.
+      columns:
+        title: Hunt
+        status: Status
+        parts: Parts
+      status:
+        disabled: Disabled
+        scheduled: Scheduled
+        live: Live
+        ended: Ended
+      tabs:
+        details: Details
+        schedule: Schedule & audience
+        parts: Parts & locations
+      gallery:
+        title: Start a new hunt
+        blank: Blank
+        hunt_title: Hunt title
+        create: Create hunt
+      details:
+        title: Title
+        slug: Slug
+        description: Description
+      schedule:
+        enabled: Enabled
+        starts_at: Starts
+        starts_at_help: Leave empty to start as soon as the hunt is enabled.
+        ends_at: Ends
+        ends_at_help: Leave empty to keep the hunt running until you disable it.
+        guests_can_see: Guests can see parts
+        guests_can_see_help: Guests who spot a part are invited to log in or sign up to collect it.
+      parts:
+        add: Add a part
+        new_name: New part
+        name: Name
+        mode: Placement
+        modes:
+          fixed: Fixed — the same place for everyone
+          assigned: Assigned — each member gets their own place
+          wandering: Wandering — turns up by chance
+        random_recommended: Random placement is the hardest to cheat, so it's the best choice when real prizes are at stake.
+        hint: Hint
+        hint_help: Shown to members who haven't found this part yet.
+        wander_chance: Chance per page view (%)
+        image: Image
+        layer: Position on the collectable (x %, y %, width %, layer)
+        sort: Order
+        delete: Delete part
+        delete_confirm: "Delete the {part}? Members who found it keep their find."
+      locations:
+        heading: Hiding places
+        none: This part isn't hidden anywhere yet.
+        add: Add a hiding place
+        spot: Hiding spot
+        page: Page
+        any_page: Any page
+        item: "Specific {type}"
+        any_item: Any
+        unavailable: This hiding spot isn't available any more, so the part won't appear here.
+        delete: Delete hiding place
   admin:
     permissions:
       play: Collect scavenger hunt parts
       manage: Manage scavenger hunts
+    settings:
+      show_header_indicator: Show progress in the header
+      show_header_indicator_help: A basket in the header shows members how many parts they have found.
+      managers_can_play: Hunt managers can collect parts
+      managers_can_play_help: Hunt managers can see every hiding place, so by default they only preview parts.
+      max_parts_per_page: Parts shown per page
+      max_parts_per_page_help: The most parts that can appear on one page at once.
+      token_lifetime: Claim window (minutes)
+      token_lifetime_help: How long a part stays collectable after it appears.
+      lookup_rate_limit: Lookups per minute
+      lookup_rate_limit_help: How often one member (or one guest IP) may check a page for parts.
+      daily_lookup_limit: Lookups per member per day
+      daily_lookup_limit_help: Holds scripts to roughly human browsing speed.
     spots:
       page_header: Page header
       page_footer: Page footer

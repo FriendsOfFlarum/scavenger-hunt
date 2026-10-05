@@ -1,1 +1,386 @@
-// FoF Scavenger Hunt — forum styles
+// FoF Scavenger Hunt — forum styles.
+// Chrome uses core variables only; themes retune the game through the --scavenger-* variables.
+
+:root {
+  --scavenger-part-size: 40px;
+  --scavenger-part-glow: var(--primary-color);
+  --scavenger-silhouette-color: var(--muted-more-color);
+  --scavenger-canvas-bg: var(--body-bg-shaded);
+  --scavenger-canvas-radius: var(--border-radius);
+  --scavenger-corner-offset: 16px;
+}
+
+@keyframes scavenger-wobble {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+// ── Parts in their Hiding spots ──────────────────────────────────────────
+
+.HidingSpot {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.HidingSpot-footer {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.ScavengerCorner {
+  position: fixed;
+  inset-inline-end: var(--scavenger-corner-offset);
+  inset-block-end: var(--scavenger-corner-offset);
+  z-index: calc(var(--zindex-composer) - 1);
+}
+
+.HiddenPart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--scavenger-part-size);
+  height: var(--scavenger-part-size);
+  padding: 3px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  filter: drop-shadow(0 0 6px var(--scavenger-part-glow));
+  animation: scavenger-wobble 2.4s ease-in-out infinite;
+  transition: transform 0.15s;
+
+  &:hover,
+  &:focus-visible {
+    transform: scale(1.15);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  &--preview {
+    opacity: 0.75;
+  }
+
+  &--claiming {
+    opacity: 0.4;
+    cursor: progress;
+    animation: none;
+  }
+
+  &--ghost {
+    position: fixed;
+    z-index: var(--zindex-alerts);
+    margin: 0;
+    pointer-events: none;
+    animation: none;
+  }
+}
+
+.HiddenPart-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.HiddenPart-placeholder {
+  font-size: calc(var(--scavenger-part-size) * 0.6);
+  color: var(--scavenger-part-glow);
+}
+
+// ── Header indicator ─────────────────────────────────────────────────────
+
+.HuntIndicator-count {
+  margin-inline-start: 4px;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+}
+
+// ── Collection view ──────────────────────────────────────────────────────
+
+.CollectionView {
+  margin-bottom: 30px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.CollectionView-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.CollectionView-progress {
+  font-size: 14px;
+  font-weight: normal;
+  color: var(--muted-color);
+}
+
+// Layers are placed in canvas coordinates, so the artwork never mirrors in RTL.
+.CollectionView-canvas {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 1;
+  margin: 0 auto 20px;
+  overflow: hidden;
+  background: var(--scavenger-canvas-bg);
+  border-radius: var(--scavenger-canvas-radius);
+  direction: ltr;
+}
+
+.CollectionView-base {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.CollectionView-layer {
+  position: absolute;
+  display: block;
+  height: auto;
+
+  &--silhouette {
+    background-color: var(--scavenger-silhouette-color);
+    opacity: 0.6;
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+
+    img {
+      display: block;
+      width: 100%;
+      visibility: hidden;
+    }
+  }
+}
+
+.CollectionView-parts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.CollectionView-part {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--control-bg);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.CollectionView-partIcon {
+  color: var(--muted-color);
+  line-height: inherit;
+
+  .CollectionView-part--found & {
+    color: var(--primary-color);
+  }
+}
+
+.CollectionView-partName {
+  font-weight: bold;
+}
+
+.CollectionView-partDetail {
+  grid-column: 2;
+  font-size: 13px;
+  color: var(--muted-color);
+}
+
+// ── Hunt dashboard ───────────────────────────────────────────────────────
+
+.ScavengerDashboard-back {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: inherit;
+  opacity: 0.8;
+}
+
+.ScavengerDashboard-toolbar {
+  margin-bottom: 20px;
+}
+
+.ScavengerDashboard-table {
+  width: 100%;
+}
+
+.HuntStatusPill {
+  &--live {
+    background: var(--control-success-bg);
+    color: var(--control-success-color);
+  }
+
+  &--scheduled {
+    background: var(--control-warning-bg);
+    color: var(--control-warning-color);
+  }
+}
+
+.HuntForm {
+  max-width: 600px;
+}
+
+.PartEditor {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: var(--body-bg);
+  border: 1px solid var(--control-bg);
+  border-radius: var(--border-radius);
+}
+
+.PartEditor-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.PartEditor-title {
+  margin: 0;
+}
+
+.PartEditor-image {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  font-size: 28px;
+  color: var(--muted-color);
+}
+
+.PartEditor-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0 15px;
+}
+
+.PartEditor-layerFields {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+
+.PartEditor-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 10px;
+}
+
+.PartEditor-locations {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid var(--control-bg);
+}
+
+.LocationRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--control-bg);
+}
+
+.LocationRow-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+
+  label {
+    font-size: 12px;
+    color: var(--muted-color);
+  }
+}
+
+.LocationRow-warning {
+  color: var(--error-color);
+  font-size: 13px;
+}
+
+.LocationRow-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.TemplateGallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.TemplateGallery-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px;
+  color: var(--text-color);
+  background: var(--body-bg);
+  border: 2px solid var(--control-bg);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+
+  &--chosen,
+  &:focus-visible {
+    border-color: var(--primary-color);
+  }
+}
+
+.TemplateGallery-preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--scavenger-canvas-bg);
+  border-radius: var(--border-radius);
+  direction: ltr;
+
+  > img:first-child {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  &--blank {
+    border: 2px dashed var(--control-bg);
+  }
+}
+
+.TemplateGallery-layer {
+  position: absolute;
+  height: auto;
+}
+
+.TemplateGallery-name {
+  font-weight: bold;
+}
+
+.TemplateGallery-occasion {
+  font-size: 12px;
+  color: var(--muted-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .HiddenPart {
+    animation: none;
+    transition: none;
+  }
+}
