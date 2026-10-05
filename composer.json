@@ -51,7 +51,7 @@
             "category": "feature",
             "icon": {
                 "name": "fas fa-binoculars",
-                "backgroundColor": "#2e7d32",
+                "backgroundColor": "#e74c3c",
                 "color": "#fff"
             },
             "optional-dependencies": [
