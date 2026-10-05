@@ -208,7 +208,7 @@ class EncounterResolver
 
     protected function itemGroup(ReportedSpot $reported): string
     {
-        return $reported->contextType.'|'.($this->spots->get($reported->spot)?->constrain ?? '');
+        return $reported->contextType.'|'.($this->spots->get($reported->spot)->constrain ?? '');
     }
 
     /**

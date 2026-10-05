@@ -38,7 +38,9 @@ return [
 
     (new Extend\Console())
         ->command(Console\PruneEncountersCommand::class)
-        ->schedule(Console\PruneEncountersCommand::class, fn (ScheduledEvent $event) => $event->daily()),
+        ->schedule(Console\PruneEncountersCommand::class, function (ScheduledEvent $event): void {
+            $event->daily();
+        }),
 
     (new HidingSpots())
         ->context('discussion', Discussion::class)
