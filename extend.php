@@ -11,6 +11,7 @@
 
 namespace FoF\ScavengerHunt;
 
+use Flarum\Api\Resource\ForumResource;
 use Flarum\Discussion\Discussion;
 use Flarum\Extend;
 use Flarum\Post\Post;
@@ -70,6 +71,9 @@ return [
     new Extend\ApiResource(Api\Resource\EncounterResource::class),
     new Extend\ApiResource(Api\Resource\FindResource::class),
 
+    (new Extend\ApiResource(ForumResource::class))
+        ->fields(Api\ForumAttributes::class),
+
     (new Extend\ThrottleApi())
         ->set('fof-scavenger-hunt.lookups', Lookup\LookupThrottler::class),
 
@@ -79,5 +83,6 @@ return [
         ->default(Setting::LOOKUP_RATE_LIMIT, 30)
         ->default(Setting::DAILY_LOOKUP_LIMIT, 1500)
         ->default(Setting::MANAGERS_CAN_PLAY, false)
-        ->default(Setting::SHOW_HEADER_INDICATOR, true),
+        ->default(Setting::SHOW_HEADER_INDICATOR, true)
+        ->serializeToForum('fof-scavenger-hunt.showHeaderIndicator', Setting::SHOW_HEADER_INDICATOR, 'boolval'),
 ];
