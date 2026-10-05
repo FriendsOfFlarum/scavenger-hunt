@@ -121,6 +121,17 @@ class ClaimTest extends TestCase
     }
 
     #[Test]
+    public function a_malformed_token_is_refused_like_any_other(): void
+    {
+        $response = $this->send($this->request('POST', '/api/scavenger-hunt-finds', [
+            'authenticatedAs' => 2,
+            'json' => ['data' => ['type' => 'scavenger-hunt-finds', 'attributes' => ['token' => ['not', 'a', 'string']]]],
+        ]));
+
+        $this->assertEquals(422, $response->getStatusCode());
+    }
+
+    #[Test]
     public function someone_elses_token_is_refused(): void
     {
         $this->assertEquals(422, $this->claim(4, $this->tokenFor(2, 'page.corner'))->getStatusCode());

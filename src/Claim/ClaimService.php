@@ -54,17 +54,26 @@ class ClaimService
         $map = $this->maps->get();
         $part = $encounter ? $map->part($encounter->part_id) : null;
 
-        if (! $encounter || ! $part || $encounter->user_id !== $actor->id || $encounter->claimed_at !== null || $encounter->expires_at->lte($now)) {
-            throw new ValidationException(['token' => $this->translator->trans('fof-scavenger-hunt.api.claim_failed')]);
+        if (! $encounter || ! $part || $encounter->user_id !== $actor->id) {
+            throw $this->failed();
         }
 
-        $partIds = $map->partIdsOf($part['hunt_id']);
+        /** @var array{0: Find, 1: bool} $result */
+        $result = $this->db->transaction(function () use ($actor, $encounter, $now) {
+            // The conditional update is what makes a token single-use: of two simultaneous claims,
+            // only one can flip claimed_at from null.
+            $claimed = Encounter::query()
+                ->whereKey($encounter->id)
+                ->whereNull('claimed_at')
+                ->where('expires_at', '>', $now)
+                ->update([
+                    'claimed_at' => $now,
+                    'claim_ms' => max(0, $now->getTimestampMs() - $encounter->issued_at_ms),
+                ]);
 
-        /** @var array{0: Find, 1: bool, 2: Completion|null} $result */
-        $result = $this->db->transaction(function () use ($actor, $encounter, $now, $part, $partIds) {
-            $encounter->claimed_at = $now;
-            $encounter->claim_ms = max(0, $now->getTimestampMs() - $encounter->issued_at_ms);
-            $encounter->save();
+            if ($claimed === 0) {
+                throw $this->failed();
+            }
 
             // insertOrIgnore rather than catching a duplicate key: a failed statement aborts the
             // whole transaction on PostgreSQL.
@@ -74,41 +83,57 @@ class ClaimService
                 'found_at' => $now,
             ]) > 0;
 
-            $find = Find::query()->where('part_id', $encounter->part_id)->where('user_id', $actor->id)->firstOrFail();
+            $find = Find::query()->where('part_id', $encounter->part_id)->where('user_id', $actor->id)->first();
 
-            if (! $isNew) {
-                return [$find, false, null];
+            if ($find === null) {
+                throw $this->failed();
             }
 
-            $found = Find::query()->where('user_id', $actor->id)->whereIn('part_id', $partIds)->count();
-
-            if ($found < count($partIds)) {
-                return [$find, true, null];
-            }
-
-            $completedNow = Completion::query()->insertOrIgnore([
-                'hunt_id' => $part['hunt_id'],
-                'user_id' => $actor->id,
-                'completed_at' => $now,
-            ]) > 0;
-
-            $completion = $completedNow
-                ? Completion::query()->where('hunt_id', $part['hunt_id'])->where('user_id', $actor->id)->first()
-                : null;
-
-            return [$find, true, $completion];
+            return [$find, $isNew];
         });
 
-        [$find, $isNew, $completion] = $result;
+        [$find, $isNew] = $result;
 
-        if ($isNew) {
-            $this->events->dispatch(new PartFound($find, $actor));
+        if (! $isNew) {
+            return $find;
         }
 
-        if ($completion) {
+        $this->events->dispatch(new PartFound($find, $actor));
+
+        if ($completion = $this->completeIfFinished($actor, $part['hunt_id'], $map->partIdsOf($part['hunt_id']), $now)) {
             $this->events->dispatch(new HuntCompleted($completion, $actor));
         }
 
         return $find;
+    }
+
+    /**
+     * Runs after the Find has committed, so of two claims for a member's last two Parts, the one
+     * that commits second always sees both Finds. insertOrIgnore keeps the Completion single.
+     *
+     * @param list<int> $partIds
+     */
+    protected function completeIfFinished(User $actor, int $huntId, array $partIds, Carbon $now): ?Completion
+    {
+        $found = Find::query()->where('user_id', $actor->id)->whereIn('part_id', $partIds)->count();
+
+        if ($found < count($partIds)) {
+            return null;
+        }
+
+        $completedNow = Completion::query()->insertOrIgnore([
+            'hunt_id' => $huntId,
+            'user_id' => $actor->id,
+            'completed_at' => $now,
+        ]) > 0;
+
+        return $completedNow
+            ? Completion::query()->where('hunt_id', $huntId)->where('user_id', $actor->id)->first()
+            : null;
+    }
+
+    protected function failed(): ValidationException
+    {
+        return new ValidationException(['token' => $this->translator->trans('fof-scavenger-hunt.api.claim_failed')]);
     }
 }

@@ -61,10 +61,11 @@ class FindResource extends AbstractDatabaseResource
             Endpoint\Endpoint::make('claim')
                 ->route('POST', '/')
                 ->authenticated()
-                ->action(fn (Context $context) => $this->claims->claim(
-                    $context->getActor(),
-                    (string) Arr::get($context->body(), 'data.attributes.token', '')
-                ))
+                ->action(function (Context $context) {
+                    $token = Arr::get($context->body(), 'data.attributes.token');
+
+                    return $this->claims->claim($context->getActor(), is_string($token) ? $token : '');
+                })
                 ->response(function (Context $context, Find $find) {
                     $serializer = new Serializer($context);
                     $serializer->addPrimary($this, $find, ['part' => ['hunt' => []]]);
