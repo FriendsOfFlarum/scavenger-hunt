@@ -13,9 +13,13 @@ namespace FoF\ScavengerHunt\Tests\integration\huntmap;
 
 use Carbon\Carbon;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
+use Flarum\Extension\Event\Disabled;
+use Flarum\Extension\ExtensionManager;
 use Flarum\Testing\integration\TestCase;
 use FoF\ScavengerHunt\HuntMap\HuntMapRepository;
 use FoF\ScavengerHunt\Tests\integration\InteractsWithHunts;
+use Illuminate\Contracts\Cache\Repository;
+use Illuminate\Contracts\Events\Dispatcher;
 use PHPUnit\Framework\Attributes\Test;
 
 class HuntMapTest extends TestCase
@@ -113,5 +117,35 @@ class HuntMapTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode(), (string) $response->getBody());
 
         $this->assertNull($this->repository()->get()->hunt(1));
+    }
+
+    #[Test]
+    public function a_map_built_before_a_change_is_never_trusted_after_it(): void
+    {
+        $repository = $this->repository();
+        $stale = $repository->get()->toArray();
+
+        // A manager disables the Hunt...
+        $this->database()->table('fof_scavenger_hunts')->where('id', 1)->update(['is_enabled' => false]);
+        $repository->forget();
+
+        // ...while a slow request that started before the save writes back its old copy.
+        $this->app()->getContainer()->make(Repository::class)->put(HuntMapRepository::CACHE_KEY, ['generation' => 0, 'map' => $stale], 600);
+
+        $this->assertNull($repository->get()->hunt(1));
+    }
+
+    #[Test]
+    public function enabling_or_disabling_an_extension_clears_the_map(): void
+    {
+        $repository = $this->repository();
+        $this->assertNotNull($repository->get()->hunt(1));
+
+        $this->database()->table('fof_scavenger_hunts')->where('id', 1)->update(['is_enabled' => false]);
+
+        $extension = $this->app()->getContainer()->make(ExtensionManager::class)->getExtension('fof-scavenger-hunt');
+        $this->app()->getContainer()->make(Dispatcher::class)->dispatch(new Disabled($extension));
+
+        $this->assertNull($repository->get()->hunt(1));
     }
 }

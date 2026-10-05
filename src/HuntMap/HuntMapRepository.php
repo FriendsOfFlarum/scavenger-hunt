@@ -20,7 +20,12 @@ use Illuminate\Contracts\Cache\Repository;
 
 class HuntMapRepository
 {
-    public const CACHE_KEY = 'fof-scavenger-hunt.map';
+    /**
+     * Versioned so a deploy that changes the map's shape never reads an old-shape copy.
+     */
+    public const CACHE_KEY = 'fof-scavenger-hunt.map.v1';
+
+    public const GENERATION_KEY = 'fof-scavenger-hunt.map.generation';
 
     /**
      * An upper bound on staleness for changes made outside the API (a direct DB edit, tinker).
@@ -35,22 +40,32 @@ class HuntMapRepository
 
     public function get(): HuntMap
     {
+        $generation = $this->generation();
         $cached = $this->cache->get(self::CACHE_KEY);
 
-        if (is_array($cached)) {
-            return HuntMap::fromArray($cached);
+        if (is_array($cached) && ($cached['generation'] ?? null) === $generation) {
+            return HuntMap::fromArray($cached['map']);
         }
 
         [$map, $ttl] = $this->build(Carbon::now());
 
-        $this->cache->put(self::CACHE_KEY, $map->toArray(), $ttl);
+        // Stamped with the generation read before building: if a change lands mid-build, this copy
+        // is already stale, and the next reader rebuilds instead of trusting it.
+        $this->cache->put(self::CACHE_KEY, ['generation' => $generation, 'map' => $map->toArray()], $ttl);
 
         return $map;
     }
 
     public function forget(): void
     {
+        $this->cache->add(self::GENERATION_KEY, 0);
+        $this->cache->increment(self::GENERATION_KEY);
         $this->cache->forget(self::CACHE_KEY);
+    }
+
+    protected function generation(): int
+    {
+        return (int) $this->cache->get(self::GENERATION_KEY, 0);
     }
 
     /**
