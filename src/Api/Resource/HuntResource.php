@@ -101,7 +101,8 @@ class HuntResource extends AbstractDatabaseResource
             Schema\Str::make('slug')
                 ->writable()
                 ->maxLength(100)
-                ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
+                // At least one letter, so a slug can never be mistaken for an id by find().
+                ->regex('/^(?=[a-z0-9-]*[a-z])[a-z0-9]+(?:-[a-z0-9]+)*$/')
                 ->unique('fof_scavenger_hunts', 'slug', true),
             Schema\Str::make('description')
                 ->nullable()
@@ -232,6 +233,10 @@ class HuntResource extends AbstractDatabaseResource
     protected function uniqueSlug(string $title): string
     {
         $base = Str::limit(Str::slug($title), 90, '') ?: 'hunt';
+
+        if (ctype_digit(str_replace('-', '', $base))) {
+            $base = "hunt-$base";
+        }
         $slug = $base;
 
         for ($i = 2; Hunt::query()->where('slug', $slug)->exists(); $i++) {

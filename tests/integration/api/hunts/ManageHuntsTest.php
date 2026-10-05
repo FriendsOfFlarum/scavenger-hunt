@@ -89,6 +89,16 @@ class ManageHuntsTest extends TestCase
     }
 
     #[Test]
+    public function slugs_always_contain_a_letter_so_they_never_look_like_ids(): void
+    {
+        $this->assertEquals(422, $this->create(3, ['title' => 'Numbers', 'slug' => '12'])->getStatusCode());
+
+        $response = $this->create(3, ['title' => '2026']);
+        $this->assertEquals(201, $response->getStatusCode(), (string) $response->getBody());
+        $this->assertSame('hunt-2026', $this->body($response)['data']['attributes']['slug']);
+    }
+
+    #[Test]
     public function members_cannot_create_hunts(): void
     {
         $this->assertEquals(403, $this->create(2, ['title' => 'Nope'])->getStatusCode());
