@@ -15,7 +15,7 @@ use Carbon\Carbon;
 use Flarum\Api\Context;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Builder;
-use Psr\Http\Message\ServerRequestInterface;
+use Flarum\User\User;
 use WeakMap;
 
 /**
@@ -23,20 +23,21 @@ use WeakMap;
  * request. Endpoints scope it to their Hunts up front so a whole page loads in one go; asking
  * about a Hunt outside the scope widens it and reloads.
  *
- * Resources are container singletons that serve many requests, so state is keyed by the request
- * object (FND-124): it dies with the request instead of leaking another actor's progress.
+ * Resources are container singletons that serve many requests, so state is keyed by the actor
+ * object, which Flarum builds afresh for every request (FND-124's per-request rule). The request
+ * object itself is not a stable key: the serializer works with derived copies of it.
  *
  * @phpstan-type Progress array{hunts: list<int>, found: array<int, Carbon>, huntCounts: array<int, int>, completed: array<int, array{at: Carbon, position: int}>}
  */
 class ActorProgress
 {
     /**
-     * @var WeakMap<ServerRequestInterface, list<int>>
+     * @var WeakMap<User, list<int>>
      */
     protected WeakMap $scopes;
 
     /**
-     * @var WeakMap<ServerRequestInterface, Progress>
+     * @var WeakMap<User, Progress>
      */
     protected WeakMap $memo;
 
@@ -52,7 +53,8 @@ class ActorProgress
      */
     public function scope(Context $context, iterable $huntIds): void
     {
-        $scope = $this->scopes[$context->request] ?? [];
+        $actor = $context->getActor();
+        $scope = $this->scopes[$actor] ?? [];
 
         foreach ($huntIds as $huntId) {
             if (! in_array((int) $huntId, $scope, true)) {
@@ -60,7 +62,7 @@ class ActorProgress
             }
         }
 
-        $this->scopes[$context->request] = $scope;
+        $this->scopes[$actor] = $scope;
     }
 
     public function isFound(Context $context, int $huntId, int $partId): bool
@@ -96,16 +98,15 @@ class ActorProgress
      */
     protected function load(Context $context, int $huntId): array
     {
-        $request = $context->request;
+        $actor = $context->getActor();
 
         $this->scope($context, [$huntId]);
-        $scope = $this->scopes[$request];
+        $scope = $this->scopes[$actor];
 
-        if (isset($this->memo[$request]) && $this->memo[$request]['hunts'] === $scope) {
-            return $this->memo[$request];
+        if (isset($this->memo[$actor]) && $this->memo[$actor]['hunts'] === $scope) {
+            return $this->memo[$actor];
         }
 
-        $actor = $context->getActor();
         $progress = ['hunts' => $scope, 'found' => [], 'huntCounts' => [], 'completed' => []];
 
         if (! $actor->isGuest()) {
@@ -135,7 +136,7 @@ class ActorProgress
             }
         }
 
-        return $this->memo[$request] = $progress;
+        return $this->memo[$actor] = $progress;
     }
 
     /**

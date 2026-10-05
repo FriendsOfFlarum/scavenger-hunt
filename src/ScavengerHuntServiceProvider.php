@@ -15,6 +15,7 @@ use Flarum\Foundation\AbstractServiceProvider;
 use FoF\ScavengerHunt\HidingSpot\HidingSpotRegistry;
 use FoF\ScavengerHunt\Lookup\NativeRandomSource;
 use FoF\ScavengerHunt\Lookup\RandomSource;
+use FoF\ScavengerHunt\Progress\ActorProgress;
 use Illuminate\Contracts\Container\Container;
 use Psr\Log\LoggerInterface;
 
@@ -41,5 +42,8 @@ class ScavengerHuntServiceProvider extends AbstractServiceProvider
         ));
 
         $this->container->bind(RandomSource::class, NativeRandomSource::class);
+
+        // Shared, so one resource can scope the progress another resource's fields read.
+        $this->container->singleton(ActorProgress::class);
     }
 }

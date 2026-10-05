@@ -15,6 +15,7 @@ use Flarum\Api\Resource\ForumResource;
 use Flarum\Discussion\Discussion;
 use Flarum\Extend;
 use Flarum\Post\Post;
+use Flarum\Search\Database\DatabaseSearchDriver;
 use Flarum\Tags\Tag;
 use Flarum\User\User;
 use FoF\ScavengerHunt\Extend\HidingSpots;
@@ -107,6 +108,14 @@ return [
     (new Extend\ModelVisibility(Location::class))
         ->scope(Access\ScopeLocationVisibility::class),
 
+    (new Extend\ModelVisibility(Completion::class))
+        ->scope(Access\ScopeCompletionVisibility::class),
+
+    (new Extend\SearchDriver(DatabaseSearchDriver::class))
+        ->addSearcher(Completion::class, Search\Completion\CompletionSearcher::class)
+        ->addFilter(Search\Completion\CompletionSearcher::class, Search\Completion\HuntFilter::class)
+        ->addFilter(Search\Completion\CompletionSearcher::class, Search\Completion\UserFilter::class),
+
     new Extend\ApiResource(Api\Resource\HuntResource::class),
     new Extend\ApiResource(Api\Resource\TemplateResource::class),
     new Extend\ApiResource(Api\Resource\PartResource::class),
@@ -114,6 +123,7 @@ return [
     new Extend\ApiResource(Api\Resource\LocationResource::class),
     new Extend\ApiResource(Api\Resource\EncounterResource::class),
     new Extend\ApiResource(Api\Resource\FindResource::class),
+    new Extend\ApiResource(Api\Resource\CompletionResource::class),
 
     (new Extend\ApiResource(ForumResource::class))
         ->fields(Api\ForumAttributes::class),
