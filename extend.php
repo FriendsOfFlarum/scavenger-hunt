@@ -31,6 +31,9 @@ return [
     (new Extend\ServiceProvider())
         ->register(ScavengerHuntServiceProvider::class),
 
+    (new Extend\Event())
+        ->subscribe(HuntMap\ClearHuntMap::class),
+
     (new HidingSpots())
         ->context('discussion', Discussion::class)
         ->context('post', Post::class)
