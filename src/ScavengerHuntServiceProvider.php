@@ -13,6 +13,8 @@ namespace FoF\ScavengerHunt;
 
 use Flarum\Foundation\AbstractServiceProvider;
 use FoF\ScavengerHunt\HidingSpot\HidingSpotRegistry;
+use FoF\ScavengerHunt\Lookup\NativeRandomSource;
+use FoF\ScavengerHunt\Lookup\RandomSource;
 use Illuminate\Contracts\Container\Container;
 
 class ScavengerHuntServiceProvider extends AbstractServiceProvider
@@ -29,5 +31,7 @@ class ScavengerHuntServiceProvider extends AbstractServiceProvider
             $container->make('fof-scavenger-hunt.excluded-routes'),
             fn () => $container->make('flarum.forum.routes'),
         ));
+
+        $this->container->bind(RandomSource::class, NativeRandomSource::class);
     }
 }

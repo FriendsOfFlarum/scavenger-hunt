@@ -67,4 +67,16 @@ return [
     new Extend\ApiResource(Api\Resource\PartResource::class),
     new Extend\ApiResource(Api\Resource\HidingSpotResource::class),
     new Extend\ApiResource(Api\Resource\LocationResource::class),
+    new Extend\ApiResource(Api\Resource\EncounterResource::class),
+
+    (new Extend\ThrottleApi())
+        ->set('fof-scavenger-hunt.lookups', Lookup\LookupThrottler::class),
+
+    (new Extend\Settings())
+        ->default(Setting::TOKEN_LIFETIME, 10)
+        ->default(Setting::MAX_PARTS_PER_PAGE, 1)
+        ->default(Setting::LOOKUP_RATE_LIMIT, 30)
+        ->default(Setting::DAILY_LOOKUP_LIMIT, 1500)
+        ->default(Setting::MANAGERS_CAN_PLAY, false)
+        ->default(Setting::SHOW_HEADER_INDICATOR, true),
 ];
