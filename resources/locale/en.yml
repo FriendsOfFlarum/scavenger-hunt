@@ -7,6 +7,9 @@ fof-scavenger-hunt:
     ends_before_start: The hunt must end after it starts.
     image_invalid: That image reference isn't valid.
     template_unknown: That template doesn't exist.
+    hint_requires_fixed: Only parts in a fixed location can have a hint.
+    wander_chance_required: Wandering parts need a chance between 1 and 100.
+    layer_invalid: The layer position isn't valid.
   lib:
     templates:
       winter:

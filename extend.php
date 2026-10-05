@@ -36,6 +36,10 @@ return [
     (new Extend\ModelVisibility(Hunt::class))
         ->scope(Access\ScopeHuntVisibility::class),
 
+    (new Extend\ModelVisibility(Part::class))
+        ->scope(Access\ScopePartVisibility::class),
+
     new Extend\ApiResource(Api\Resource\HuntResource::class),
     new Extend\ApiResource(Api\Resource\TemplateResource::class),
+    new Extend\ApiResource(Api\Resource\PartResource::class),
 ];
