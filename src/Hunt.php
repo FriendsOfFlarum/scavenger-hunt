@@ -47,11 +47,6 @@ class Hunt extends AbstractModel
 
     public $timestamps = true;
 
-    protected $attributes = [
-        'is_enabled' => false,
-        'guests_can_see' => true,
-    ];
-
     protected $casts = [
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',

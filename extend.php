@@ -23,4 +23,18 @@ return [
         ->css(__DIR__.'/resources/less/admin.less'),
 
     new Extend\Locales(__DIR__.'/resources/locale'),
+
+    // AbstractModel takes defaults from this registry, not from Eloquent's $attributes.
+    (new Extend\Model(Hunt::class))
+        ->default('is_enabled', false)
+        ->default('guests_can_see', true),
+
+    (new Extend\Model(Part::class))
+        ->default('mode', PlacementMode::Fixed->value)
+        ->default('sort', 0),
+
+    (new Extend\ModelVisibility(Hunt::class))
+        ->scope(Access\ScopeHuntVisibility::class),
+
+    new Extend\ApiResource(Api\Resource\HuntResource::class),
 ];

@@ -42,11 +42,6 @@ class Part extends AbstractModel
 
     public $timestamps = true;
 
-    protected $attributes = [
-        'mode' => 'fixed',
-        'sort' => 0,
-    ];
-
     protected $casts = [
         'hunt_id' => 'integer',
         'layer' => 'array',

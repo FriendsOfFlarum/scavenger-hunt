@@ -3,3 +3,6 @@ fof-scavenger-hunt:
     permissions:
       play: Collect scavenger hunt parts
       manage: Manage scavenger hunts
+  api:
+    ends_before_start: The hunt must end after it starts.
+    image_invalid: That image reference isn't valid.
