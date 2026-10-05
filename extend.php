@@ -83,6 +83,9 @@ return [
         ->excludeRoute('default'),
 
     (new Extend\Conditional())
+        ->whenExtensionEnabled('flarum-audit', fn () => [Integration\AuditLog::extender()]),
+
+    (new Extend\Conditional())
         ->whenExtensionEnabled('fof-gamification', fn () => [
             (new LeaderboardMetric())
                 ->add(Gamification\PartsFound::class)

@@ -82,7 +82,14 @@
         "flarum/phpstan": "^2.0.0",
         "flarum/testing": "^2.0.0",
         "flarum/tags": "^2.0",
-        "fof/gamification": "2.x-dev"
+        "fof/gamification": "2.x-dev",
+        "flarum/audit": "^2.0"
+    },
+    "suggest": {
+        "flarum/tags": "Hide parts on tag tiles.",
+        "fof/gamification": "Rank members by parts found and hunts completed on the leaderboard.",
+        "flarum/audit": "Log hunt changes, completions and lookup-limit breaches.",
+        "flarum/gdpr": "Include scavenger hunt data in exports and erasure."
     },
     "scripts": {
         "analyse:phpstan": "phpstan analyse",
