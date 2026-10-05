@@ -48,12 +48,28 @@ class EncounterResolver
     }
 
     /**
-     * Which of a Part's Locations a member is given in Assigned mode. Keyed by the Hunt's secret
-     * seed, so it cannot be worked out from outside the server, and stable for each member.
+     * Which of a Part's Locations a member is given in Assigned mode: the one with the highest
+     * score keyed by the Hunt's secret seed (rendezvous hashing). It cannot be worked out from
+     * outside the server, it is stable for each member, and adding or removing a Location only
+     * moves the members whose pick was that Location.
+     *
+     * @param non-empty-list<int> $locationIds
      */
-    public static function assignedIndex(string $seed, int $partId, int $userId, int $count): int
+    public static function assignedLocation(string $seed, int $partId, int $userId, array $locationIds): int
     {
-        return (int) (hexdec(substr(hash_hmac('sha256', "$partId:$userId", $seed), 0, 12)) % $count);
+        $best = $locationIds[0];
+        $bestScore = '';
+
+        foreach ($locationIds as $locationId) {
+            $score = hash_hmac('sha256', "$partId:$userId:$locationId", $seed);
+
+            if (strcmp($score, $bestScore) > 0) {
+                $best = $locationId;
+                $bestScore = $score;
+            }
+        }
+
+        return $best;
     }
 
     /**
@@ -141,7 +157,8 @@ class EncounterResolver
             }
 
             if ($part['mode'] === PlacementMode::Assigned->value) {
-                $locations = [$locations[self::assignedIndex($hunt['seed'], $part['id'], $actor->id, count($locations))]];
+                $assigned = self::assignedLocation($hunt['seed'], $part['id'], $actor->id, array_column($locations, 'id'));
+                $locations = array_values(array_filter($locations, fn (array $location) => $location['id'] === $assigned));
             }
 
             foreach ($locations as $location) {

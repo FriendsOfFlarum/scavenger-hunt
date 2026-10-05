@@ -65,7 +65,7 @@ class AssignedAndWanderingTest extends TestCase
     public function an_assigned_part_appears_only_at_each_members_own_location(): void
     {
         foreach ([2, 4] as $userId) {
-            $mine = ['index', 'tags'][EncounterResolver::assignedIndex(self::SEED, 1, $userId, 2)];
+            $mine = [1 => 'index', 2 => 'tags'][EncounterResolver::assignedLocation(self::SEED, 1, $userId, [1, 2])];
             $other = $mine === 'index' ? 'tags' : 'index';
 
             $this->assertSame(['1'], $this->partIds($userId, $mine, 'page.corner'), "user $userId at $mine");
