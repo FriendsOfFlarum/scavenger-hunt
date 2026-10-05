@@ -1,0 +1,33 @@
+<?php
+
+/*
+ * This file is part of fof/scavenger-hunt.
+ *
+ * Copyright (c) FriendsOfFlarum.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace FoF\ScavengerHunt;
+
+use Flarum\Foundation\AbstractServiceProvider;
+use FoF\ScavengerHunt\HidingSpot\HidingSpotRegistry;
+use Illuminate\Contracts\Container\Container;
+
+class ScavengerHuntServiceProvider extends AbstractServiceProvider
+{
+    public function register(): void
+    {
+        $this->container->singleton('fof-scavenger-hunt.spots', fn () => []);
+        $this->container->singleton('fof-scavenger-hunt.contexts', fn () => []);
+        $this->container->singleton('fof-scavenger-hunt.excluded-routes', fn () => []);
+
+        $this->container->singleton(HidingSpotRegistry::class, fn (Container $container) => new HidingSpotRegistry(
+            $container->make('fof-scavenger-hunt.spots'),
+            $container->make('fof-scavenger-hunt.contexts'),
+            $container->make('fof-scavenger-hunt.excluded-routes'),
+            fn () => $container->make('flarum.forum.routes'),
+        ));
+    }
+}

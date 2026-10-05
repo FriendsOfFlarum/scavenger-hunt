@@ -3,6 +3,11 @@ fof-scavenger-hunt:
     permissions:
       play: Collect scavenger hunt parts
       manage: Manage scavenger hunts
+    spots:
+      page_header: Page header
+      page_footer: Page footer
+      page_corner: Page corner (floating)
+      page_sidebar: Page sidebar
   api:
     ends_before_start: The hunt must end after it starts.
     image_invalid: That image reference isn't valid.
