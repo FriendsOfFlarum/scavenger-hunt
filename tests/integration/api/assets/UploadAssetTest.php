@@ -98,6 +98,9 @@ class UploadAssetTest extends TestCase
             'html' => ['<html><body onload="alert(1)">hi</body></html>', 'page.svg', 'image/svg+xml'],
             'svg that does not parse' => ['<svg xmlns="http://www.w3.org/2000/svg"><rect', 'broken.svg', 'image/svg+xml'],
             'empty file' => ['', 'empty.png', 'image/png'],
+            // Browsers don't render these as images, so they would only ever show as broken.
+            'svg without the svg namespace' => ['<svg viewBox="0 0 10 10"><rect width="5" height="5"/></svg>', 'plain.svg', 'image/svg+xml'],
+            'svg in the xhtml namespace' => ['<svg xmlns="http://www.w3.org/1999/xhtml" viewBox="0 0 10 10"><rect width="5" height="5"/></svg>', 'xhtml.svg', 'image/svg+xml'],
         ];
     }
 
@@ -209,6 +212,15 @@ class UploadAssetTest extends TestCase
         $data = $this->body($response)['data']['attributes'];
         $this->assertSame($width, $data['width']);
         $this->assertSame($height, $data['height']);
+    }
+
+    #[Test]
+    public function a_name_that_is_not_utf_8_is_cleaned(): void
+    {
+        $response = $this->upload(1, $this->rasterImage('png'), "snow\xC3\x28man.png");
+
+        $this->assertEquals(201, $response->getStatusCode(), (string) $response->getBody());
+        $this->assertTrue(mb_check_encoding($this->body($response)['data']['attributes']['name'], 'UTF-8'));
     }
 
     #[Test]

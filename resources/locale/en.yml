@@ -257,6 +257,7 @@ fof-scavenger-hunt:
     claim_failed: This part has slipped away. Keep looking!
     reward_group_invalid: That group can't be a reward.
     asset_in_use: This image is used by a hunt or part, so it can't be deleted.
+    asset_file_missing: Choose an image to upload.
     asset_type_invalid: Upload a PNG, JPEG, GIF, WebP or SVG image.
     asset_too_large: Images can be up to 2 MB.
   lib:

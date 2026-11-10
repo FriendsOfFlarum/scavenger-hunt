@@ -25,6 +25,7 @@ use Intervention\Image\Decoders\BinaryImageDecoder;
 use Intervention\Image\Exceptions\DecoderException;
 use Intervention\Image\ImageManager;
 use Psr\Http\Message\UploadedFileInterface;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -81,7 +82,9 @@ class AssetUploader
 
         $path = 'scavenger-hunt/'.bin2hex(random_bytes(16)).".$extension";
         $disk = $this->disk();
-        $disk->put($path, $contents);
+        if (! $disk->put($path, $contents)) {
+            throw new RuntimeException("Could not store the uploaded image at $path.");
+        }
 
         $asset = new Asset();
         $asset->path = $path;
@@ -143,7 +146,7 @@ class AssetUploader
 
     protected function name(?string $filename): string
     {
-        $name = trim(pathinfo((string) $filename, PATHINFO_FILENAME));
+        $name = trim(mb_scrub(pathinfo((string) $filename, PATHINFO_FILENAME), 'UTF-8'));
 
         return $name === '' ? 'image' : mb_substr($name, 0, 100);
     }

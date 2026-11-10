@@ -49,9 +49,7 @@ class UploadAssetController implements RequestHandlerInterface
         $file = Arr::get($request->getUploadedFiles(), 'file');
 
         if (! $file instanceof UploadedFileInterface) {
-            throw new ValidationException([
-                'file' => str_replace(':attribute', 'file', $this->translator->trans('validation.required')),
-            ]);
+            throw new ValidationException(['file' => $this->translator->trans('fof-scavenger-hunt.api.asset_file_missing')]);
         }
 
         $asset = $this->uploader->upload($file, $actor);

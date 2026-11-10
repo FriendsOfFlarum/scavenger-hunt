@@ -24,6 +24,8 @@ use FoF\ScavengerHunt\Image\AssetUsage;
 use FoF\ScavengerHunt\Permission;
 use Illuminate\Contracts\Filesystem\Cloud;
 use Illuminate\Contracts\Filesystem\Factory;
+use Psr\Log\LoggerInterface;
+use Throwable;
 use Tobyz\JsonApiServer\Context as OriginalContext;
 
 /**
@@ -38,6 +40,7 @@ class AssetResource extends AbstractDatabaseResource
         protected AssetUsage $usage,
         protected Factory $filesystem,
         protected TranslatorInterface $translator,
+        protected LoggerInterface $log,
     ) {
     }
 
@@ -106,9 +109,14 @@ class AssetResource extends AbstractDatabaseResource
 
     public function deleted(object $model, OriginalContext $context): void
     {
-        $this->disk()->delete($model->path);
-
         $this->events->dispatch(new AssetDeleted($model, $context->getActor()));
+
+        // The row is already gone, so a storage failure leaves an orphaned file rather than a failed request.
+        try {
+            $this->disk()->delete($model->path);
+        } catch (Throwable $e) {
+            $this->log->warning("[fof/scavenger-hunt] Could not delete the file of deleted Asset {$model->id} at {$model->path}: {$e->getMessage()}");
+        }
     }
 
     protected function disk(): Cloud

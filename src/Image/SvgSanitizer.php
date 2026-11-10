@@ -31,7 +31,10 @@ class SvgSanitizer
 
         $clean = $sanitizer->sanitize($svg);
 
-        if (! is_string($clean) || $this->root($clean)?->localName !== 'svg') {
+        $root = is_string($clean) ? $this->root($clean) : null;
+
+        // Outside the SVG namespace, browsers don't render the file as an image.
+        if ($root?->localName !== 'svg' || $root->namespaceURI !== 'http://www.w3.org/2000/svg') {
             return null;
         }
 

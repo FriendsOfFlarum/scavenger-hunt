@@ -31,8 +31,10 @@ use WeakMap;
  */
 class ImageReference
 {
-    protected const TEMPLATE = '/^template:([a-z0-9-]+)\/([a-z0-9_-]+\.svg)$/';
-    protected const ASSET = '/^asset:([1-9]\d{0,9})$/';
+    // D: without it, `$` also matches before a trailing newline, and such a reference would
+    // slip past AssetUsage's exact match.
+    protected const TEMPLATE = '/^template:([a-z0-9-]+)\/([a-z0-9_-]+\.svg)$/D';
+    protected const ASSET = '/^asset:([1-9]\d{0,9})$/D';
 
     /**
      * @var WeakMap<User, array<int, string>>

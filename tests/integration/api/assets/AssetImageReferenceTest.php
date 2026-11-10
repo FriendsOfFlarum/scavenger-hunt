@@ -117,6 +117,14 @@ class AssetImageReferenceTest extends TestCase
     }
 
     #[Test]
+    public function a_reference_with_a_trailing_newline_is_rejected(): void
+    {
+        // Stored as is, it would slip past the check that stops an Asset in use being deleted.
+        $this->assertEquals(422, $this->save('PATCH', '/api/scavenger-hunts/1', 'scavenger-hunts', ['image' => "asset:12\n"])->getStatusCode());
+        $this->assertEquals(422, $this->save('PATCH', '/api/scavenger-hunt-parts/1', 'scavenger-hunt-parts', ['image' => "template:winter/hat.svg\n"])->getStatusCode());
+    }
+
+    #[Test]
     public function an_asset_that_does_not_exist_is_rejected(): void
     {
         $this->assertEquals(422, $this->save('PATCH', '/api/scavenger-hunts/1', 'scavenger-hunts', ['image' => 'asset:99'])->getStatusCode());
