@@ -109,6 +109,12 @@ class PartsTest extends TestCase
     }
 
     #[Test]
+    public function a_part_name_cannot_be_emptied(): void
+    {
+        $this->assertEquals(422, $this->updatePart(3, 1, ['name' => ''])->getStatusCode());
+    }
+
+    #[Test]
     public function an_out_of_range_layer_is_rejected(): void
     {
         $this->assertEquals(422, $this->updatePart(3, 1, ['layer' => ['x' => 150, 'y' => 0, 'width' => 10, 'z' => 1]])->getStatusCode());

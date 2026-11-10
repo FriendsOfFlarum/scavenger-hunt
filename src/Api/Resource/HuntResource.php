@@ -126,7 +126,8 @@ class HuntResource extends AbstractDatabaseResource
             Schema\Str::make('title')
                 ->requiredOnCreate()
                 ->writable()
-                ->minLength(1)
+                // minLength(1) alone lets an empty string through: Laravel skips most rules for empty values.
+                ->rule('filled')
                 ->maxLength(200),
             Schema\Str::make('slug')
                 ->writable()

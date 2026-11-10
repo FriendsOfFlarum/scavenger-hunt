@@ -80,7 +80,8 @@ class PartResource extends AbstractDatabaseResource
             Schema\Str::make('name')
                 ->requiredOnCreate()
                 ->writable()
-                ->minLength(1)
+                // minLength(1) alone lets an empty string through: Laravel skips most rules for empty values.
+                ->rule('filled')
                 ->maxLength(100),
             // Random Parts never carry a Hint: nobody can be told where they are.
             Schema\Str::make('hint')

@@ -138,6 +138,17 @@ class ManageHuntsTest extends TestCase
     }
 
     #[Test]
+    public function a_hunt_title_cannot_be_emptied(): void
+    {
+        $response = $this->send($this->request('PATCH', '/api/scavenger-hunts/1', [
+            'authenticatedAs' => 3,
+            'json' => ['data' => ['type' => 'scavenger-hunts', 'id' => '1', 'attributes' => ['title' => '']]],
+        ]));
+
+        $this->assertEquals(422, $response->getStatusCode(), (string) $response->getBody());
+    }
+
+    #[Test]
     public function members_cannot_update_hunts(): void
     {
         $response = $this->send($this->request('PATCH', '/api/scavenger-hunts/1', [
