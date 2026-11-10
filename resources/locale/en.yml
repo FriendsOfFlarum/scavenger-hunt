@@ -189,6 +189,21 @@ fof-scavenger-hunt:
       lookup_rate_limit_help: How often one member (or one guest IP) may check a page for parts.
       daily_lookup_limit: Lookups per member per day
       daily_lookup_limit_help: Holds scripts to roughly human browsing speed.
+    assets:
+      title: Image library
+      help: Images uploaded here can be used as the collectable or a part in any hunt.
+      upload: Upload image
+      upload_help: PNG, JPEG, GIF, WebP or SVG, up to 2 MB.
+      empty: No images uploaded yet.
+      name_label: Image name
+      dimensions: "{width} × {height}"
+      size_kb: "{size} KB"
+      size_mb: "{size} MB"
+      in_use: In use
+      in_use_help: A hunt or part uses this image. Replace it there to delete it.
+      delete: Delete image
+      delete_confirm: "Delete {name}? This can't be undone."
+      load_more: Load more
     spots:
       page_header: Page header
       page_footer: Page footer

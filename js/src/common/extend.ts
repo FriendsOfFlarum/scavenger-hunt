@@ -1,4 +1,5 @@
 import Extend from 'flarum/common/extenders';
+import Asset from './models/Asset';
 import Completion from './models/Completion';
 import Encounter from './models/Encounter';
 import Find from './models/Find';
@@ -21,5 +22,6 @@ export default [
     .add('scavenger-hunt-spots', HidingSpotDefinition)
     .add('scavenger-hunt-completions', Completion)
     .add('scavenger-hunt-stats', HuntStats)
-    .add('scavenger-hunt-participants', Participant),
+    .add('scavenger-hunt-participants', Participant)
+    .add('scavenger-hunt-assets', Asset),
 ] satisfies object[];

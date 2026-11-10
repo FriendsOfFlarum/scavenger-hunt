@@ -1,7 +1,9 @@
 import app from 'flarum/admin/app';
 import Extend from 'flarum/common/extenders';
+import commonExtend from '../common/extend';
 
 export default [
+  ...commonExtend,
   new Extend.Admin()
     .setting(() => ({
       setting: 'fof-scavenger-hunt.showHeaderIndicator',
