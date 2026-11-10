@@ -40,4 +40,23 @@ describe('TemplateGalleryModal', () => {
 
     expect(gallery.find('.TemplateGallery-item').map((item) => item.getAttribute('aria-checked'))).toEqual(['false', 'true']);
   });
+  it('offers a retry when the Templates fail to load', async () => {
+    const responses = [() => Promise.reject(new Error('offline')), () => Promise.resolve({ data: [template('winter', 'Build a Snowman')] })];
+    const request = jest.spyOn(app, 'request').mockImplementation((() => responses.shift()!()) as never);
+    const gallery = mq(TemplateGalleryModal, { state: app.modal, animateShow: () => {}, animateHide: () => {} });
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    gallery.redraw();
+
+    expect(gallery).toHaveElement('.TemplateGallery-error');
+    expect(gallery).not.toHaveElement('.LoadingIndicator');
+
+    gallery.click('.TemplateGallery-retry');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    gallery.redraw();
+
+    expect(request).toHaveBeenCalledTimes(2);
+    expect(gallery).not.toHaveElement('.TemplateGallery-error');
+    expect(gallery.find('.TemplateGallery-item')).toHaveLength(2);
+  });
 });

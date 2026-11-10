@@ -70,7 +70,7 @@ export default class AssetCard<CustomAttrs extends IAssetCardAttrs = IAssetCardA
         icon="fas fa-trash-alt"
         disabled={inUse}
         loading={this.deleting}
-        aria-label={app.translator.trans('fof-scavenger-hunt.admin.assets.delete', {}, true)}
+        aria-label={app.translator.trans('fof-scavenger-hunt.admin.assets.delete', { name: this.attrs.asset.name() }, true)}
         aria-describedby={inUse ? `${this.idPrefix()}-in-use ${this.idPrefix()}-in-use-help` : undefined}
         onclick={() => this.delete()}
       />

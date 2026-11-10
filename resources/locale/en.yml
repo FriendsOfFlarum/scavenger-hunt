@@ -125,6 +125,8 @@ fof-scavenger-hunt:
         blank: Blank
         hunt_title: Hunt title
         create: Create hunt
+        load_failed: The templates couldn't be loaded.
+        retry: Try again
       details:
         title: Title
         slug: Slug
@@ -235,7 +237,7 @@ fof-scavenger-hunt:
       size_mb: "{size} MB"
       in_use: In use
       in_use_help: A hunt or part uses this image. Replace it there to delete it.
-      delete: Delete image
+      delete: "Delete {name}"
       delete_confirm: "Delete {name}? This can't be undone."
       load_more: Load more
     spots:

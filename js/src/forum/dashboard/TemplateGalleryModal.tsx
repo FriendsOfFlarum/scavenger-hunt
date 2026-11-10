@@ -13,6 +13,7 @@ import type HuntTemplate from '../../common/models/HuntTemplate';
  */
 export default class TemplateGalleryModal extends FormModal {
   protected templates: HuntTemplate[] | null = null;
+  protected failed = false;
   protected chosen: HuntTemplate | null = null;
   protected huntTitle!: Stream<string>;
 
@@ -20,11 +21,21 @@ export default class TemplateGalleryModal extends FormModal {
     super.oninit(vnode);
 
     this.huntTitle = Stream('');
+    this.load();
+  }
 
-    app.store.find<HuntTemplate[]>('scavenger-hunt-templates').then((templates) => {
-      this.templates = templates;
-      m.redraw();
-    });
+  protected load(): void {
+    this.failed = false;
+
+    app.store
+      .find<HuntTemplate[]>('scavenger-hunt-templates')
+      .then((templates) => {
+        this.templates = templates;
+      })
+      .catch(() => {
+        this.failed = true;
+      })
+      .finally(() => m.redraw());
   }
 
   className() {
@@ -38,7 +49,7 @@ export default class TemplateGalleryModal extends FormModal {
   content() {
     return (
       <div className="Modal-body">
-        {this.templates ? this.gallery() : <LoadingIndicator />}
+        {this.templates ? this.gallery() : this.failed ? this.loadError() : <LoadingIndicator />}
 
         <div className="Form-group">
           <label for="scavenger-new-hunt-title">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.gallery.hunt_title')}</label>
@@ -50,6 +61,17 @@ export default class TemplateGalleryModal extends FormModal {
             {app.translator.trans('fof-scavenger-hunt.forum.dashboard.gallery.create')}
           </Button>
         </div>
+      </div>
+    );
+  }
+
+  protected loadError(): Mithril.Children {
+    return (
+      <div className="TemplateGallery-error">
+        <p>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.gallery.load_failed')}</p>
+        <Button className="Button TemplateGallery-retry" icon="fas fa-redo" onclick={() => this.load()}>
+          {app.translator.trans('fof-scavenger-hunt.forum.dashboard.gallery.retry')}
+        </Button>
       </div>
     );
   }
