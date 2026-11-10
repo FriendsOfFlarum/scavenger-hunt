@@ -14,6 +14,7 @@ namespace FoF\ScavengerHunt;
 use Flarum\Api\Resource\ForumResource;
 use Flarum\Discussion\Discussion;
 use Flarum\Extend;
+use Flarum\Gdpr\Extend\UserData;
 use Flarum\Post\Post;
 use Flarum\Search\Database\DatabaseSearchDriver;
 use Flarum\Tags\Tag;
@@ -83,7 +84,10 @@ return [
         ->excludeRoute('default'),
 
     (new Extend\Conditional())
-        ->whenExtensionEnabled('flarum-audit', fn () => [Integration\AuditLog::extender()]),
+        ->whenExtensionEnabled('flarum-audit', fn () => [Integration\AuditLog::extender()])
+        ->whenExtensionEnabled('flarum-gdpr', fn () => [
+            (new UserData())->addType(Data\ScavengerHunt::class),
+        ]),
 
     (new Extend\Conditional())
         ->whenExtensionEnabled('fof-gamification', fn () => [

@@ -262,3 +262,11 @@ flarum-audit:
         progress_reset: "Reset user #{user_id}'s progress in scavenger hunt #{hunt_id}"
         hunt_completed: "Completed scavenger hunt #{hunt_id}"
         lookup_limit_reached: "Reached the daily scavenger hunt lookup limit"
+
+flarum-gdpr:
+  lib:
+    data:
+      scavengerhunt:
+        export_description: Exports the parts the user found, the hunts they completed and the parts they were shown.
+        anonymize_description: Deletes the record of the parts the user was shown. Found parts and completed hunts are kept under the anonymized account.
+        delete_description: Deletes the parts the user found, the hunts they completed and the record of the parts they were shown.
