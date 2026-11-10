@@ -40,6 +40,14 @@ const ARROWS: Record<string, [number, number]> = {
   ArrowDown: [0, 1],
 };
 
+// Both throw when the pointer is no longer active; the drag works without capture.
+function capturePointer(element: HTMLElement, pointerId: number, capture: boolean): void {
+  try {
+    if (capture) element.setPointerCapture?.(pointerId);
+    else element.releasePointerCapture?.(pointerId);
+  } catch {}
+}
+
 /**
  * Arranges the Parts on the Collectable canvas. Changes stay local until "Save layout".
  * The canvas is always laid out left to right (see CollectableCanvas), so pointer and
@@ -304,7 +312,7 @@ export default class LayerEditor<CustomAttrs extends ILayerEditorAttrs = ILayerE
 
     e.preventDefault();
     element.focus?.();
-    element.setPointerCapture?.(e.pointerId);
+    capturePointer(element, e.pointerId, true);
 
     this.selected = part.id()!;
     this.drag = {
@@ -335,7 +343,7 @@ export default class LayerEditor<CustomAttrs extends ILayerEditorAttrs = ILayerE
   protected endDrag(e: PointerEvent, part: Part): void {
     if (!this.drag || this.drag.pointerId !== e.pointerId) return;
 
-    (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+    capturePointer(e.currentTarget as HTMLElement, e.pointerId, false);
 
     if (!layersEqual(this.drag.start, this.layerOf(part))) this.announce(part);
     this.drag = null;

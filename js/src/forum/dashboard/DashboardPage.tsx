@@ -5,6 +5,7 @@ import Button from 'flarum/common/components/Button';
 import Link from 'flarum/common/components/Link';
 import LinkButton from 'flarum/common/components/LinkButton';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
+import SelectDropdown from 'flarum/common/components/SelectDropdown';
 import listItems from 'flarum/common/helpers/listItems';
 import ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
@@ -69,6 +70,8 @@ export default class DashboardPage extends Page {
         className="Button Button--primary ScavengerDashboard-newHunt"
         itemClassName="App-primaryControl"
         icon="fas fa-plus"
+        // On phones core hides the label of the header's primary control, leaving only the icon.
+        aria-label={app.translator.trans('fof-scavenger-hunt.forum.dashboard.new_hunt', {}, true)}
         onclick={() => app.modal.show(() => import('./TemplateGalleryModal'))}
       >
         {app.translator.trans('fof-scavenger-hunt.forum.dashboard.new_hunt')}
@@ -76,12 +79,32 @@ export default class DashboardPage extends Page {
       100
     );
 
+    // Like core's IndexSidebar: on phones core moves the title control into the header.
+    items.add(
+      'nav',
+      <SelectDropdown
+        buttonClassName="Button"
+        className="App-titleControl"
+        accessibleToggleLabel={app.translator.trans('core.forum.index.toggle_sidenav_dropdown_accessible_label', {}, true)}
+        defaultLabel={app.translator.trans('fof-scavenger-hunt.forum.dashboard.all_hunts')}
+      >
+        {this.navItems().toArray()}
+      </SelectDropdown>,
+      90
+    );
+
+    return items;
+  }
+
+  navItems(): ItemList<Mithril.Children> {
+    const items = new ItemList<Mithril.Children>();
+
     items.add(
       'allHunts',
       <LinkButton href={app.route('fof-scavenger-hunt.dashboard')} icon="fas fa-binoculars" active>
         {app.translator.trans('fof-scavenger-hunt.forum.dashboard.all_hunts')}
       </LinkButton>,
-      90
+      100
     );
 
     return items;
@@ -99,32 +122,34 @@ export default class DashboardPage extends Page {
     return (
       <div className="ScavengerDashboard-hunts">
         {this.hunts.length ? (
-          <table className="Table ScavengerDashboard-table">
-            <thead>
-              <tr>
-                <th>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.title')}</th>
-                <th>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.status')}</th>
-                <th className="ScavengerDashboard-number">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.parts')}</th>
-                <th className="ScavengerDashboard-number">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.participants')}</th>
-                <th className="ScavengerDashboard-number">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.finishers')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.hunts.map((hunt) => (
+          <div className="ScavengerDashboard-tableScroll">
+            <table className="Table ScavengerDashboard-table">
+              <thead>
                 <tr>
-                  <td>
-                    <Link href={app.route('fof-scavenger-hunt.dashboard.hunt', { id: hunt.id() })}>{hunt.title()}</Link>
-                  </td>
-                  <td>
-                    <HuntStatusPill hunt={hunt} />
-                  </td>
-                  <td className="ScavengerDashboard-number">{hunt.partCount()}</td>
-                  <td className="ScavengerDashboard-number">{hunt.participantCount()}</td>
-                  <td className="ScavengerDashboard-number">{hunt.finisherCount()}</td>
+                  <th>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.title')}</th>
+                  <th>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.status')}</th>
+                  <th className="ScavengerDashboard-number">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.parts')}</th>
+                  <th className="ScavengerDashboard-number">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.participants')}</th>
+                  <th className="ScavengerDashboard-number">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.finishers')}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {this.hunts.map((hunt) => (
+                  <tr>
+                    <td>
+                      <Link href={app.route('fof-scavenger-hunt.dashboard.hunt', { id: hunt.id() })}>{hunt.title()}</Link>
+                    </td>
+                    <td>
+                      <HuntStatusPill hunt={hunt} />
+                    </td>
+                    <td className="ScavengerDashboard-number">{hunt.partCount()}</td>
+                    <td className="ScavengerDashboard-number">{hunt.participantCount()}</td>
+                    <td className="ScavengerDashboard-number">{hunt.finisherCount()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <p className="ScavengerDashboard-empty">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.empty')}</p>
         )}

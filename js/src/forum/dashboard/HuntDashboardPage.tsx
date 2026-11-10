@@ -4,7 +4,9 @@ import PageStructure from 'flarum/forum/components/PageStructure';
 import Button from 'flarum/common/components/Button';
 import Link from 'flarum/common/components/Link';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
-import classList from 'flarum/common/utils/classList';
+import SelectDropdown from 'flarum/common/components/SelectDropdown';
+import listItems from 'flarum/common/helpers/listItems';
+import ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 import type HidingSpotDefinition from '../../common/models/HidingSpotDefinition';
 import type Hunt from '../../common/models/Hunt';
@@ -82,21 +84,49 @@ export default class HuntDashboardPage extends Page {
   }
 
   protected sidebar(): Mithril.Children {
-    const tabs = TABS;
-
     return (
       <nav className="sideNav ScavengerDashboard-nav">
-        <ul>
-          {tabs.map((tab) => (
-            <li className={classList({ active: this.tab === tab })}>
-              <Button className={classList('Button Button--link', { active: this.tab === tab })} onclick={() => this.setTab(tab)}>
-                {app.translator.trans(`fof-scavenger-hunt.forum.dashboard.tabs.${tab}`)}
-              </Button>
-            </li>
-          ))}
-        </ul>
+        <ul>{listItems(this.sidebarItems().toArray())}</ul>
       </nav>
     );
+  }
+
+  sidebarItems(): ItemList<Mithril.Children> {
+    const items = new ItemList<Mithril.Children>();
+
+    // Like core's UserPage: on phones core moves the title control into the header.
+    items.add(
+      'nav',
+      <SelectDropdown
+        buttonClassName="Button"
+        className="App-titleControl"
+        accessibleToggleLabel={app.translator.trans('core.forum.index.toggle_sidenav_dropdown_accessible_label', {}, true)}
+        defaultLabel={app.translator.trans(`fof-scavenger-hunt.forum.dashboard.tabs.${this.tab}`)}
+      >
+        {this.navItems().toArray()}
+      </SelectDropdown>,
+      100
+    );
+
+    return items;
+  }
+
+  navItems(): ItemList<Mithril.Children> {
+    const items = new ItemList<Mithril.Children>();
+
+    TABS.forEach((tab, index) => {
+      const active = this.tab === tab;
+
+      items.add(
+        tab,
+        <Button active={active} itemClassName={active ? 'active' : undefined} onclick={() => this.setTab(tab)}>
+          {app.translator.trans(`fof-scavenger-hunt.forum.dashboard.tabs.${tab}`)}
+        </Button>,
+        (TABS.length - index) * 10
+      );
+    });
+
+    return items;
   }
 
   protected content(): Mithril.Children {

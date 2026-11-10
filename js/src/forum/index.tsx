@@ -11,7 +11,7 @@ import type ItemList from 'flarum/common/utils/ItemList';
 import type Mithril from 'mithril';
 import HidingSpot from './components/HidingSpot';
 import HuntIndicator from './components/HuntIndicator';
-import { encounters } from './states/EncounterState';
+import { encounters, lookUpWhenDrawerOpens } from './states/EncounterState';
 import { placement } from './states/placement';
 import { activeHunts, canManageHunts } from './utils/activeHunts';
 
@@ -22,6 +22,8 @@ app.initializers.add('fof-scavenger-hunt', () => {
   extend(Page.prototype, 'oninit', function () {
     encounters.pageChanged(app.current.get('routeName') ?? '', m.route.param() ?? {});
   });
+
+  lookUpWhenDrawerOpens();
 
   extend(HeaderSecondary.prototype, 'items', function (items: ItemList<Mithril.Children>) {
     if (activeHunts().length && app.forum.attribute('fof-scavenger-hunt.showHeaderIndicator')) {

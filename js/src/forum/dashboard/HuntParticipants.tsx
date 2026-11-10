@@ -55,18 +55,20 @@ export default class HuntParticipants extends Component<HuntParticipantsAttrs> {
         {this.loading && !this.participants.length ? (
           <LoadingIndicator />
         ) : this.participants.length ? (
-          <table className="ScavengerDashboard-table HuntParticipants-table">
-            <thead>
-              <tr>
-                <th>{t('member')}</th>
-                <th>{t('found')}</th>
-                <th>{t('completed')}</th>
-                <th>{t('average_claim')}</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>{this.participants.map((participant) => this.row(participant))}</tbody>
-          </table>
+          <div className="ScavengerDashboard-tableScroll">
+            <table className="ScavengerDashboard-table HuntParticipants-table">
+              <thead>
+                <tr>
+                  <th>{t('member')}</th>
+                  <th>{t('found')}</th>
+                  <th>{t('completed')}</th>
+                  <th>{t('average_claim')}</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>{this.participants.map((participant) => this.row(participant))}</tbody>
+            </table>
+          </div>
         ) : (
           <p className="helpText">{t('none')}</p>
         )}

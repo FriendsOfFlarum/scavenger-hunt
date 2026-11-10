@@ -55,42 +55,46 @@ export default class HuntOverview extends Component<HuntOverviewAttrs> {
         </div>
 
         <h3>{t('parts_heading')}</h3>
-        <table className="ScavengerDashboard-table">
-          <thead>
-            <tr>
-              <th>{t('part')}</th>
-              <th>{t('shown')}</th>
-              <th>{t('found')}</th>
-              <th>{t('find_rate')}</th>
-              <th>{t('average_claim')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {stats.parts().map((part) => (
-              <tr>
-                <td>{part.name}</td>
-                <td>{part.shown}</td>
-                <td>{part.found}</td>
-                <td>{rate(part.found, part.shown)}</td>
-                <td>{seconds(part.averageClaimMs)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <p className="helpText">{t('shown_help')}</p>
-
-        <h3>{t('completions_heading')}</h3>
-        {stats.completionsPerDay().length ? (
+        <div className="ScavengerDashboard-tableScroll">
           <table className="ScavengerDashboard-table">
+            <thead>
+              <tr>
+                <th>{t('part')}</th>
+                <th>{t('shown')}</th>
+                <th>{t('found')}</th>
+                <th>{t('find_rate')}</th>
+                <th>{t('average_claim')}</th>
+              </tr>
+            </thead>
             <tbody>
-              {stats.completionsPerDay().map((day) => (
+              {stats.parts().map((part) => (
                 <tr>
-                  <td>{day.date}</td>
-                  <td>{day.count}</td>
+                  <td>{part.name}</td>
+                  <td>{part.shown}</td>
+                  <td>{part.found}</td>
+                  <td>{rate(part.found, part.shown)}</td>
+                  <td>{seconds(part.averageClaimMs)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+        <p className="helpText">{t('shown_help')}</p>
+
+        <h3>{t('completions_heading')}</h3>
+        {stats.completionsPerDay().length ? (
+          <div className="ScavengerDashboard-tableScroll">
+            <table className="ScavengerDashboard-table">
+              <tbody>
+                {stats.completionsPerDay().map((day) => (
+                  <tr>
+                    <td>{day.date}</td>
+                    <td>{day.count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <p className="helpText">{t('no_completions')}</p>
         )}

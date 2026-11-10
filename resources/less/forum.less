@@ -27,6 +27,10 @@
   vertical-align: middle;
 }
 
+.HidingSpot-anchor {
+  display: none;
+}
+
 .HidingSpot-footer {
   display: flex;
   justify-content: center;
@@ -160,6 +164,61 @@
   flex: 1;
   font-size: 13px;
   color: var(--muted-color);
+}
+
+.PlacementToolbar-selects,
+.PlacementToolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+// Phones: title and actions on one row, both pickers sharing the next; the help is the region's description.
+@media @phone {
+  .PlacementToolbar {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .PlacementToolbar-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .PlacementToolbar-actions {
+    order: 1;
+    gap: 4px;
+  }
+
+  .PlacementToolbar-selects {
+    order: 2;
+    flex-basis: 100%;
+    min-width: 0;
+    gap: 8px;
+
+    .Select {
+      display: flex;
+      flex: 1 1 0;
+      align-items: center;
+      min-width: 0;
+    }
+
+    select {
+      flex: 1;
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .PlacementToolbar-help {
+    .sr-only();
+  }
 }
 
 // ── Header indicator ─────────────────────────────────────────────────────
@@ -414,10 +473,45 @@
 }
 
 .ScavengerDashboard-back {
-  display: inline-block;
-  margin-bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  margin-bottom: 6px;
   color: inherit;
   opacity: 0.8;
+}
+
+// Core's expanded sideNav styles its links; the Hunt tabs are buttons, so they get the same look.
+@media @expand-side-nav {
+  .ScavengerDashboard-nav .Dropdown--select .Dropdown-menu > li {
+    > button {
+      gap: 15px;
+      padding-inline-start: 0;
+      color: var(--sidenav-color, var(--muted-color));
+
+      &:hover {
+        background: none;
+        color: var(--sidenav-color-hover, var(--link-color));
+      }
+    }
+
+    &.active > button {
+      background: none;
+      color: var(--sidenav-color-active, var(--primary-color));
+      font-weight: bold;
+    }
+  }
+}
+
+// On phones html and body clip sideways overflow, so wide tables scroll inside their own box.
+.ScavengerDashboard-tableScroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+// Lets the content column shrink to the page, so the box scrolls instead of widening it.
+.ScavengerDashboard .Page-content {
+  min-width: 0;
 }
 
 .ScavengerDashboard-table .ScavengerDashboard-number {
@@ -728,6 +822,15 @@
   border-radius: 50%;
   cursor: nwse-resize;
   touch-action: none;
+
+  // A 32px finger-sized hit area centred on the dot, so it stays usable when the canvas clips a Part at its edge.
+  @media (pointer: coarse) {
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -9px;
+    }
+  }
 }
 
 .LayerEditor-sidebar {

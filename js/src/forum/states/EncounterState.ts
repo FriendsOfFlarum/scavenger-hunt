@@ -1,4 +1,6 @@
 import app from 'flarum/forum/app';
+import { extend } from 'flarum/common/extend';
+import Drawer from 'flarum/common/utils/Drawer';
 import type { ApiPayloadPlural } from 'flarum/common/Store';
 import type Encounter from '../../common/models/Encounter';
 import { activeHunts } from '../utils/activeHunts';
@@ -9,6 +11,11 @@ export interface SpotReport {
   contextId?: number;
 }
 
+/** Whether a mounted spot is currently out of sight (e.g. in the closed phone drawer). */
+export type HiddenCheck = () => boolean;
+
+const inSight: HiddenCheck = () => false;
+
 export function reportKey(report: SpotReport): string {
   return [report.spot, report.contextType ?? '', report.contextId ?? ''].join('|');
 }
@@ -16,7 +23,8 @@ export function reportKey(report: SpotReport): string {
 /**
  * Collects the Hiding spots drawn on the current page and asks the server, once per page view,
  * which Parts appear in them. Spots that mount later (more posts while scrolling) get their own
- * lookup; spots already reported for this page are never reported again.
+ * lookup; spots already reported for this page are never reported again. A spot that is out of
+ * sight is held back until a later lookup finds it in sight.
  */
 export default class EncounterState {
   static readonly DEBOUNCE_MS = 500;
@@ -26,7 +34,7 @@ export default class EncounterState {
    */
   paused = false;
 
-  protected mounted = new Map<string, { report: SpotReport; count: number }>();
+  protected mounted = new Map<string, { report: SpotReport; checks: HiddenCheck[] }>();
   protected reported = new Set<string>();
   protected encounters = new Map<string, Encounter>();
   protected page = '';
@@ -39,24 +47,31 @@ export default class EncounterState {
     return !this.paused && activeHunts().length > 0 && !this.route.startsWith('fof-scavenger-hunt.dashboard');
   }
 
-  register(report: SpotReport): void {
+  register(report: SpotReport, isHidden: HiddenCheck = inSight): void {
     const key = reportKey(report);
     const entry = this.mounted.get(key);
 
     if (entry) {
-      entry.count++;
+      entry.checks.push(isHidden);
     } else {
-      this.mounted.set(key, { report, count: 1 });
+      this.mounted.set(key, { report, checks: [isHidden] });
     }
 
     this.schedule();
   }
 
-  unregister(report: SpotReport): void {
+  unregister(report: SpotReport, isHidden: HiddenCheck = inSight): void {
     const key = reportKey(report);
     const entry = this.mounted.get(key);
 
-    if (entry && --entry.count <= 0) {
+    if (!entry) {
+      return;
+    }
+
+    const index = entry.checks.indexOf(isHidden);
+    entry.checks.splice(index === -1 ? 0 : index, 1);
+
+    if (!entry.checks.length) {
       this.mounted.delete(key);
     }
   }
@@ -97,7 +112,9 @@ export default class EncounterState {
   }
 
   pendingReports(): SpotReport[] {
-    return [...this.mounted.entries()].filter(([key]) => !this.reported.has(key)).map(([, entry]) => entry.report);
+    return [...this.mounted.entries()]
+      .filter(([key, entry]) => !this.reported.has(key) && !entry.checks.every((isHidden) => isHidden()))
+      .map(([, entry]) => entry.report);
   }
 
   schedule(): void {
@@ -156,3 +173,10 @@ export default class EncounterState {
 }
 
 export const encounters = new EncounterState();
+
+/**
+ * Spots held back in the closed phone drawer get their lookup when the drawer opens.
+ */
+export function lookUpWhenDrawerOpens(): void {
+  extend(Drawer.prototype, 'show', () => encounters.schedule());
+}

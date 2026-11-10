@@ -4,6 +4,8 @@ import mq from 'mithril-query';
 import HidingSpot from '../../src/forum/components/HidingSpot';
 import { placement } from '../../src/forum/states/placement';
 import locationAttributes from '../../src/forum/placement/locationAttributes';
+import PlacementToolbar from '../../src/forum/placement/PlacementToolbar';
+import type { PlacementController } from '../../src/forum/placement/PlacementController';
 
 beforeAll(() => {
   bootstrapForum();
@@ -57,5 +59,23 @@ describe('locationAttributes', () => {
       contextType: null,
       contextId: null,
     });
+  });
+});
+
+describe('PlacementToolbar', () => {
+  const controller = { hunts: [], parts: () => [], huntId: null, partId: null, select: () => {}, stop: () => {} } as unknown as PlacementController;
+
+  it('groups the pickers and the actions so phones can lay each out on one row', () => {
+    const toolbar = mq(PlacementToolbar, { controller });
+
+    expect(toolbar).toHaveElement('.PlacementToolbar-selects > .Select + .Select');
+    expect(toolbar).toHaveElement('.PlacementToolbar-actions > .Button--primary + .Button--icon');
+  });
+
+  it('keeps the help text as the region description when phones hide it', () => {
+    const toolbar = mq(PlacementToolbar, { controller });
+
+    expect(toolbar).toHaveElementAttr('.PlacementToolbar', 'aria-describedby', 'PlacementToolbar-help');
+    expect(toolbar).toHaveElement('#PlacementToolbar-help.PlacementToolbar-help');
   });
 });

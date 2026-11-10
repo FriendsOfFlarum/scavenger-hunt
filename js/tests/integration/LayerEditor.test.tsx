@@ -313,6 +313,29 @@ describe('LayerEditor', () => {
     expect(savedLayers(request)[parts[0].id()!]).toEqual({ x: 20, y: 15, width: 27.5, z: 1 });
   });
 
+  it('keeps dragging when the browser refuses pointer capture', () => {
+    const { hunt, parts } = setup([{ x: 10, y: 10, width: 20, z: 1 }]);
+    const editor = render(hunt, parts);
+
+    const canvas = editor.first('.LayerEditor-canvas') as HTMLElement;
+    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: 400, height: 400 }) as DOMRect;
+
+    // Both throw once the pointer is no longer active (lifted, cancelled).
+    const layer = editor.first(layerSelector(parts[0])) as HTMLElement;
+    layer.setPointerCapture = () => {
+      throw new Error('InvalidStateError');
+    };
+    layer.releasePointerCapture = () => {
+      throw new Error('NotFoundError');
+    };
+
+    editor.trigger(layerSelector(parts[0]), 'pointerdown', { pointerId: 1, button: 0, clientX: 100, clientY: 100 } as never);
+    editor.trigger(layerSelector(parts[0]), 'pointermove', { pointerId: 1, clientX: 140, clientY: 120 } as never);
+    expect(() => editor.trigger(layerSelector(parts[0]), 'pointerup', { pointerId: 1, clientX: 140, clientY: 120 } as never)).not.toThrow();
+
+    expect(editor.first('.LayerEditor-status').textContent).toBe('Part 1: left 20%, top 15%, width 20%, layer 1');
+  });
+
   it('brings the selected Part forward past its neighbour and sends it back', async () => {
     const request = mockApi();
     const { hunt, parts } = setup([

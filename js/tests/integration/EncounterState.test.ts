@@ -100,4 +100,52 @@ describe('EncounterState', () => {
     expect(request).toHaveBeenCalledTimes(2);
     expect(sentSpots(request, 1)).toEqual([{ spot: 'page.header' }]);
   });
+  it('holds back a spot while it is out of sight and reports it once it shows', async () => {
+    const request = mockRequest();
+    const state = new EncounterState();
+    let hidden = true;
+
+    state.pageChanged('index', {});
+    state.register({ spot: 'page.header' }, () => hidden);
+    state.register({ spot: 'page.corner' });
+    await jest.advanceTimersByTimeAsync(500);
+
+    expect(sentSpots(request)).toEqual([{ spot: 'page.corner' }]);
+
+    hidden = false;
+    state.schedule();
+    await jest.advanceTimersByTimeAsync(500);
+
+    expect(request).toHaveBeenCalledTimes(2);
+    expect(sentSpots(request, 1)).toEqual([{ spot: 'page.header' }]);
+  });
+
+  it('reports a spot drawn twice when one of them is in sight', async () => {
+    const request = mockRequest();
+    const state = new EncounterState();
+    const hidden = () => true;
+
+    state.pageChanged('index', {});
+    state.register({ spot: 'page.header' }, hidden);
+    state.register({ spot: 'page.header' });
+    await jest.advanceTimersByTimeAsync(500);
+
+    expect(sentSpots(request)).toEqual([{ spot: 'page.header' }]);
+  });
+
+  it('forgets a held-back spot once it unmounts', async () => {
+    const request = mockRequest();
+    const state = new EncounterState();
+    let hidden = true;
+    const isHidden = () => hidden;
+
+    state.pageChanged('index', {});
+    state.register({ spot: 'page.header' }, isHidden);
+    state.unregister({ spot: 'page.header' }, isHidden);
+    hidden = false;
+    state.schedule();
+    await jest.advanceTimersByTimeAsync(500);
+
+    expect(request).not.toHaveBeenCalled();
+  });
 });
