@@ -37,20 +37,32 @@ php flarum cache:clear
 
 Hunt managers (moderators and admins by default) open **Scavenger hunts** from the session menu or the index sidebar.
 
-1. **New hunt** → pick a template (or Blank) and give it a title.
-2. **Parts & locations**: give each part a placement mode, a hint for fixed parts, and one or more hiding places. **Place on the forum** switches on **hide it here** mode: every hiding spot on the forum is outlined, and clicking one hides the part there.
-3. **Schedule & audience**: enable the hunt, optionally set when it starts and ends, and choose whether guests can see parts.
+1. **New hunt** → pick a template (or Blank) and give it a title. There are twelve templates: spring, summer, autumn, winter, Easter, Ramadan, Thanksgiving, Christmas, New Year, Halloween, a treasure chest for promotions, and a birthday cake for your forum's anniversary. Templates carry no dates, since seasons and moving holidays differ between forums.
+2. **Details**: the title, description, and the collectable's images. Pick any template image or an image uploaded in the admin panel.
+3. **Parts & locations**: give each part an image, a placement mode, a hint for fixed parts, and one or more hiding places. Arrange the collectable by dragging parts on the canvas, resizing them from the corner handle and changing their stacking order, then **Save layout**. **Place on the forum** switches on **hide it here** mode: every hiding spot on the forum is outlined, and clicking one hides the part there.
+4. **Rewards**: a message revealed only to finishers, and a group finishers join automatically. Only members who can edit user groups can choose the group, because joining it grants its permissions.
+5. **Schedule & audience**: enable the hunt, optionally set when it starts and ends, and choose whether guests can see parts.
 
 ## Settings and permissions
 
 In the admin panel you can:
 - show or hide the header basket;
 - let hunt managers collect parts;
-- set the number of parts per page, the claim window, and the per-minute and per-day lookup limits.
+- set the number of parts per page, the claim window, and the per-minute and per-day lookup limits;
+- manage the **image library**: upload PNG, JPEG, GIF, WebP or SVG images up to 2 MB for hunt managers to use, rename them, and delete the ones no hunt or part uses. Uploaded SVGs are cleaned of scripts, event handlers and references to other sites.
 
 There are two permissions:
 - **Collect scavenger hunt parts** (Members by default)
 - **Manage scavenger hunts** (Moderators by default)
+
+## Integrations
+
+All optional; each works once the other extension is enabled.
+
+- **[flarum/tags](https://docs.flarum.org/extensions/tags)**: hide parts on tag tiles.
+- **[flarum/audit](https://docs.flarum.org/extensions/audit)**: logs hunt, part and location changes, completions, progress resets, image uploads and deletions, and members reaching the daily lookup limit.
+- **[flarum/gdpr](https://docs.flarum.org/extensions/gdpr)**: a member's data export includes the parts they found, the hunts they completed and the parts they were shown. Anonymizing deletes the record of parts shown and keeps finds and completions, so a hunt's first finishers stay intact. Deleting removes all three.
+- **[fof/gamification](https://github.com/FriendsOfFlarum/gamification)**: ranks members by parts found and hunts completed on the leaderboard.
 
 ## Built-in hiding spots
 
