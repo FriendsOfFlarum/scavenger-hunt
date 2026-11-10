@@ -1,0 +1,13 @@
+{
+    "occasion": "ramadan",
+    "image": "base.svg",
+    "completedImage": null,
+    "parts": [
+        { "key": "frame", "image": "frame.svg", "layer": { "x": 32, "y": 33.5, "width": 36, "z": 3 } },
+        { "key": "glass", "image": "glass.svg", "layer": { "x": 33.5, "y": 36.5, "width": 33, "z": 1 } },
+        { "key": "candle", "image": "candle.svg", "layer": { "x": 43, "y": 52, "width": 14, "z": 2 } },
+        { "key": "cap", "image": "cap.svg", "layer": { "x": 34, "y": 0, "width": 32, "z": 4 } },
+        { "key": "crescent", "image": "crescent.svg", "layer": { "x": 9, "y": 9.5, "width": 23, "z": 5 } },
+        { "key": "star", "image": "star.svg", "layer": { "x": 72, "y": 12.5, "width": 17, "z": 5 } }
+    ]
+}

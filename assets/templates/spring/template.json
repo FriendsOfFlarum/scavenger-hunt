@@ -1,0 +1,13 @@
+{
+    "occasion": "spring",
+    "image": "base.svg",
+    "completedImage": null,
+    "parts": [
+        { "key": "pot", "image": "pot.svg", "layer": { "x": 30.75, "y": 60.25, "width": 38.5, "z": 2 } },
+        { "key": "soil", "image": "soil.svg", "layer": { "x": 32.75, "y": 56.75, "width": 34.5, "z": 3 } },
+        { "key": "stem", "image": "stem.svg", "layer": { "x": 35, "y": 31, "width": 30, "z": 1 } },
+        { "key": "bloom", "image": "bloom.svg", "layer": { "x": 36.75, "y": 17, "width": 26.5, "z": 4 } },
+        { "key": "butterfly", "image": "butterfly.svg", "layer": { "x": 67.25, "y": 16.75, "width": 20.5, "z": 6 } },
+        { "key": "watering-can", "image": "watering-can.svg", "layer": { "x": 7.75, "y": 65, "width": 28.25, "z": 5 } }
+    ]
+}

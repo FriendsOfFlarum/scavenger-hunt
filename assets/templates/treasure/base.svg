@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="treasure-base-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9fd8ee"/>
+      <stop offset="1" stop-color="#e6f6fb"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#treasure-base-sky)"/>
+  <circle cx="68" cy="70" r="30" fill="#ffe28a"/>
+  <g fill="#ffffff" opacity="0.9">
+    <ellipse cx="270" cy="70" rx="40" ry="14"/>
+    <ellipse cx="300" cy="58" rx="24" ry="14"/>
+    <ellipse cx="150" cy="120" rx="30" ry="10"/>
+  </g>
+  <rect y="214" width="400" height="90" fill="#4fb0c9"/>
+  <path d="M0 236 Q50 228 100 236 T200 236 T300 236 T400 236" fill="none" stroke="#86cfe0" stroke-width="4"/>
+  <path d="M0 260 Q50 252 100 260 T200 260 T300 260 T400 260" fill="none" stroke="#86cfe0" stroke-width="3"/>
+  <path d="M0 292 Q110 270 210 284 T400 282 V400 H0 Z" fill="#f2d79b"/>
+  <path d="M0 364 Q120 350 230 362 T400 356 V400 H0 Z" fill="#e8c67f"/>
+</svg>

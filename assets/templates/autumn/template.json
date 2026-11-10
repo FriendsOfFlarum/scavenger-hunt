@@ -1,0 +1,13 @@
+{
+    "occasion": "autumn",
+    "image": "base.svg",
+    "completedImage": null,
+    "parts": [
+        { "key": "post", "image": "post.svg", "layer": { "x": 21.25, "y": 34.25, "width": 57.5, "z": 1 } },
+        { "key": "coat", "image": "coat.svg", "layer": { "x": 19.5, "y": 47.5, "width": 61, "z": 2 } },
+        { "key": "head", "image": "head.svg", "layer": { "x": 40.5, "y": 30.5, "width": 19, "z": 3 } },
+        { "key": "hat", "image": "hat.svg", "layer": { "x": 33.25, "y": 23.25, "width": 33.5, "z": 4 } },
+        { "key": "crow", "image": "crow.svg", "layer": { "x": 60.75, "y": 37.25, "width": 20.5, "z": 5 } },
+        { "key": "pumpkin", "image": "pumpkin.svg", "layer": { "x": 16.75, "y": 73.75, "width": 21.5, "z": 6 } }
+    ]
+}

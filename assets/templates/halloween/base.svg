@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="halloween-base-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b2150"/>
+      <stop offset="1" stop-color="#6b4b8f"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#halloween-base-sky)"/>
+  <circle cx="330" cy="72" r="34" fill="#fff1bf"/>
+  <circle cx="318" cy="62" r="6" fill="#f2dea0"/>
+  <circle cx="340" cy="86" r="8" fill="#f2dea0"/>
+  <g fill="#fff6d6" opacity="0.85">
+    <circle cx="40" cy="44" r="3"/>
+    <circle cx="110" cy="96" r="2"/>
+    <circle cx="70" cy="170" r="3"/>
+    <circle cx="190" cy="34" r="2"/>
+    <circle cx="250" cy="110" r="3"/>
+    <circle cx="372" cy="170" r="2"/>
+    <circle cx="28" cy="250" r="2"/>
+    <circle cx="380" cy="262" r="3"/>
+  </g>
+  <path d="M0 336 Q110 312 210 326 T400 320 V400 H0 Z" fill="#3e2f5c"/>
+  <path d="M0 362 Q130 346 240 360 T400 354 V400 H0 Z" fill="#2e2346"/>
+</svg>

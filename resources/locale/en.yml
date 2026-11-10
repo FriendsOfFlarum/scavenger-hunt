@@ -230,6 +230,115 @@ fof-scavenger-hunt:
           arms: Stick arms
           scarf: Woolly scarf
           hat: Top hat
+      spring:
+        title: Grow a Flower Pot
+        occasion: Spring
+        parts:
+          pot: Clay pot
+          soil: Fresh soil
+          stem: Stem and leaves
+          bloom: Pink bloom
+          butterfly: Butterfly
+          watering-can: Watering can
+      summer:
+        title: Build a Sandcastle
+        occasion: Summer
+        parts:
+          sand: Sand base
+          towers: Castle towers
+          flag: Flag
+          shell: Seashell
+          bucket: Bucket
+          spade: Spade
+      autumn:
+        title: Build a Scarecrow
+        occasion: Autumn
+        parts:
+          post: Wooden post
+          coat: Patched coat
+          head: Sack head
+          hat: Straw hat
+          crow: Crow
+          pumpkin: Pumpkin
+      easter:
+        title: Fill the Easter Basket
+        occasion: Easter
+        parts:
+          basket: Wicker basket
+          grass: Basket grass
+          blue-egg: Blue egg
+          yellow-egg: Yellow egg
+          pink-egg: Pink egg
+          bow: Ribbon bow
+      ramadan:
+        title: Light the Lantern
+        occasion: Ramadan
+        parts:
+          frame: Lantern frame
+          glass: Coloured glass
+          candle: Candle
+          cap: Cap & ring
+          crescent: Crescent moon
+          star: Star
+      thanksgiving:
+        title: Fill the Cornucopia
+        occasion: Thanksgiving
+        parts:
+          horn: Horn basket
+          pumpkin: Pumpkin
+          corn: Corn
+          apples: Apples
+          grapes: Grapes
+          leaves: Autumn leaves
+      christmas:
+        title: Trim the Tree
+        occasion: Christmas
+        parts:
+          tree: Christmas tree
+          star: Tree-top star
+          baubles: Baubles
+          tinsel: Tinsel
+          lights: Fairy lights
+          presents: Presents
+      new-year:
+        title: Countdown to Midnight
+        occasion: New Year
+        parts:
+          clock: Clock
+          hands: Clock hands
+          hat: Party hat
+          streamers: Streamers
+          confetti: Confetti
+          fireworks: Fireworks
+      halloween:
+        title: Carve a Jack-o'-Lantern
+        occasion: Halloween
+        parts:
+          pumpkin: Plump pumpkin
+          stalk: Curly stalk
+          eyes: Glowing eyes
+          mouth: Toothy grin
+          glow: Candle glow
+      treasure:
+        title: Find the Lost Treasure
+        occasion: All year
+        parts:
+          chest: Treasure chest
+          lid: Chest lid
+          lock: Golden padlock
+          key: Old brass key
+          coins: Gold coins
+          map: Treasure map
+      anniversary:
+        title: Bake a Birthday Cake
+        occasion: Forum anniversary
+        parts:
+          bottom-tier: Bottom tier
+          top-tier: Top tier
+          icing: Drippy icing
+          candles: Birthday candles
+          flames: Candle flames
+          cherry: Cherry on top
   gamification:
     metric:
       parts_found: Scavenger hunt parts found

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="196 286 200 66" width="200" height="66">
+<g stroke="#8e2222" stroke-width="2.5">
+    <path d="M226 312 C210 302 196 316 200 332 C204 348 220 352 228 346 C236 352 252 348 256 332 C260 316 246 302 230 312 Z" fill="#d43c3c"/>
+    <path d="M362 306 C346 296 332 310 336 326 C340 342 356 346 364 340 C372 346 388 342 392 326 C396 310 382 296 366 306 Z" fill="#e0513a"/>
+  </g>
+  <path d="M228 312 Q227 302 232 296 M364 306 Q363 296 368 290" fill="none" stroke="#5b3a1e" stroke-width="3" stroke-linecap="round"/>
+  <path d="M232 302 Q242 292 250 300 Q240 306 232 302 Z M368 296 Q378 286 386 294 Q376 300 368 296 Z" fill="#7fa83f" stroke="#4f6e24" stroke-width="1.5"/>
+  <path d="M210 322 Q210 314 216 312 M346 316 Q346 308 352 306" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+</svg>

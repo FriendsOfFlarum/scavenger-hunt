@@ -1,0 +1,12 @@
+{
+    "occasion": "halloween",
+    "image": "base.svg",
+    "completedImage": null,
+    "parts": [
+        { "key": "pumpkin", "image": "pumpkin.svg", "layer": { "x": 15, "y": 36, "width": 70, "z": 2 } },
+        { "key": "stalk", "image": "stalk.svg", "layer": { "x": 45.5, "y": 27, "width": 19, "z": 1 } },
+        { "key": "eyes", "image": "eyes.svg", "layer": { "x": 34, "y": 48, "width": 32, "z": 4 } },
+        { "key": "mouth", "image": "mouth.svg", "layer": { "x": 33, "y": 63.5, "width": 34, "z": 4 } },
+        { "key": "glow", "image": "glow.svg", "layer": { "x": 21.5, "y": 44.5, "width": 57, "z": 3 } }
+    ]
+}

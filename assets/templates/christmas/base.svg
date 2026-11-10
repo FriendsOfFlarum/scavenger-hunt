@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+<defs>
+    <linearGradient id="christmas-base-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#21396a"/>
+      <stop offset="1" stop-color="#5b84b8"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#christmas-base-sky)"/>
+  <g fill="#ffffff" opacity="0.85">
+    <circle cx="40" cy="50" r="3"/><circle cx="110" cy="120" r="4"/><circle cx="60" cy="210" r="3"/>
+    <circle cx="340" cy="60" r="4"/><circle cx="370" cy="150" r="3"/><circle cx="300" cy="30" r="2.5"/>
+    <circle cx="350" cy="250" r="3"/><circle cx="30" cy="290" r="2.5"/><circle cx="130" cy="30" r="2.5"/>
+  </g>
+  <path d="M0 330 Q100 312 200 324 T400 318 V400 H0 Z" fill="#ffffff"/>
+  <path d="M0 360 Q120 346 230 358 T400 352 V400 H0 Z" fill="#dce9f5"/>
+</svg>

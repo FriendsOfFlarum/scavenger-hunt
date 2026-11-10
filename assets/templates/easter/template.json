@@ -1,0 +1,13 @@
+{
+    "occasion": "easter",
+    "image": "base.svg",
+    "completedImage": null,
+    "parts": [
+        { "key": "basket", "image": "basket.svg", "layer": { "x": 23.75, "y": 34.5, "width": 52.5, "z": 5 } },
+        { "key": "grass", "image": "grass.svg", "layer": { "x": 26.25, "y": 53.25, "width": 47.5, "z": 4 } },
+        { "key": "blue-egg", "image": "blue-egg.svg", "layer": { "x": 31.5, "y": 43, "width": 16, "z": 2 } },
+        { "key": "yellow-egg", "image": "yellow-egg.svg", "layer": { "x": 43.75, "y": 43.5, "width": 12.5, "z": 1 } },
+        { "key": "pink-egg", "image": "pink-egg.svg", "layer": { "x": 52.25, "y": 43, "width": 16.25, "z": 3 } },
+        { "key": "bow", "image": "bow.svg", "layer": { "x": 40.5, "y": 32.25, "width": 19, "z": 6 } }
+    ]
+}

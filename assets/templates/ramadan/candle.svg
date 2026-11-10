@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="172 208 56 96" width="56" height="96">
+<defs>
+    <radialGradient id="ramadan-candle-halo">
+      <stop offset="0" stop-color="#fff2a8" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#fff2a8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="200" cy="236" r="26" fill="url(#ramadan-candle-halo)"/>
+  <rect x="189" y="252" width="22" height="50" rx="3" fill="#f7ecd2" stroke="#b89a62" stroke-width="2"/>
+  <path d="M189 258 Q195 263 200 257 Q205 263 211 258" fill="none" stroke="#e4d3ad" stroke-width="2"/>
+  <path d="M200 251 V244" stroke="#4a3a28" stroke-width="2" stroke-linecap="round"/>
+  <path d="M200 216 Q211 232 205 242 Q200 248 195 242 Q189 232 200 216 Z" fill="#f59b23" stroke="#c96a12" stroke-width="1.5"/>
+  <path d="M200 228 Q205 236 202 241 Q200 243 198 241 Q195 236 200 228 Z" fill="#ffe27a"/>
+</svg>

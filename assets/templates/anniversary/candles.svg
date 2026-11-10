@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="143 117 114 63" width="114" height="63">
+  <rect x="145" y="128" width="10" height="50" rx="2" fill="#8ecae6" stroke="#5a9bb8" stroke-width="2"/>
+  <path d="M146 140 L154 134 M146 154 L154 148 M146 168 L154 162" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M150 128 V120" stroke="#4a3a2a" stroke-width="2" stroke-linecap="round"/>
+  <rect x="171" y="128" width="10" height="50" rx="2" fill="#f6bd60" stroke="#c9902f" stroke-width="2"/>
+  <path d="M172 140 L180 134 M172 154 L180 148 M172 168 L180 162" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M176 128 V120" stroke="#4a3a2a" stroke-width="2" stroke-linecap="round"/>
+  <rect x="219" y="128" width="10" height="50" rx="2" fill="#90be6d" stroke="#5f8c40" stroke-width="2"/>
+  <path d="M220 140 L228 134 M220 154 L228 148 M220 168 L228 162" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M224 128 V120" stroke="#4a3a2a" stroke-width="2" stroke-linecap="round"/>
+  <rect x="245" y="128" width="10" height="50" rx="2" fill="#f28482" stroke="#c25553" stroke-width="2"/>
+  <path d="M246 140 L254 134 M246 154 L254 148 M246 168 L254 162" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M250 128 V120" stroke="#4a3a2a" stroke-width="2" stroke-linecap="round"/>
+</svg>

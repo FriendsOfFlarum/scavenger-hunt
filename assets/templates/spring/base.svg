@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="spring-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#bfe6fa"/>
+      <stop offset="1" stop-color="#f3fbe8"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#spring-sky)"/>
+  <circle cx="60" cy="62" r="28" fill="#fff1a8"/>
+  <g fill="#ffffff" opacity="0.9">
+    <ellipse cx="170" cy="58" rx="34" ry="11"/>
+    <ellipse cx="186" cy="48" rx="18" ry="11"/>
+    <ellipse cx="350" cy="190" rx="30" ry="9"/>
+    <ellipse cx="362" cy="182" rx="15" ry="9"/>
+  </g>
+  <path d="M0 330 Q90 300 200 318 T400 312 V400 H0 Z" fill="#a9d98b"/>
+  <path d="M0 360 Q110 342 220 356 T400 350 V400 H0 Z" fill="#8cc86e"/>
+  <g fill="#ffffff">
+    <circle cx="28" cy="376" r="4"/><circle cx="300" cy="372" r="4"/><circle cx="356" cy="388" r="4"/><circle cx="330" cy="334" r="3"/>
+  </g>
+  <g fill="#f7c948">
+    <circle cx="28" cy="376" r="1.6"/><circle cx="300" cy="372" r="1.6"/><circle cx="356" cy="388" r="1.6"/><circle cx="330" cy="334" r="1.2"/>
+  </g>
+</svg>

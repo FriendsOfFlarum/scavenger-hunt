@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="anniversary-base-wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#efe0fa"/>
+      <stop offset="1" stop-color="#fdf2f7"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#anniversary-base-wall)"/>
+  <path d="M0 30 Q100 118 200 30 Q300 118 400 30" fill="none" stroke="#b38fc4" stroke-width="2"/>
+  <g stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round">
+    <path d="M7 43.84 L33 43.84 L20 71.84 Z" fill="#f28482"/>
+    <path d="M47 64.96 L73 64.96 L60 92.96 Z" fill="#f6bd60"/>
+    <path d="M87 72 L113 72 L100 100 Z" fill="#84a59d"/>
+    <path d="M127 64.96 L153 64.96 L140 92.96 Z" fill="#8ecae6"/>
+    <path d="M167 43.84 L193 43.84 L180 71.84 Z" fill="#cdb4db"/>
+    <path d="M207 43.84 L233 43.84 L220 71.84 Z" fill="#f28482"/>
+    <path d="M247 64.96 L273 64.96 L260 92.96 Z" fill="#f6bd60"/>
+    <path d="M287 72 L313 72 L300 100 Z" fill="#84a59d"/>
+    <path d="M327 64.96 L353 64.96 L340 92.96 Z" fill="#8ecae6"/>
+    <path d="M367 43.84 L393 43.84 L380 71.84 Z" fill="#cdb4db"/>
+  </g>
+  <g opacity="0.8">
+    <circle cx="40" cy="150" r="4" fill="#f28482"/>
+    <circle cx="352" cy="140" r="4" fill="#8ecae6"/>
+    <circle cx="70" cy="240" r="3" fill="#f6bd60"/>
+    <circle cx="336" cy="236" r="3" fill="#84a59d"/>
+    <rect x="96" y="118" width="7" height="7" rx="1" fill="#cdb4db" transform="rotate(25 99 121)"/>
+    <rect x="300" y="190" width="7" height="7" rx="1" fill="#f28482" transform="rotate(-20 303 193)"/>
+  </g>
+  <rect y="350" width="400" height="50" fill="#e3c4a8"/>
+  <rect y="350" width="400" height="6" fill="#d1ad8d"/>
+  <ellipse cx="200" cy="349" rx="138" ry="11" fill="#ffffff" stroke="#c9b3c9" stroke-width="2"/>
+</svg>

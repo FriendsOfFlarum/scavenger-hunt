@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="134 146 132 166" width="132" height="166">
+<defs>
+    <radialGradient id="ramadan-glass-glow" cx="0.5" cy="0.55" r="0.6">
+      <stop offset="0" stop-color="#fff6c8"/>
+      <stop offset="1" stop-color="#ffcf5c"/>
+    </radialGradient>
+  </defs>
+  <rect x="172" y="148" width="56" height="162" fill="url(#ramadan-glass-glow)"/>
+  <path d="M150 148 H172 V200 H135 Z M228 148 H250 L265 200 H228 Z" fill="#d6456a"/>
+  <path d="M135 200 H172 V270 H135 Z M228 200 H265 V270 H228 Z" fill="#2fae9e"/>
+  <path d="M135 270 H172 V310 H160 Z M228 270 H265 L240 310 H228 Z" fill="#3b78c9"/>
+  <path d="M140 205 L150 225 M233 205 L243 225" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+</svg>

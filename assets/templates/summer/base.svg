@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="summer-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7fd0f2"/>
+      <stop offset="1" stop-color="#dff4fc"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#summer-sky)"/>
+  <circle cx="62" cy="62" r="30" fill="#ffd54f"/>
+  <circle cx="62" cy="62" r="40" fill="#ffd54f" opacity="0.25"/>
+  <path d="M0 236 H400 V300 H0 Z" fill="#3fa9d6"/>
+  <path d="M0 254 Q25 248 50 254 T100 254 T150 254 T200 254 T250 254 T300 254 T350 254 T400 254" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.6"/>
+  <path d="M0 276 Q25 270 50 276 T100 276 T150 276 T200 276 T250 276 T300 276 T350 276 T400 276" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.4"/>
+  <path d="M0 292 Q100 280 200 288 T400 284 V400 H0 Z" fill="#f6e2b3"/>
+  <path d="M0 344 Q120 334 240 346 T400 340 V400 H0 Z" fill="#efd69a"/>
+</svg>

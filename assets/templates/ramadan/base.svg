@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+<defs>
+    <linearGradient id="ramadan-base-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1b2550"/>
+      <stop offset="1" stop-color="#46508f"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#ramadan-base-sky)"/>
+  <g fill="#fff3c4" opacity="0.8">
+    <circle cx="30" cy="180" r="2"/><circle cx="150" cy="40" r="2.5"/><circle cx="250" cy="28" r="2"/>
+    <circle cx="372" cy="160" r="2.5"/><circle cx="60" cy="260" r="2"/><circle cx="345" cy="245" r="2"/>
+    <circle cx="380" cy="30" r="2"/><circle cx="110" cy="150" r="1.5"/><circle cx="295" cy="150" r="1.5"/>
+  </g>
+  <path d="M0 352 Q90 330 180 346 T400 338 V400 H0 Z" fill="#2c3466"/>
+  <path d="M0 374 Q130 360 250 372 T400 366 V400 H0 Z" fill="#232a55"/>
+</svg>

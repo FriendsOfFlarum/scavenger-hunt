@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="86 178 228 168" width="228" height="168">
+  <defs>
+    <radialGradient id="halloween-glow-light">
+      <stop offset="0" stop-color="#fff6a8" stop-opacity="0.95"/>
+      <stop offset="0.55" stop-color="#ffd25a" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#ffb347" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="200" cy="262" rx="114" ry="84" fill="url(#halloween-glow-light)"/>
+</svg>

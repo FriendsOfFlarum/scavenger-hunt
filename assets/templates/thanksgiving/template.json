@@ -1,0 +1,13 @@
+{
+    "occasion": "thanksgiving",
+    "image": "base.svg",
+    "completedImage": null,
+    "parts": [
+        { "key": "horn", "image": "horn.svg", "layer": { "x": 7.5, "y": 45, "width": 62, "z": 2 } },
+        { "key": "pumpkin", "image": "pumpkin.svg", "layer": { "x": 59, "y": 58.5, "width": 32, "z": 5 } },
+        { "key": "corn", "image": "corn.svg", "layer": { "x": 59.5, "y": 35, "width": 32, "z": 3 } },
+        { "key": "apples", "image": "apples.svg", "layer": { "x": 49, "y": 71.5, "width": 50, "z": 6 } },
+        { "key": "grapes", "image": "grapes.svg", "layer": { "x": 54.5, "y": 42.5, "width": 19, "z": 4 } },
+        { "key": "leaves", "image": "leaves.svg", "layer": { "x": 6, "y": 34, "width": 94, "z": 1 } }
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "occasion": "new-year",
+    "image": "base.svg",
+    "completedImage": null,
+    "parts": [
+        { "key": "clock", "image": "clock.svg", "layer": { "x": 23.5, "y": 32, "width": 53, "z": 2 } },
+        { "key": "hands", "image": "hands.svg", "layer": { "x": 46, "y": 36, "width": 8, "z": 3 } },
+        { "key": "hat", "image": "hat.svg", "layer": { "x": 40.5, "y": 8.5, "width": 30, "z": 5 } },
+        { "key": "streamers", "image": "streamers.svg", "layer": { "x": 6.5, "y": 42, "width": 87, "z": 4 } },
+        { "key": "confetti", "image": "confetti.svg", "layer": { "x": 0.5, "y": 1.5, "width": 99, "z": 6 } },
+        { "key": "fireworks", "image": "fireworks.svg", "layer": { "x": 4, "y": 3.5, "width": 93, "z": 1 } }
+    ]
+}

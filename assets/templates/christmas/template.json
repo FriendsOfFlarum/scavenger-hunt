@@ -1,0 +1,13 @@
+{
+    "occasion": "christmas",
+    "image": "base.svg",
+    "completedImage": null,
+    "parts": [
+        { "key": "tree", "image": "tree.svg", "layer": { "x": 20.5, "y": 14, "width": 59, "z": 1 } },
+        { "key": "star", "image": "star.svg", "layer": { "x": 42, "y": 6, "width": 16, "z": 6 } },
+        { "key": "baubles", "image": "baubles.svg", "layer": { "x": 32, "y": 21.5, "width": 36.5, "z": 4 } },
+        { "key": "tinsel", "image": "tinsel.svg", "layer": { "x": 26, "y": 29.5, "width": 48, "z": 2 } },
+        { "key": "lights", "image": "lights.svg", "layer": { "x": 37, "y": 42.5, "width": 30, "z": 3 } },
+        { "key": "presents", "image": "presents.svg", "layer": { "x": 15, "y": 71, "width": 68, "z": 5 } }
+    ]
+}

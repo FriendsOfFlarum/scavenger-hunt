@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="autumn-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f9c784"/>
+      <stop offset="1" stop-color="#fdf0d8"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#autumn-sky)"/>
+  <circle cx="330" cy="76" r="32" fill="#fde3a7"/>
+  <g fill="#d9643a">
+    <path d="M52 120 Q62 108 74 118 Q64 130 52 120 Z"/>
+    <path d="M110 64 Q122 56 130 68 Q118 76 110 64 Z"/>
+    <path d="M356 172 Q366 160 378 170 Q368 182 356 172 Z"/>
+  </g>
+  <g fill="#e8a33a">
+    <path d="M40 220 Q50 208 62 218 Q52 230 40 220 Z"/>
+    <path d="M250 50 Q262 42 270 54 Q258 62 250 50 Z"/>
+  </g>
+  <path d="M0 300 Q80 270 170 290 T340 280 T400 286 V400 H0 Z" fill="#e3a65a"/>
+  <path d="M0 330 Q120 316 240 328 T400 322 V400 H0 Z" fill="#c98a3e"/>
+  <g fill="none" stroke="#b07430" stroke-width="3" opacity="0.6">
+    <path d="M0 356 Q200 344 400 356"/>
+    <path d="M0 382 Q200 370 400 382"/>
+  </g>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="easter-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e6d9f7"/>
+      <stop offset="1" stop-color="#fff6e6"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#easter-sky)"/>
+  <g fill="#ffffff" opacity="0.9">
+    <ellipse cx="80" cy="70" rx="34" ry="11"/>
+    <ellipse cx="96" cy="60" rx="18" ry="11"/>
+    <ellipse cx="320" cy="90" rx="30" ry="10"/>
+    <ellipse cx="334" cy="81" rx="15" ry="9"/>
+  </g>
+  <g opacity="0.8">
+    <circle cx="40" cy="170" r="5" fill="#f9c6d8"/>
+    <circle cx="360" cy="200" r="5" fill="#bfe0f7"/>
+    <circle cx="210" cy="40" r="4" fill="#fbe7a1"/>
+    <circle cx="70" cy="250" r="4" fill="#bfe0f7"/>
+    <circle cx="340" cy="270" r="4" fill="#fbe7a1"/>
+  </g>
+  <path d="M0 326 Q100 300 200 316 T400 310 V400 H0 Z" fill="#b5e3a0"/>
+  <path d="M0 356 Q110 340 220 352 T400 346 V400 H0 Z" fill="#97d27f"/>
+  <g fill="#ffffff">
+    <circle cx="40" cy="372" r="4"/><circle cx="350" cy="380" r="4"/><circle cx="62" cy="336" r="3"/><circle cx="330" cy="330" r="3"/>
+  </g>
+  <g fill="#f7c948">
+    <circle cx="40" cy="372" r="1.6"/><circle cx="350" cy="380" r="1.6"/><circle cx="62" cy="336" r="1.2"/><circle cx="330" cy="330" r="1.2"/>
+  </g>
+</svg>
