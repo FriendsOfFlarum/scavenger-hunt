@@ -52,6 +52,23 @@ class TemplatesTest extends TestCase
     }
 
     #[Test]
+    public function templates_return_image_references_alongside_urls(): void
+    {
+        $response = $this->send($this->request('GET', '/api/scavenger-hunt-templates', ['authenticatedAs' => 3]));
+
+        $this->assertEquals(200, $response->getStatusCode(), (string) $response->getBody());
+
+        $winter = collect($this->body($response)['data'])->firstWhere('id', 'winter')['attributes'];
+        $this->assertSame('template:winter/base.svg', $winter['imageReference']);
+        $this->assertArrayHasKey('completedImageReference', $winter);
+        $this->assertNull($winter['completedImageReference']);
+
+        $hat = collect($winter['parts'])->firstWhere('key', 'hat');
+        $this->assertSame('template:winter/hat.svg', $hat['reference']);
+        $this->assertStringEndsWith('extensions/fof-scavenger-hunt/templates/winter/hat.svg', $hat['imageUrl']);
+    }
+
+    #[Test]
     public function members_cannot_list_templates(): void
     {
         $this->assertEquals(403, $this->send($this->request('GET', '/api/scavenger-hunt-templates', ['authenticatedAs' => 2]))->getStatusCode());

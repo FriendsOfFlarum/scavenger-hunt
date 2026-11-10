@@ -129,6 +129,20 @@ fof-scavenger-hunt:
         title: Title
         slug: Slug
         description: Description
+        image: Image
+        completed_image: Completed image
+        completed_image_help: Shown once the hunt is finished. Without one, the base image with every part is shown.
+      images:
+        title: Choose an image
+        choose: Choose image
+        remove: Remove
+        none: No image
+        base_image: Base image
+        tabs:
+          templates: Templates
+          assets: Uploaded images
+        empty: No images have been uploaded yet. Admins upload images in the admin panel.
+        load_more: Load more
       schedule:
         enabled: Enabled
         starts_at: Starts

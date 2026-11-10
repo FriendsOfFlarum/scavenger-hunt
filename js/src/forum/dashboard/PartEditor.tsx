@@ -10,6 +10,7 @@ import type HidingSpotDefinition from '../../common/models/HidingSpotDefinition'
 import type Location from '../../common/models/Location';
 import type Part from '../../common/models/Part';
 import type { PlacementMode } from '../../common/models/Part';
+import ImageField from './ImageField';
 import LocationRow, { type PageRoute } from './LocationRow';
 import { placement } from '../states/placement';
 
@@ -38,7 +39,7 @@ export default class PartEditor extends Component<PartEditorAttrs> {
   protected hint!: Stream<string>;
   protected wanderChance!: Stream<string>;
   protected sort!: Stream<string>;
-  protected image!: Stream<string>;
+  protected image!: Stream<string | null>;
   protected layer!: { x: Stream<string>; y: Stream<string>; width: Stream<string>; z: Stream<string> };
   protected locations: Location[] = [];
 
@@ -53,7 +54,7 @@ export default class PartEditor extends Component<PartEditorAttrs> {
     this.hint = Stream(part.hint() ?? '');
     this.wanderChance = Stream(part.wanderChance() ? String(part.wanderChance()) : '');
     this.sort = Stream(String(part.sort() ?? 0));
-    this.image = Stream(part.image() ?? '');
+    this.image = Stream(part.image() ?? null);
     this.layer = {
       x: Stream(layer ? String(layer.x) : ''),
       y: Stream(layer ? String(layer.y) : ''),
@@ -135,8 +136,8 @@ export default class PartEditor extends Component<PartEditorAttrs> {
 
           <div className="PartEditor-fields">
             <div className="Form-group PartEditor-imageField">
-              <label>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.image')}</label>
-              <input className="FormControl" bidi={this.image} placeholder="template:winter/hat.svg" />
+              <label id={`part-${part.id()}-image`}>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.image')}</label>
+              <ImageField stream={this.image} url={part.imageUrl()} labelledby={`part-${part.id()}-image`} />
             </div>
 
             {(['x', 'y', 'width', 'z'] as const).map((key) => (
@@ -192,7 +193,7 @@ export default class PartEditor extends Component<PartEditorAttrs> {
         mode: this.mode(),
         hint: this.mode() === 'fixed' ? this.hint() || null : null,
         wanderChance: this.mode() === 'wandering' ? Number(this.wanderChance()) || null : null,
-        image: this.image() || null,
+        image: this.image(),
         sort: Number(this.sort()) || 0,
         layer: hasLayer ? { x: Number(layer.x()), y: Number(layer.y()), width: Number(layer.width()), z: Number(layer.z()) } : null,
       })

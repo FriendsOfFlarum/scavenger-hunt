@@ -6,6 +6,7 @@ import Switch from 'flarum/common/components/Switch';
 import Stream from 'flarum/common/utils/Stream';
 import type Mithril from 'mithril';
 import type Hunt from '../../common/models/Hunt';
+import ImageField from './ImageField';
 
 export interface HuntFormAttrs extends ComponentAttrs {
   hunt: Hunt;
@@ -29,6 +30,8 @@ export default class HuntForm extends Component<HuntFormAttrs> {
   protected title!: Stream<string>;
   protected slug!: Stream<string>;
   protected description!: Stream<string>;
+  protected image!: Stream<string | null>;
+  protected completedImage!: Stream<string | null>;
   protected isEnabled!: Stream<boolean>;
   protected guestsCanSee!: Stream<boolean>;
   protected startsAt!: Stream<string>;
@@ -42,6 +45,8 @@ export default class HuntForm extends Component<HuntFormAttrs> {
     this.title = Stream(hunt.title());
     this.slug = Stream(hunt.slug());
     this.description = Stream(hunt.description() ?? '');
+    this.image = Stream(hunt.image() ?? null);
+    this.completedImage = Stream(hunt.completedImage() ?? null);
     this.isEnabled = Stream(!!hunt.isEnabled());
     this.guestsCanSee = Stream(!!hunt.guestsCanSee());
     this.startsAt = Stream(toLocalInput(hunt.startsAt()));
@@ -75,6 +80,15 @@ export default class HuntForm extends Component<HuntFormAttrs> {
       <div className="Form-group">
         <label for="hunt-description">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.details.description')}</label>
         <textarea id="hunt-description" className="FormControl" bidi={this.description} rows={4} maxlength={5000} />
+      </div>,
+      <div className="Form-group HuntForm-image">
+        <label id="hunt-image">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.details.image')}</label>
+        <ImageField stream={this.image} url={this.attrs.hunt.imageUrl()} labelledby="hunt-image" />
+      </div>,
+      <div className="Form-group HuntForm-completedImage">
+        <label id="hunt-completed-image">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.details.completed_image')}</label>
+        <ImageField stream={this.completedImage} url={this.attrs.hunt.completedImageUrl()} labelledby="hunt-completed-image" />
+        <div className="helpText">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.details.completed_image_help')}</div>
       </div>,
     ];
   }
@@ -110,7 +124,13 @@ export default class HuntForm extends Component<HuntFormAttrs> {
 
     const attributes =
       this.attrs.section === 'details'
-        ? { title: this.title(), slug: this.slug(), description: this.description() || null }
+        ? {
+            title: this.title(),
+            slug: this.slug(),
+            description: this.description() || null,
+            image: this.image(),
+            completedImage: this.completedImage(),
+          }
         : {
             isEnabled: this.isEnabled(),
             guestsCanSee: this.guestsCanSee(),
