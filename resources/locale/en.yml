@@ -117,6 +117,7 @@ fof-scavenger-hunt:
         group: Reward group
         group_help: Finishers join this group automatically. Removing a finisher from the group later is up to you.
         no_group: No group
+        group_locked_help: Only members who can edit user groups can choose the reward group.
         message: Reward message
         message_help: Revealed only to members who complete the hunt — a thank-you, a promo code, a link. Formatting works as in posts.
       gallery:

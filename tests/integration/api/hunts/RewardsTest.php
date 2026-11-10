@@ -13,6 +13,7 @@ namespace FoF\ScavengerHunt\Tests\integration\api\hunts;
 
 use Carbon\Carbon;
 use Flarum\Group\Group;
+use Flarum\Group\PermissionCache;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use Flarum\User\Event\GroupsChanged;
@@ -57,7 +58,7 @@ class RewardsTest extends TestCase
 
     protected function configureRewards(): void
     {
-        $response = $this->updateHunt(3, [
+        $response = $this->updateHunt(1, [
             'attributes' => ['rewardMessage' => 'Use code **SNOW26** for 10% off!'],
             'relationships' => ['rewardGroup' => ['data' => ['type' => 'groups', 'id' => '5']]],
         ]);
@@ -66,7 +67,35 @@ class RewardsTest extends TestCase
     }
 
     #[Test]
-    public function a_hunt_manager_can_set_a_reward_group_and_message(): void
+    public function a_hunt_manager_can_set_a_reward_message(): void
+    {
+        $response = $this->updateHunt(3, ['attributes' => ['rewardMessage' => 'Use code **SNOW26** for 10% off!']]);
+
+        $this->assertEquals(200, $response->getStatusCode(), (string) $response->getBody());
+        $this->assertStringContainsString('SNOW26', $this->hunt(3)['attributes']['rewardMessageHtml']);
+    }
+
+    #[Test]
+    public function only_members_who_can_edit_groups_can_set_a_reward_group(): void
+    {
+        foreach ([Group::MODERATOR_ID, 5] as $groupId) {
+            $response = $this->updateHunt(3, ['relationships' => ['rewardGroup' => ['data' => ['type' => 'groups', 'id' => (string) $groupId]]]]);
+
+            $this->assertContains($response->getStatusCode(), [403, 422], "group $groupId: ".$response->getBody());
+        }
+
+        $this->assertNull($this->database()->table('fof_scavenger_hunts')->find(1)->reward_group_id);
+
+        $this->database()->table('group_permission')->insert(['group_id' => Group::MODERATOR_ID, 'permission' => 'user.editGroups']);
+        // Query-builder writes fire no model events, so the moderators' cached permission set is still stale.
+        $this->app()->getContainer()->make(PermissionCache::class)->flush();
+
+        $response = $this->updateHunt(3, ['relationships' => ['rewardGroup' => ['data' => ['type' => 'groups', 'id' => '5']]]]);
+        $this->assertEquals(200, $response->getStatusCode(), (string) $response->getBody());
+    }
+
+    #[Test]
+    public function an_admin_can_set_a_reward_group_and_message(): void
     {
         $this->configureRewards();
 
@@ -81,10 +110,10 @@ class RewardsTest extends TestCase
     }
 
     #[Test]
-    public function the_admin_and_guest_groups_cannot_be_a_reward(): void
+    public function the_admin_guest_and_member_groups_cannot_be_a_reward(): void
     {
-        foreach ([Group::ADMINISTRATOR_ID, Group::GUEST_ID] as $groupId) {
-            $response = $this->updateHunt(3, ['relationships' => ['rewardGroup' => ['data' => ['type' => 'groups', 'id' => (string) $groupId]]]]);
+        foreach ([Group::ADMINISTRATOR_ID, Group::GUEST_ID, Group::MEMBER_ID] as $groupId) {
+            $response = $this->updateHunt(1, ['relationships' => ['rewardGroup' => ['data' => ['type' => 'groups', 'id' => (string) $groupId]]]]);
 
             $this->assertEquals(422, $response->getStatusCode(), "group $groupId");
         }

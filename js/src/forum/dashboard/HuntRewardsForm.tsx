@@ -29,6 +29,7 @@ export default class HuntRewardsForm extends Component<HuntRewardsFormAttrs> {
   }
 
   view() {
+    const canAwardGroups = HuntRewardsForm.canAwardGroups();
     const options: Record<string, string> = { [NONE]: app.translator.trans('fof-scavenger-hunt.forum.dashboard.rewards.no_group', {}, true) };
 
     app.store
@@ -40,8 +41,10 @@ export default class HuntRewardsForm extends Component<HuntRewardsFormAttrs> {
       <form className="HuntForm Form" onsubmit={(e: SubmitEvent) => this.save(e)}>
         <div className="Form-group">
           <label>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.rewards.group')}</label>
-          <Select options={options} value={this.groupId()} onchange={(value: string) => this.groupId(value)} />
-          <div className="helpText">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.rewards.group_help')}</div>
+          <Select options={options} value={this.groupId()} disabled={!canAwardGroups} onchange={(value: string) => this.groupId(value)} />
+          <div className="helpText">
+            {app.translator.trans(`fof-scavenger-hunt.forum.dashboard.rewards.${canAwardGroups ? 'group_help' : 'group_locked_help'}`)}
+          </div>
         </div>
 
         <div className="Form-group">
@@ -59,6 +62,10 @@ export default class HuntRewardsForm extends Component<HuntRewardsFormAttrs> {
     );
   }
 
+  static canAwardGroups(): boolean {
+    return !!app.forum.attribute<boolean | undefined>('scavengerHuntCanAwardGroups');
+  }
+
   protected save(e: SubmitEvent): void {
     e.preventDefault();
 
@@ -66,11 +73,15 @@ export default class HuntRewardsForm extends Component<HuntRewardsFormAttrs> {
 
     this.saving = true;
 
+    const data: Record<string, unknown> = { rewardMessage: this.message() || null };
+
+    // The server refuses the relationship from anyone without user.editGroups, so leave it out for them.
+    if (HuntRewardsForm.canAwardGroups()) {
+      data.relationships = { rewardGroup: groupId ? (app.store.getById<Group>('groups', groupId) ?? null) : null };
+    }
+
     this.attrs.hunt
-      .save({
-        rewardMessage: this.message() || null,
-        relationships: { rewardGroup: groupId ? (app.store.getById<Group>('groups', groupId) ?? null) : null },
-      })
+      .save(data)
       .then(() => toast(app.translator.trans('fof-scavenger-hunt.forum.dashboard.saved')))
       .catch(() => {})
       .finally(() => {

@@ -225,7 +225,8 @@ class HuntResource extends AbstractDatabaseResource
                 ->includable()
                 ->nullable()
                 ->visible($manages)
-                ->writable(),
+                // Joining a group grants its permissions, so choosing one follows core's group editing.
+                ->writable(fn (Hunt $hunt, Context $context) => $context->getActor()->hasPermission('user.editGroups')),
             Schema\Relationship\ToMany::make('parts')
                 ->type('scavenger-hunt-parts')
                 ->includable(),
@@ -258,7 +259,7 @@ class HuntResource extends AbstractDatabaseResource
             throw new ValidationException(['endsAt' => $this->translator->trans('fof-scavenger-hunt.api.ends_before_start')]);
         }
 
-        if (in_array($model->reward_group_id, [Group::ADMINISTRATOR_ID, Group::GUEST_ID], true)) {
+        if (in_array($model->reward_group_id, [Group::ADMINISTRATOR_ID, Group::GUEST_ID, Group::MEMBER_ID], true)) {
             throw new ValidationException(['rewardGroup' => $this->translator->trans('fof-scavenger-hunt.api.reward_group_invalid')]);
         }
 

@@ -87,6 +87,8 @@ class ForumPayloadTest extends TestCase
 
         $this->assertTrue($attributes['scavengerHuntCanManage']);
         $this->assertFalse($attributes['scavengerHunts'][0]['canClaim']);
+        $this->assertFalse($attributes['scavengerHuntCanAwardGroups'], 'reward groups follow core\'s user.editGroups');
+        $this->assertTrue($this->forum(1)['scavengerHuntCanAwardGroups']);
     }
 
     #[Test]

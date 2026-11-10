@@ -41,6 +41,9 @@ class ForumAttributes
                 ->get(fn (object $forum, Context $context) => $this->hunts($context->getActor())),
             Schema\Boolean::make('scavengerHuntCanManage')
                 ->get(fn (object $forum, Context $context) => $this->access->canManage($context->getActor())),
+            Schema\Boolean::make('scavengerHuntCanAwardGroups')
+                ->visible(fn (object $forum, Context $context) => $this->access->canManage($context->getActor()))
+                ->get(fn (object $forum, Context $context) => $context->getActor()->hasPermission('user.editGroups')),
         ];
     }
 
