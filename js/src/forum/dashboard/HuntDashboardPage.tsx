@@ -15,6 +15,7 @@ import HuntOverview from './HuntOverview';
 import HuntParticipants from './HuntParticipants';
 import HuntRewardsForm from './HuntRewardsForm';
 import HuntStatusPill from './HuntStatusPill';
+import LayerEditor from './LayerEditor';
 import type { PageRoute } from './LocationRow';
 import PartEditor from './PartEditor';
 
@@ -110,6 +111,7 @@ export default class HuntDashboardPage extends Page {
     if (this.tab === 'parts') {
       return (
         <div className="ScavengerDashboard-parts">
+          <LayerEditor hunt={this.hunt} parts={this.parts} />
           {this.parts.map((part) => (
             <PartEditor
               key={part.id()}

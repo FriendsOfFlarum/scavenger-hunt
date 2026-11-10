@@ -41,13 +41,13 @@ export default class PartEditor extends Component<PartEditorAttrs> {
   protected sort!: Stream<string>;
   protected image!: Stream<string | null>;
   protected layer!: { x: Stream<string>; y: Stream<string>; width: Stream<string>; z: Stream<string> };
+  protected syncedLayer = '';
   protected locations: Location[] = [];
 
   oninit(vnode: Mithril.Vnode<PartEditorAttrs, this>) {
     super.oninit(vnode);
 
     const part = this.attrs.part;
-    const layer = part.layer();
 
     this.name = Stream(part.name());
     this.mode = Stream(part.mode() ?? 'fixed');
@@ -55,13 +55,25 @@ export default class PartEditor extends Component<PartEditorAttrs> {
     this.wanderChance = Stream(part.wanderChance() ? String(part.wanderChance()) : '');
     this.sort = Stream(String(part.sort() ?? 0));
     this.image = Stream(part.image() ?? null);
-    this.layer = {
-      x: Stream(layer ? String(layer.x) : ''),
-      y: Stream(layer ? String(layer.y) : ''),
-      width: Stream(layer ? String(layer.width) : ''),
-      z: Stream(layer ? String(layer.z) : ''),
-    };
+    this.layer = { x: Stream(''), y: Stream(''), width: Stream(''), z: Stream('') };
+    this.syncLayer();
     this.locations = ((part.locations() || []).filter(Boolean) as Location[]).slice();
+  }
+
+  onbeforeupdate(vnode: Mithril.VnodeDOM<PartEditorAttrs, this>) {
+    super.onbeforeupdate(vnode);
+
+    // The layer editor saves layers too: show the saved values.
+    if (JSON.stringify(this.attrs.part.layer() ?? null) !== this.syncedLayer) {
+      this.syncLayer();
+    }
+  }
+
+  protected syncLayer(): void {
+    const layer = this.attrs.part.layer() ?? null;
+
+    this.syncedLayer = JSON.stringify(layer);
+    (['x', 'y', 'width', 'z'] as const).forEach((key) => this.layer[key](layer ? String(layer[key]) : ''));
   }
 
   view() {

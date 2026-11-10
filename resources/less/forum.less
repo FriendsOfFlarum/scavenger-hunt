@@ -636,6 +636,142 @@
   margin-top: 10px;
 }
 
+.LayerEditor {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: var(--body-bg);
+  border: 1px solid var(--control-bg);
+  border-radius: var(--border-radius);
+}
+
+.LayerEditor-title {
+  margin: 0 0 5px;
+}
+
+.LayerEditor-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+// Canvas coordinates, like .CollectionView-canvas: never mirrored in RTL.
+.LayerEditor-canvas {
+  position: relative;
+  flex: 0 1 400px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--scavenger-canvas-bg);
+  border-radius: var(--scavenger-canvas-radius);
+  direction: ltr;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.LayerEditor-base {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.LayerEditor-layer {
+  position: absolute;
+  cursor: move;
+  touch-action: none;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+  }
+
+  &:hover {
+    box-shadow: 0 0 0 1px var(--muted-color);
+  }
+
+  // A box-shadow, so core's keyboard focus ring (an outline) still shows on top.
+  &--selected,
+  &--selected:hover {
+    box-shadow: 0 0 0 2px var(--primary-color);
+  }
+
+  .add-keyboard-focus-ring();
+  .add-keyboard-focus-ring-offset(4px);
+}
+
+.LayerEditor-handle {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  width: 14px;
+  height: 14px;
+  background: var(--primary-color);
+  border: 2px solid var(--body-bg);
+  border-radius: 50%;
+  cursor: nwse-resize;
+  touch-action: none;
+}
+
+.LayerEditor-sidebar {
+  flex: 1 1 200px;
+  min-width: 0;
+
+  h5 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: var(--muted-color);
+  }
+}
+
+.LayerEditor-selection {
+  margin-bottom: 15px;
+}
+
+.LayerEditor-zButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.LayerEditor-unplacedList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.LayerEditor-unplacedItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-block: 4px;
+}
+
+.LayerEditor-thumbnail {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.LayerEditor-unplacedName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LayerEditor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 15px;
+}
+
 .TemplateGallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
