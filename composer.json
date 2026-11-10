@@ -102,6 +102,7 @@
         ],
         "test:unit": "phpunit -c tests/phpunit.unit.xml",
         "test:integration": "phpunit -c tests/phpunit.integration.xml",
+        "test:integration:deprecations": "phpunit -c tests/phpunit.integration.xml --display-deprecations",
         "test:setup": "@php tests/integration/setup.php"
     },
     "scripts-descriptions": {
@@ -109,6 +110,7 @@
         "test": "Runs all tests.",
         "test:unit": "Runs all unit tests.",
         "test:integration": "Runs all integration tests.",
+        "test:integration:deprecations": "Runs all integration tests and lists the deprecations they trigger.",
         "test:setup": "Sets up a database for use with integration tests. Execute this only once."
     },
     "minimum-stability": "beta",
