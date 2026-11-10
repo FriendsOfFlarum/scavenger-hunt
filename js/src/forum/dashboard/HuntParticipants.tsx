@@ -87,13 +87,15 @@ export default class HuntParticipants extends Component<HuntParticipantsAttrs> {
 
     return (
       <tr>
-        <td className="HuntParticipants-member">
-          <Avatar user={user} /> {username(user)}
-          {participant.fastClaimFlag() && (
-            <Tooltip text={app.translator.trans('fof-scavenger-hunt.forum.dashboard.participants.fast_claims_help', {}, true)}>
-              <Pill className="HuntParticipants-flag">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.participants.fast_claims')}</Pill>
-            </Tooltip>
-          )}
+        <td>
+          <div className="HuntParticipants-member">
+            <Avatar user={user} /> {username(user)}
+            {participant.fastClaimFlag() && (
+              <Tooltip text={app.translator.trans('fof-scavenger-hunt.forum.dashboard.participants.fast_claims_help', {}, true)}>
+                <Pill className="HuntParticipants-flag">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.participants.fast_claims')}</Pill>
+              </Tooltip>
+            )}
+          </div>
         </td>
         <td>
           {participant.foundCount()}/{this.attrs.hunt.partCount()}

@@ -52,6 +52,19 @@ class TemplatesTest extends TestCase
     }
 
     #[Test]
+    public function templates_are_listed_by_season_then_holiday_then_all_year(): void
+    {
+        $response = $this->send($this->request('GET', '/api/scavenger-hunt-templates', ['authenticatedAs' => 3]));
+
+        $this->assertEquals(200, $response->getStatusCode(), (string) $response->getBody());
+        $this->assertSame([
+            'spring', 'summer', 'autumn', 'winter',
+            'new-year', 'easter', 'ramadan', 'halloween', 'thanksgiving', 'christmas',
+            'treasure', 'anniversary',
+        ], array_column($this->body($response)['data'], 'id'));
+    }
+
+    #[Test]
     public function templates_return_image_references_alongside_urls(): void
     {
         $response = $this->send($this->request('GET', '/api/scavenger-hunt-templates', ['authenticatedAs' => 3]));

@@ -11,6 +11,8 @@ export interface IImageFieldAttrs extends ComponentAttrs {
   url: string | null | undefined;
   /** Space-separated ids, as for aria-labelledby. */
   labelledby?: string;
+  /** The key of the Hunt's Template, which the picker lists first. */
+  template?: string | null;
 }
 
 export default class ImageField extends Component<IImageFieldAttrs> {
@@ -40,6 +42,7 @@ export default class ImageField extends Component<IImageFieldAttrs> {
   protected choose(): void {
     app.modal.show(() => import('./ImagePickerModal'), {
       selected: this.attrs.stream(),
+      template: this.attrs.template,
       onselect: (reference: string | null, url: string | null) => this.select(reference, url),
     });
   }

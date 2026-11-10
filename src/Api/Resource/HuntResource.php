@@ -27,6 +27,7 @@ use FoF\ScavengerHunt\Hunt;
 use FoF\ScavengerHunt\Image\ImageReference;
 use FoF\ScavengerHunt\Permission;
 use FoF\ScavengerHunt\Progress\ActorProgress;
+use FoF\ScavengerHunt\Progress\ParticipantCounts;
 use FoF\ScavengerHunt\Template\TemplateRepository;
 use FoF\ScavengerHunt\Tracking\ProgressResetter;
 use Illuminate\Database\Eloquent\Builder;
@@ -48,6 +49,7 @@ class HuntResource extends AbstractDatabaseResource
         protected TemplateRepository $templates,
         protected Formatter $formatter,
         protected ProgressResetter $resetter,
+        protected ParticipantCounts $participants,
     ) {
     }
 
@@ -155,6 +157,8 @@ class HuntResource extends AbstractDatabaseResource
                 ->get(fn (Hunt $hunt, Context $context) => $this->images->url($hunt->completed_image, $context)),
             Schema\Integer::make('partCount')
                 ->countRelation('parts'),
+            Schema\Integer::make('finisherCount')
+                ->countRelation('completions'),
             Schema\Integer::make('foundCount')
                 ->visible($registered)
                 ->get(fn (Hunt $hunt, Context $context) => $this->progress->foundCount($context, $hunt->id)),
@@ -169,6 +173,9 @@ class HuntResource extends AbstractDatabaseResource
             Schema\Boolean::make('guestsCanSee')
                 ->visible($manages)
                 ->writable(),
+            Schema\Integer::make('participantCount')
+                ->visible($manages)
+                ->get(fn (Hunt $hunt, Context $context) => $this->participants->count($context, $hunt->id)),
             Schema\Str::make('image')
                 ->nullable()
                 ->visible($manages)

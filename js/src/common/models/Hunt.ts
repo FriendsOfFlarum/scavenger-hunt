@@ -39,6 +39,17 @@ export default class Hunt extends Model {
     return Model.attribute<number>('partCount').call(this);
   }
 
+  finisherCount() {
+    return Model.attribute<number>('finisherCount').call(this);
+  }
+
+  /**
+   * Only present for Hunt managers.
+   */
+  participantCount() {
+    return Model.attribute<number | undefined>('participantCount').call(this);
+  }
+
   foundCount() {
     return Model.attribute<number | undefined>('foundCount').call(this);
   }

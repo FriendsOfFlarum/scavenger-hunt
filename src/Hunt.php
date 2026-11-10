@@ -38,6 +38,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Carbon $updated_at
  * @property-read Collection<int, Part> $parts
  * @property-read Group|null $rewardGroup
+ * @property-read Collection<int, Completion> $completions
  */
 class Hunt extends AbstractModel
 {
@@ -61,6 +62,14 @@ class Hunt extends AbstractModel
     public function parts(): HasMany
     {
         return $this->hasMany(Part::class, 'hunt_id')->orderBy('sort')->orderBy('id');
+    }
+
+    /**
+     * @return HasMany<Completion, $this>
+     */
+    public function completions(): HasMany
+    {
+        return $this->hasMany(Completion::class, 'hunt_id');
     }
 
     /**

@@ -105,6 +105,8 @@ export default class DashboardPage extends Page {
                 <th>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.title')}</th>
                 <th>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.status')}</th>
                 <th>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.parts')}</th>
+                <th>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.participants')}</th>
+                <th>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.columns.finishers')}</th>
               </tr>
             </thead>
             <tbody>
@@ -117,6 +119,8 @@ export default class DashboardPage extends Page {
                     <HuntStatusPill hunt={hunt} />
                   </td>
                   <td>{hunt.partCount()}</td>
+                  <td>{hunt.participantCount()}</td>
+                  <td>{hunt.finisherCount()}</td>
                 </tr>
               ))}
             </tbody>

@@ -18,6 +18,78 @@ function editorFor(mode: string) {
 }
 
 describe('PartEditor', () => {
+  // The inputs are bound with bidi, which the test renderer leaves unpatched, so drive the streams.
+  function editorWithFields() {
+    const oninit = jest.spyOn(PartEditor.prototype, 'oninit');
+    const editor = editorFor('fixed');
+    const fields = oninit.mock.contexts[0] as unknown as Record<string, any>;
+    oninit.mockRestore();
+
+    return { editor, fields };
+  }
+
+  it('shows Save as primary only once something has changed', () => {
+    const { editor, fields } = editorWithFields();
+
+    expect(editor).toHaveElement('.PartEditor-save');
+    expect(editor).not.toHaveElement('.PartEditor-save.Button--primary');
+
+    fields.name('Top hat');
+    editor.redraw();
+
+    expect(editor).toHaveElement('.PartEditor-save.Button--primary');
+
+    fields.name('Hat');
+    editor.redraw();
+
+    expect(editor).not.toHaveElement('.PartEditor-save.Button--primary');
+  });
+
+  it.each([
+    ['mode', (fields: Record<string, any>) => fields.mode('assigned')],
+    ['hint', (fields: Record<string, any>) => fields.hint('Look up')],
+    ['sort', (fields: Record<string, any>) => fields.sort('3')],
+    ['image', (fields: Record<string, any>) => fields.image('asset:1')],
+    ['layer', (fields: Record<string, any>) => ['x', 'y', 'width', 'z'].forEach((key) => fields.layer[key]('10'))],
+  ])('counts a changed %s', (_name, change) => {
+    const { editor, fields } = editorWithFields();
+
+    change(fields);
+    editor.redraw();
+
+    expect(editor).toHaveElement('.PartEditor-save.Button--primary');
+  });
+
+  it('counts a changed wander chance', () => {
+    const part = new Part({
+      type: 'scavenger-hunt-parts',
+      id: '1',
+      attributes: { name: 'Hat', mode: 'wandering', wanderChance: 20, sort: 0, layer: null },
+    });
+    jest.spyOn(part, 'locations').mockReturnValue([]);
+    const oninit = jest.spyOn(PartEditor.prototype, 'oninit');
+    const editor = mq(PartEditor, { part, spots: [], routes: [], ondeleted: () => {} });
+    const fields = oninit.mock.contexts[0] as unknown as Record<string, any>;
+    oninit.mockRestore();
+
+    expect(editor).not.toHaveElement('.PartEditor-save.Button--primary');
+
+    fields.wanderChance('30');
+    editor.redraw();
+
+    expect(editor).toHaveElement('.PartEditor-save.Button--primary');
+  });
+
+  it('keeps a plain Save clickable', () => {
+    const { editor } = editorWithFields();
+    const save = jest.spyOn(PartEditor.prototype as any, 'save').mockImplementation(() => {});
+
+    editor.click('.PartEditor-save');
+
+    expect(save).toHaveBeenCalled();
+    save.mockRestore();
+  });
+
   it('offers a Hint for Fixed Parts', () => {
     expect(editorFor('fixed')).toHaveElement('.PartEditor-hint');
   });

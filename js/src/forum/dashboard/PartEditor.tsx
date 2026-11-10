@@ -5,6 +5,7 @@ import Button from 'flarum/common/components/Button';
 import Icon from 'flarum/common/components/Icon';
 import Select from 'flarum/common/components/Select';
 import Stream from 'flarum/common/utils/Stream';
+import classList from 'flarum/common/utils/classList';
 import type Mithril from 'mithril';
 import type HidingSpotDefinition from '../../common/models/HidingSpotDefinition';
 import type Location from '../../common/models/Location';
@@ -18,6 +19,8 @@ export interface PartEditorAttrs extends ComponentAttrs {
   part: Part;
   spots: HidingSpotDefinition[];
   routes: PageRoute[];
+  /** The key of the Hunt's Template, which the image picker lists first. */
+  template?: string | null;
   ondeleted: (part: Part) => void;
 }
 
@@ -96,7 +99,12 @@ export default class PartEditor extends Component<PartEditorAttrs> {
             {part.name()}
           </h4>
           <div className="PartEditor-actions">
-            <Button className="Button Button--primary" icon="fas fa-check" loading={this.saving} onclick={() => this.save()}>
+            <Button
+              className={classList('Button PartEditor-save', { 'Button--primary': this.isDirty() })}
+              icon="fas fa-check"
+              loading={this.saving}
+              onclick={() => this.save()}
+            >
               {app.translator.trans('fof-scavenger-hunt.forum.dashboard.save')}
             </Button>
             <Button
@@ -150,7 +158,12 @@ export default class PartEditor extends Component<PartEditorAttrs> {
           <div className="PartEditor-fields">
             <div className="Form-group PartEditor-imageField">
               <label id={`part-${part.id()}-image`}>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.image')}</label>
-              <ImageField stream={this.image} url={part.imageUrl()} labelledby={`part-${part.id()}-title part-${part.id()}-image`} />
+              <ImageField
+                stream={this.image}
+                url={part.imageUrl()}
+                labelledby={`part-${part.id()}-title part-${part.id()}-image`}
+                template={this.attrs.template}
+              />
             </div>
 
             {(['x', 'y', 'width', 'z'] as const).map((key) => (
@@ -194,22 +207,43 @@ export default class PartEditor extends Component<PartEditorAttrs> {
     );
   }
 
-  protected save(): void {
+  protected data() {
     const layer = this.layer;
     const hasLayer = [layer.x(), layer.y(), layer.width(), layer.z()].every((value) => value !== '');
 
+    return {
+      name: this.name(),
+      mode: this.mode(),
+      hint: this.mode() === 'fixed' ? this.hint() || null : null,
+      wanderChance: this.mode() === 'wandering' ? Number(this.wanderChance()) || null : null,
+      image: this.image(),
+      sort: Number(this.sort()) || 0,
+      layer: hasLayer ? { x: Number(layer.x()), y: Number(layer.y()), width: Number(layer.width()), z: Number(layer.z()) } : null,
+    };
+  }
+
+  /** Whether saving would change the Part. */
+  protected isDirty(): boolean {
+    const part = this.attrs.part;
+    const data = this.data();
+    const layer = part.layer() ?? null;
+
+    return (
+      data.name !== part.name() ||
+      data.mode !== (part.mode() ?? 'fixed') ||
+      data.hint !== (part.hint() ?? null) ||
+      data.wanderChance !== (part.wanderChance() ?? null) ||
+      data.image !== (part.image() ?? null) ||
+      data.sort !== (part.sort() ?? 0) ||
+      JSON.stringify(data.layer) !== JSON.stringify(layer && { x: layer.x, y: layer.y, width: layer.width, z: layer.z })
+    );
+  }
+
+  protected save(): void {
     this.saving = true;
 
     this.attrs.part
-      .save({
-        name: this.name(),
-        mode: this.mode(),
-        hint: this.mode() === 'fixed' ? this.hint() || null : null,
-        wanderChance: this.mode() === 'wandering' ? Number(this.wanderChance()) || null : null,
-        image: this.image(),
-        sort: Number(this.sort()) || 0,
-        layer: hasLayer ? { x: Number(layer.x()), y: Number(layer.y()), width: Number(layer.width()), z: Number(layer.z()) } : null,
-      })
+      .save(this.data())
       .then(() => toast(app.translator.trans('fof-scavenger-hunt.forum.dashboard.saved')))
       .catch(() => {})
       .finally(() => {

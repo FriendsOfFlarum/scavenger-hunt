@@ -71,6 +71,8 @@ fof-scavenger-hunt:
         title: Hunt
         status: Status
         parts: Parts
+        participants: Participants
+        finishers: Finishers
       status:
         disabled: Disabled
         scheduled: Scheduled

@@ -20,6 +20,16 @@ use FoF\ScavengerHunt\PlacementMode;
 class TemplateRepository
 {
     /**
+     * Seasons, then holidays through the calendar year, then all-year Templates. Any Template
+     * not listed follows, alphabetically.
+     */
+    public const array ORDER = [
+        'spring', 'summer', 'autumn', 'winter',
+        'new-year', 'easter', 'ramadan', 'halloween', 'thanksgiving', 'christmas',
+        'treasure', 'anniversary',
+    ];
+
+    /**
      * @var array<string, Template>|null
      */
     protected ?array $templates = null;
@@ -57,7 +67,11 @@ class TemplateRepository
             );
         }
 
-        ksort($templates);
+        uksort($templates, function (string $a, string $b) {
+            $positions = array_flip(self::ORDER);
+
+            return [$positions[$a] ?? PHP_INT_MAX, $a] <=> [$positions[$b] ?? PHP_INT_MAX, $b];
+        });
 
         return $this->templates = $templates;
     }

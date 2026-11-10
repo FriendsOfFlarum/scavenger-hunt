@@ -433,6 +433,10 @@
     padding: 12px 15px;
   }
 
+  td {
+    vertical-align: middle;
+  }
+
   td:last-child,
   th:last-child {
     text-align: end;
@@ -490,6 +494,7 @@
   }
 }
 
+// A wrapper, not the cell: a flex <td> stops being a table cell and no longer spans the row's height.
 .HuntParticipants-member {
   display: flex;
   align-items: center;
@@ -940,6 +945,7 @@
   align-items: center;
   gap: 4px;
   width: 100%;
+  height: 100%;
   padding: 6px;
   color: var(--text-color);
   background: var(--body-bg);
@@ -954,28 +960,36 @@
   }
 }
 
+// The image is taken out of flow so a tall one can't stretch the square.
 .ImagePicker-thumbnail {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
   width: 100%;
   aspect-ratio: 1;
+  overflow: hidden;
   background: var(--scavenger-canvas-bg);
   border-radius: var(--border-radius);
 
   img {
-    max-width: 100%;
-    max-height: 100%;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
   }
 }
 
 .ImagePicker-label {
+  display: -webkit-box;
   max-width: 100%;
+  min-height: 2.6em;
   overflow: hidden;
   font-size: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.3;
+  overflow-wrap: break-word;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 @media (prefers-reduced-motion: reduce) {

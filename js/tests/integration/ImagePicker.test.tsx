@@ -95,10 +95,10 @@ async function settle(tree: { redraw: () => void }) {
   tree.redraw();
 }
 
-async function renderPicker(selected: string | null = null) {
+async function renderPicker(selected: string | null = null, template: string | null = null) {
   const onselect = jest.fn();
   const animateHide = jest.fn();
-  const picker = mq(ImagePickerModal, { state: app.modal, animateShow: () => {}, animateHide, selected, onselect });
+  const picker = mq(ImagePickerModal, { state: app.modal, animateShow: () => {}, animateHide, selected, onselect, template });
 
   await settle(picker);
 
@@ -114,6 +114,27 @@ describe('ImagePickerModal', () => {
     expect(picker.find('.ImagePicker-groupTitle').map((el) => el.textContent)).toEqual(['Build a Snowman', 'Flower pot']);
     expect(picker.find('.ImagePicker-item')).toHaveLength(5);
     expect(picker).toHaveElementAttr('[data-reference="template:winter/hat.svg"] img', 'src', templateUrl('winter/hat.svg'));
+  });
+
+  it("puts the Hunt's own Template first", async () => {
+    mockApi();
+    const { picker } = await renderPicker(null, 'spring');
+
+    expect(picker.find('.ImagePicker-groupTitle').map((el) => el.textContent)).toEqual(['Flower pot', 'Build a Snowman']);
+  });
+
+  it('keeps the API order when the Hunt has no Template', async () => {
+    mockApi();
+    const { picker } = await renderPicker(null, null);
+
+    expect(picker.find('.ImagePicker-groupTitle').map((el) => el.textContent)).toEqual(['Build a Snowman', 'Flower pot']);
+  });
+
+  it('gives every image its full name as a title', async () => {
+    mockApi();
+    const { picker } = await renderPicker();
+
+    expect(picker).toHaveElementAttr('[data-reference="template:winter/hat.svg"] .ImagePicker-label', 'title', 'HAT');
   });
 
   it('selects a Template image by its template: reference and closes', async () => {
@@ -292,6 +313,15 @@ describe('ImageField', () => {
     expect(field).toHaveElementAttr('.ImageField-preview img', 'src', 'https://example.com/assets/scavenger-hunt/7.png');
   });
 
+  it('tells the picker which Template the Hunt was made from', () => {
+    const show = captureShow();
+    const field = mq({ view: () => <ImageField stream={Stream<string | null>(null)} url={null} template="spring" /> });
+
+    field.click('.ImageField-choose');
+
+    expect((show.mock.calls[0][1] as { template?: string | null }).template).toBe('spring');
+  });
+
   it('clears the reference with Remove', () => {
     const stream = Stream<string | null>('asset:7');
     const field = mq({ view: () => <ImageField stream={stream} url="https://example.com/assets/scavenger-hunt/7.png" /> });
@@ -325,7 +355,7 @@ describe('saving the chosen image', () => {
 
     editor.click('.PartEditor-imageField .ImageField-choose');
     pick(show, 'asset:3', 'https://example.com/assets/scavenger-hunt/3.png');
-    editor.click('.PartEditor-actions .Button--primary');
+    editor.click('.PartEditor-save');
     await settle(editor);
 
     expect(sentAttributes(request)).toMatchObject({ name: 'Hat', image: 'asset:3' });
@@ -341,7 +371,7 @@ describe('saving the chosen image', () => {
     const editor = mq(PartEditor, { part, spots: [], routes: [], ondeleted: () => {} });
 
     editor.click('.PartEditor-imageField .ImageField-remove');
-    editor.click('.PartEditor-actions .Button--primary');
+    editor.click('.PartEditor-save');
     await settle(editor);
 
     expect(sentAttributes(request)).toMatchObject({ image: null });
@@ -369,6 +399,26 @@ describe('saving the chosen image', () => {
     await settle(form);
 
     expect(sentAttributes(request)).toMatchObject({ title: 'Snowman', image: null, completedImage: 'asset:5' });
+  });
+
+  it("HuntForm and PartEditor open the picker with the Hunt's Template", () => {
+    const show = captureShow();
+    const hunt = app.store.pushPayload<Hunt>({
+      data: {
+        type: 'scavenger-hunts',
+        id: '3',
+        attributes: { title: 'Pumpkin', slug: 'pumpkin', template: 'halloween', image: null, completedImage: null },
+      },
+    });
+    const part = app.store.pushPayload<Part>({
+      data: { type: 'scavenger-hunt-parts', id: '3', attributes: { name: 'Stem', mode: 'fixed', sort: 0, image: null, imageUrl: null, layer: null } },
+    });
+    jest.spyOn(part, 'locations').mockReturnValue([]);
+
+    mq(HuntForm, { hunt, section: 'details' }).click('.HuntForm-completedImage .ImageField-choose');
+    mq(PartEditor, { part, spots: [], routes: [], ondeleted: () => {}, template: 'halloween' }).click('.PartEditor-imageField .ImageField-choose');
+
+    expect(show.mock.calls.map((call) => (call[1] as { template?: string | null }).template)).toEqual(['halloween', 'halloween']);
   });
 
   it('HuntForm leaves the images alone on the Schedule tab', async () => {

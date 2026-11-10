@@ -109,6 +109,8 @@ export default class HuntDashboardPage extends Page {
     }
 
     if (this.tab === 'parts') {
+      const template = this.hunt.template();
+
       return (
         <div className="ScavengerDashboard-parts">
           <LayerEditor hunt={this.hunt} parts={this.parts} />
@@ -118,6 +120,7 @@ export default class HuntDashboardPage extends Page {
               part={part}
               spots={this.spots}
               routes={this.routes}
+              template={template}
               ondeleted={(deleted: Part) => (this.parts = this.parts.filter((candidate) => candidate !== deleted))}
             />
           ))}

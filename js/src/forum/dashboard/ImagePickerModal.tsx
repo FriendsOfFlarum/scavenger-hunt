@@ -9,6 +9,8 @@ import type HuntTemplate from '../../common/models/HuntTemplate';
 
 export interface IImagePickerModalAttrs extends IInternalModalAttrs {
   selected: string | null;
+  /** The key of the Template the Hunt was made from, listed first. */
+  template?: string | null;
   onselect: (reference: string | null, url: string | null) => void;
 }
 
@@ -79,7 +81,10 @@ export default class ImagePickerModal extends Modal<IImagePickerModalAttrs> {
     if (this.templatesFailed) return this.loadError(() => this.loadTemplates());
     if (!this.templates) return <LoadingIndicator />;
 
-    return this.templates.map((template) => (
+    const own = this.attrs.template;
+    const templates = own ? [...this.templates].sort((a, b) => Number(b.id() === own) - Number(a.id() === own)) : this.templates;
+
+    return templates.map((template) => (
       <section className="ImagePicker-group">
         <h4 className="ImagePicker-groupTitle">{template.title()}</h4>
         <ul className="ImagePicker-grid">
@@ -126,7 +131,9 @@ export default class ImagePickerModal extends Modal<IImagePickerModalAttrs> {
           onclick={() => this.select(reference, url)}
         >
           <span className="ImagePicker-thumbnail">{url && <img src={url} alt="" loading="lazy" />}</span>
-          <span className="ImagePicker-label">{label}</span>
+          <span className="ImagePicker-label" title={label}>
+            {label}
+          </span>
         </button>
       </li>
     );
