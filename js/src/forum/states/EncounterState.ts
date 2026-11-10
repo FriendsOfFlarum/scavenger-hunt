@@ -35,7 +35,8 @@ export default class EncounterState {
   protected timer: ReturnType<typeof setTimeout> | null = null;
 
   isActive(): boolean {
-    return !this.paused && activeHunts().length > 0;
+    // Hunt managers see every hiding place on the dashboard, so Parts there would only cost lookups.
+    return !this.paused && activeHunts().length > 0 && !this.route.startsWith('fof-scavenger-hunt.dashboard');
   }
 
   register(report: SpotReport): void {

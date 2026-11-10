@@ -150,7 +150,7 @@ export default class TemplateGalleryModal extends FormModal {
       .save(attributes, { errorHandler: this.onerror.bind(this) })
       .then((hunt) => {
         this.hide();
-        m.route.set(app.route('fof-scavenger-hunt.dashboard.hunt', { id: hunt.id() }));
+        m.route.set(app.route('fof-scavenger-hunt.dashboard.hunt', { id: hunt.id(), tab: 'parts' }));
       })
       .catch(() => {
         this.loading = false;

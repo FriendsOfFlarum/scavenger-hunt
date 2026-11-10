@@ -82,7 +82,9 @@ app.initializers.add('fof-scavenger-hunt', () => {
     content.push(<HidingSpot spot="post.body-end" className="HidingSpot-postBody" context={['post', Number(this.attrs.post.id())]} />);
   });
 
-  extend('flarum/forum/components/Post', 'footerItems', function (this: any, items: ItemList<Mithril.Children>) {
+  // CommentPost, not Post: once any extension extends CommentPost's inherited footerItems, CommentPost
+  // holds its own copy wrapping Post's original, and a later extend of Post never reaches comment posts.
+  extend('flarum/forum/components/CommentPost', 'footerItems', function (this: any, items: ItemList<Mithril.Children>) {
     items.add('scavengerHuntSpot', <HidingSpot spot="post.footer" context={['post', Number(this.attrs.post.id())]} />, -100);
   });
 

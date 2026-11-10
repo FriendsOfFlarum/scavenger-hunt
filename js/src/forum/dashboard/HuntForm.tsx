@@ -75,7 +75,14 @@ export default class HuntForm extends Component<HuntFormAttrs> {
       </div>,
       <div className="Form-group">
         <label for="hunt-slug">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.details.slug')}</label>
-        <input id="hunt-slug" className="FormControl" bidi={this.slug} maxlength={100} pattern="(?=[a-z0-9-]*[a-z])[a-z0-9]+(-[a-z0-9]+)*" required />
+        <input
+          id="hunt-slug"
+          className="FormControl"
+          bidi={this.slug}
+          maxlength={100}
+          pattern="(?=[a-z0-9\-]*[a-z])[a-z0-9]+(-[a-z0-9]+)*"
+          required
+        />
       </div>,
       <div className="Form-group">
         <label for="hunt-description">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.details.description')}</label>

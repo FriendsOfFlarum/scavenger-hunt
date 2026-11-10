@@ -123,6 +123,7 @@ export default class PartEditor extends Component<PartEditorAttrs> {
             <div className="Form-group PartEditor-hint">
               <label>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.hint')}</label>
               <input className="FormControl" bidi={this.hint} maxlength={255} />
+              <div className="helpText">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.hint_help')}</div>
             </div>
           )}
 
@@ -138,11 +139,9 @@ export default class PartEditor extends Component<PartEditorAttrs> {
             <input className="FormControl" type="number" min="0" bidi={this.sort} />
           </div>
 
-          <div className="helpText PartEditor-modeHelp">
-            {this.mode() === 'fixed'
-              ? app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.hint_help')
-              : app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.random_recommended')}
-          </div>
+          {this.mode() !== 'fixed' && (
+            <div className="helpText PartEditor-modeHelp">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.random_recommended')}</div>
+          )}
         </div>
 
         <details className="PartEditor-appearance">

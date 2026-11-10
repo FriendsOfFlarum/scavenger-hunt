@@ -41,6 +41,19 @@ describe('EncounterState', () => {
     expect(request).not.toHaveBeenCalled();
   });
 
+  it('looks nothing up on the hunt dashboard', async () => {
+    const request = mockRequest();
+    const state = new EncounterState();
+
+    for (const route of ['fof-scavenger-hunt.dashboard', 'fof-scavenger-hunt.dashboard.hunt']) {
+      state.pageChanged(route, { id: '2' });
+      state.register({ spot: 'page.corner' });
+      await jest.advanceTimersByTimeAsync(1000);
+    }
+
+    expect(request).not.toHaveBeenCalled();
+  });
+
   it('sends one debounced lookup with de-duplicated spots', async () => {
     const request = mockRequest();
     const state = new EncounterState();

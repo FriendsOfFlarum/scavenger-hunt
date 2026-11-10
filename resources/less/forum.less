@@ -439,15 +439,16 @@
   }
 }
 
+// Core's Pill paints its inner element from these variables, so a plain background would be covered.
 .HuntStatusPill {
   &--live {
-    background: var(--control-success-bg);
-    color: var(--control-success-color);
+    --pill-bg: var(--control-success-bg);
+    --pill-color: var(--control-success-color);
   }
 
   &--scheduled {
-    background: var(--control-warning-bg);
-    color: var(--control-warning-color);
+    --pill-bg: var(--control-warning-bg);
+    --pill-color: var(--control-warning-color);
   }
 }
 
@@ -567,7 +568,7 @@
 }
 
 .PartEditor-modeHelp {
-  grid-column: 1 / -1;
+  grid-column: ~"1 / -1"; // escaped: LESS would divide a bare 1 / -1
   margin-top: -4px;
 }
 
@@ -583,7 +584,7 @@
 }
 
 .PartEditor-imageField {
-  grid-column: 1 / -1;
+  grid-column: ~"1 / -1"; // escaped: LESS would divide a bare 1 / -1
 }
 
 .PartEditor-locations {
@@ -620,7 +621,7 @@
 }
 
 .LocationRow-warning {
-  grid-column: 1 / -1;
+  grid-column: ~"1 / -1"; // escaped: LESS would divide a bare 1 / -1
   color: var(--error-color);
   font-size: 13px;
 }
