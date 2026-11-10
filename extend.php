@@ -146,6 +146,10 @@ return [
     new Extend\ApiResource(Api\Resource\CompletionResource::class),
     new Extend\ApiResource(Api\Resource\StatsResource::class),
     new Extend\ApiResource(Api\Resource\ParticipantResource::class),
+    new Extend\ApiResource(Api\Resource\AssetResource::class),
+
+    (new Extend\Routes('api'))
+        ->post('/scavenger-hunt/assets', 'fof-scavenger-hunt.assets.upload', Api\Controller\UploadAssetController::class),
 
     (new Extend\ApiResource(ForumResource::class))
         ->fields(Api\ForumAttributes::class),

@@ -14,6 +14,7 @@ namespace FoF\ScavengerHunt\Tests\integration\audit;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use FoF\ScavengerHunt\Setting;
+use FoF\ScavengerHunt\Tests\integration\InteractsWithAssets;
 use FoF\ScavengerHunt\Tests\integration\InteractsWithHunts;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -21,6 +22,7 @@ class AuditTest extends TestCase
 {
     use RetrievesAuthorizedUsers;
     use InteractsWithHunts;
+    use InteractsWithAssets;
 
     protected function setUp(): void
     {
@@ -35,6 +37,13 @@ class AuditTest extends TestCase
             'fof_scavenger_parts' => [$this->partRow()],
             'fof_scavenger_locations' => [$this->locationRow()],
         ]);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->removeAssetFiles();
+
+        parent::tearDown();
     }
 
     protected function logged(string $action): array
@@ -84,5 +93,18 @@ class AuditTest extends TestCase
         $this->lookup(2, 'index', []);
 
         $this->assertSame([['actor' => 2, 'payload' => ['user_id' => 2]]], $this->logged('lookup_limit_reached'));
+    }
+
+    #[Test]
+    public function asset_uploads_and_deletions_are_logged(): void
+    {
+        $response = $this->upload(1, $this->rasterImage('png'), 'Golden carrot.png');
+        $id = (int) $this->body($response)['data']['id'];
+
+        $this->assertEquals([['actor' => 1, 'payload' => ['asset_id' => $id, 'name' => 'Golden carrot']]], $this->logged('asset_uploaded'));
+
+        $this->send($this->request('DELETE', "/api/scavenger-hunt-assets/$id", ['authenticatedAs' => 1]));
+
+        $this->assertEquals([['actor' => 1, 'payload' => ['asset_id' => $id, 'name' => 'Golden carrot']]], $this->logged('asset_deleted'));
     }
 }

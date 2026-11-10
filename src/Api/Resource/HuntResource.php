@@ -148,10 +148,10 @@ class HuntResource extends AbstractDatabaseResource
                 ->get(fn (Hunt $hunt) => $hunt->isActive()),
             Schema\Str::make('imageUrl')
                 ->nullable()
-                ->get(fn (Hunt $hunt) => $this->images->url($hunt->image)),
+                ->get(fn (Hunt $hunt, Context $context) => $this->images->url($hunt->image, $context)),
             Schema\Str::make('completedImageUrl')
                 ->nullable()
-                ->get(fn (Hunt $hunt) => $this->images->url($hunt->completed_image)),
+                ->get(fn (Hunt $hunt, Context $context) => $this->images->url($hunt->completed_image, $context)),
             Schema\Integer::make('partCount')
                 ->countRelation('parts'),
             Schema\Integer::make('foundCount')
@@ -264,7 +264,7 @@ class HuntResource extends AbstractDatabaseResource
         }
 
         foreach (['image' => 'image', 'completed_image' => 'completedImage'] as $column => $field) {
-            if (! ImageReference::isValid($model->$column)) {
+            if (! $this->images->isValid($model->$column)) {
                 throw new ValidationException([$field => $this->translator->trans('fof-scavenger-hunt.api.image_invalid')]);
             }
         }

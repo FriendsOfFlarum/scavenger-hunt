@@ -214,6 +214,9 @@ fof-scavenger-hunt:
     context_not_found: That item doesn't exist.
     claim_failed: This part has slipped away. Keep looking!
     reward_group_invalid: That group can't be a reward.
+    asset_in_use: This image is used by a hunt or part, so it can't be deleted.
+    asset_type_invalid: Upload a PNG, JPEG, GIF, WebP or SVG image.
+    asset_too_large: Images can be up to 2 MB.
   lib:
     templates:
       winter:
@@ -262,6 +265,8 @@ flarum-audit:
         progress_reset: "Reset user #{user_id}'s progress in scavenger hunt #{hunt_id}"
         hunt_completed: "Completed scavenger hunt #{hunt_id}"
         lookup_limit_reached: "Reached the daily scavenger hunt lookup limit"
+        asset_uploaded: "Uploaded scavenger hunt image {name}"
+        asset_deleted: "Deleted scavenger hunt image {name}"
 
 flarum-gdpr:
   lib:

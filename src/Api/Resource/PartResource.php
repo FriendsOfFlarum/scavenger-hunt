@@ -90,7 +90,7 @@ class PartResource extends AbstractDatabaseResource
                 ->visible(fn (Part $part) => $part->mode === PlacementMode::Fixed),
             Schema\Str::make('imageUrl')
                 ->nullable()
-                ->get(fn (Part $part) => $this->images->url($part->image)),
+                ->get(fn (Part $part, Context $context) => $this->images->url($part->image, $context)),
             Schema\Arr::make('layer')
                 ->nullable()
                 ->writable(),
@@ -156,7 +156,7 @@ class PartResource extends AbstractDatabaseResource
             $model->wander_chance = null;
         }
 
-        if (! ImageReference::isValid($model->image)) {
+        if (! $this->images->isValid($model->image)) {
             throw $this->invalid('image', 'image_invalid');
         }
 

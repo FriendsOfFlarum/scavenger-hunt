@@ -23,7 +23,8 @@
         }
     ],
     "require": {
-        "flarum/core": "^2.0.0"
+        "flarum/core": "^2.0.0",
+        "enshrined/svg-sanitize": "^1.1"
     },
     "authors": [
         {

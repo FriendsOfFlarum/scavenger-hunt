@@ -62,12 +62,12 @@ class TemplateResource extends AbstractResource implements Listable
                 ->get(fn (Template $template) => $this->templates->occasion($template)),
             Schema\Str::make('imageUrl')
                 ->nullable()
-                ->get(fn (Template $template) => $this->images->url($template->reference($template->image))),
+                ->get(fn (Template $template) => $this->images->templateUrl($template->reference($template->image))),
             Schema\Arr::make('parts')
                 ->get(fn (Template $template) => array_map(fn (TemplatePart $part) => [
                     'key' => $part->key,
                     'name' => $this->templates->partName($template, $part),
-                    'imageUrl' => $this->images->url($template->reference($part->image)),
+                    'imageUrl' => $this->images->templateUrl($template->reference($part->image)),
                     'layer' => $part->layer,
                 ], $template->parts)),
         ];

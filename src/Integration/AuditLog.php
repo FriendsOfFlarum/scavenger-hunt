@@ -16,7 +16,8 @@ use FoF\ScavengerHunt\Event;
 
 /**
  * What flarum/audit records: everything a Hunt manager changes, every Completion (with the IP
- * audit adds, which helps when checking prize winners) and crossings of the daily lookup limit.
+ * audit adds, which helps when checking prize winners), crossings of the daily lookup limit, and
+ * Asset uploads and deletions.
  * Individual Finds are left out; there are far too many to be useful.
  */
 class AuditLog
@@ -25,6 +26,7 @@ class AuditLog
     {
         $hunt = fn (Event\HuntCreated|Event\HuntUpdated|Event\HuntDeleted $e) => ['hunt_id' => $e->hunt->id, 'title' => $e->hunt->title];
         $part = fn (Event\PartCreated|Event\PartUpdated|Event\PartDeleted $e) => ['hunt_id' => $e->part->hunt_id, 'part_id' => $e->part->id, 'name' => $e->part->name];
+        $asset = fn (Event\AssetUploaded|Event\AssetDeleted $e) => ['asset_id' => $e->asset->id, 'name' => $e->asset->name];
         $location = fn (Event\LocationCreated|Event\LocationUpdated|Event\LocationDeleted $e) => ['part_id' => $e->location->part_id, 'location_id' => $e->location->id, 'spot' => $e->location->spot];
 
         return (new Audit())
@@ -39,6 +41,8 @@ class AuditLog
             ->listen(Event\LocationDeleted::class, 'fof-scavenger-hunt.location_deleted', $location)
             ->listen(Event\ProgressReset::class, 'fof-scavenger-hunt.progress_reset', fn (Event\ProgressReset $e) => ['hunt_id' => $e->hunt->id, 'user_id' => $e->user->id])
             ->listen(Event\HuntCompleted::class, 'fof-scavenger-hunt.hunt_completed', fn (Event\HuntCompleted $e) => ['hunt_id' => $e->completion->hunt_id, 'user_id' => $e->completion->user_id])
-            ->listen(Event\LookupLimitReached::class, 'fof-scavenger-hunt.lookup_limit_reached', fn (Event\LookupLimitReached $e) => ['user_id' => $e->actor->id]);
+            ->listen(Event\LookupLimitReached::class, 'fof-scavenger-hunt.lookup_limit_reached', fn (Event\LookupLimitReached $e) => ['user_id' => $e->actor->id])
+            ->listen(Event\AssetUploaded::class, 'fof-scavenger-hunt.asset_uploaded', $asset)
+            ->listen(Event\AssetDeleted::class, 'fof-scavenger-hunt.asset_deleted', $asset);
     }
 }

@@ -13,6 +13,7 @@ namespace FoF\ScavengerHunt;
 
 use Flarum\Foundation\AbstractServiceProvider;
 use FoF\ScavengerHunt\HidingSpot\HidingSpotRegistry;
+use FoF\ScavengerHunt\Image\ImageReference;
 use FoF\ScavengerHunt\Lookup\NativeRandomSource;
 use FoF\ScavengerHunt\Lookup\RandomSource;
 use FoF\ScavengerHunt\Progress\ActorProgress;
@@ -45,5 +46,7 @@ class ScavengerHuntServiceProvider extends AbstractServiceProvider
 
         // Shared, so one resource can scope the progress another resource's fields read.
         $this->container->singleton(ActorProgress::class);
+        // Shared, so the Assets of every resource in a response load together.
+        $this->container->singleton(ImageReference::class);
     }
 }
