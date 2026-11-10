@@ -26,4 +26,12 @@ describe('PartEditor', () => {
     expect(editorFor('assigned')).not.toHaveElement('.PartEditor-hint');
     expect(editorFor('wandering')).not.toHaveElement('.PartEditor-hint');
   });
+
+  it("names each Part's image group after the Part", () => {
+    const editor = editorFor('fixed');
+    const ids = editor.first('.PartEditor-imageField .ImageField').getAttribute('aria-labelledby')!.split(' ');
+    const names = ids.map((id: string) => editor.first(`#${id}`).textContent);
+
+    expect(names).toEqual(['Hat', 'fof-scavenger-hunt.forum.dashboard.parts.image']);
+  });
 });

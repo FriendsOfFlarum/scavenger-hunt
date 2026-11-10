@@ -61,12 +61,21 @@ export function resizeBy(layer: PartLayer, dWidth: number, aspect?: number | nul
   return clampLayer({ ...layer, width }, aspect);
 }
 
-export function bringForward(layer: PartLayer): PartLayer {
-  return { ...layer, z: Math.min(MAX_Z, layer.z + 1) };
+/**
+ * Moves the Part just above the nearest other Part at or above it, so the visible order changes
+ * even where layers tie (ties are drawn in document order). A Part already on top stays put.
+ */
+export function bringForward(layer: PartLayer, others: PartLayer[]): PartLayer {
+  const above = others.filter((other) => other.z >= layer.z).map((other) => other.z);
+
+  return above.length ? { ...layer, z: clamp(Math.min(...above) + 1, MIN_Z, MAX_Z) } : layer;
 }
 
-export function sendBackward(layer: PartLayer): PartLayer {
-  return { ...layer, z: Math.max(MIN_Z, layer.z - 1) };
+/** The reverse of bringForward: just below the nearest other Part at or below it. */
+export function sendBackward(layer: PartLayer, others: PartLayer[]): PartLayer {
+  const below = others.filter((other) => other.z <= layer.z).map((other) => other.z);
+
+  return below.length ? { ...layer, z: clamp(Math.max(...below) - 1, MIN_Z, MAX_Z) } : layer;
 }
 
 /** A centred, 20% wide layer drawn above every existing one. */

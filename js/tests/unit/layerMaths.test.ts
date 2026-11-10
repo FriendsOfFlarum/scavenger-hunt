@@ -104,14 +104,44 @@ describe('resizeBy', () => {
 });
 
 describe('z order', () => {
-  it('brings a Part forward one step, up to the server maximum', () => {
-    expect(bringForward(layer(0, 0, 10, 4))).toMatchObject({ z: 5 });
-    expect(bringForward(layer(0, 0, 10, MAX_Z))).toMatchObject({ z: MAX_Z });
+  const at = (z: number) => layer(0, 0, 10, z);
+
+  it('brings a Part just above the nearest Part at or above it', () => {
+    expect(bringForward(at(4), [at(2), at(6), at(9)])).toMatchObject({ z: 7 });
+    expect(bringForward(at(4), [at(5)])).toMatchObject({ z: 6 });
   });
 
-  it('sends a Part back one step, never below zero', () => {
-    expect(sendBackward(layer(0, 0, 10, 4))).toMatchObject({ z: 3 });
-    expect(sendBackward(layer(0, 0, 10, 0))).toMatchObject({ z: 0 });
+  it('brings a Part above another Part on the same layer', () => {
+    expect(bringForward(at(3), [at(3), at(8)])).toMatchObject({ z: 4 });
+  });
+
+  it('leaves a Part already on top where it is', () => {
+    expect(bringForward(at(4), [at(1), at(3)])).toEqual(at(4));
+    expect(bringForward(at(4), [])).toEqual(at(4));
+  });
+
+  it('never brings a Part past the server maximum', () => {
+    expect(bringForward(at(MAX_Z - 1), [at(MAX_Z)])).toMatchObject({ z: MAX_Z });
+    expect(bringForward(at(MAX_Z), [at(MAX_Z)])).toMatchObject({ z: MAX_Z });
+  });
+
+  it('sends a Part just below the nearest Part at or below it', () => {
+    expect(sendBackward(at(6), [at(2), at(4), at(9)])).toMatchObject({ z: 3 });
+    expect(sendBackward(at(6), [at(5)])).toMatchObject({ z: 4 });
+  });
+
+  it('sends a Part below another Part on the same layer', () => {
+    expect(sendBackward(at(3), [at(3), at(1)])).toMatchObject({ z: 2 });
+  });
+
+  it('leaves a Part already at the back where it is', () => {
+    expect(sendBackward(at(4), [at(5), at(9)])).toEqual(at(4));
+    expect(sendBackward(at(4), [])).toEqual(at(4));
+  });
+
+  it('never sends a Part below zero', () => {
+    expect(sendBackward(at(1), [at(0)])).toMatchObject({ z: 0 });
+    expect(sendBackward(at(0), [at(0)])).toMatchObject({ z: 0 });
   });
 });
 

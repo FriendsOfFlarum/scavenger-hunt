@@ -1,10 +1,12 @@
 import app from 'flarum/admin/app';
 import Extend from 'flarum/common/extenders';
 import Icon from 'flarum/common/components/Icon';
-import commonExtend from '../common/extend';
+import Asset from '../common/models/Asset';
 
 export default [
-  ...commonExtend,
+  // Only the Asset library needs a model here; the rest stay out of the admin bundle.
+  new Extend.Store().add('scavenger-hunt-assets', Asset),
+
   new Extend.Admin()
     .customSetting(
       () =>

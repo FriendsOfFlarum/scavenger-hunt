@@ -14,6 +14,7 @@ export default class AssetLibrary extends Component {
   protected loading = false;
   protected uploading = false;
   protected more = false;
+  protected failed = false;
 
   oninit(vnode: Mithril.Vnode<{}, this>) {
     super.oninit(vnode);
@@ -40,7 +41,14 @@ export default class AssetLibrary extends Component {
           <span className="helpText">{app.translator.trans('fof-scavenger-hunt.admin.assets.upload_help')}</span>
         </div>
 
-        {this.loading && !this.assets.length ? (
+        {this.failed ? (
+          <div className="AssetLibrary-error">
+            <p>{app.translator.trans('fof-scavenger-hunt.admin.assets.load_failed')}</p>
+            <Button className="Button AssetLibrary-retry" icon="fas fa-redo" onclick={() => this.load(true)}>
+              {app.translator.trans('fof-scavenger-hunt.admin.assets.retry')}
+            </Button>
+          </div>
+        ) : this.loading && !this.assets.length ? (
           <LoadingIndicator />
         ) : this.assets.length ? (
           <ul className="AssetLibrary-grid">
@@ -63,6 +71,7 @@ export default class AssetLibrary extends Component {
 
   protected load(fresh: boolean): void {
     this.loading = true;
+    this.failed = false;
 
     app.store
       .find<Asset[]>('scavenger-hunt-assets', { page: { offset: fresh ? 0 : this.assets.length } })
@@ -72,7 +81,8 @@ export default class AssetLibrary extends Component {
         this.assets = [...known, ...assets.filter((asset) => !known.includes(asset))];
         this.more = !!assets.payload?.links?.next;
       })
-      .catch(() => {})
+      // A failed later page leaves "Load more" to try again.
+      .catch(() => (this.failed = fresh))
       .finally(() => {
         this.loading = false;
         m.redraw();

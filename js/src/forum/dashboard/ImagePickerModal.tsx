@@ -20,18 +20,16 @@ type Tab = 'templates' | 'assets';
 export default class ImagePickerModal extends Modal<IImagePickerModalAttrs> {
   protected tab: Tab = 'templates';
   protected templates: HuntTemplate[] | null = null;
+  protected templatesFailed = false;
   protected assets: Asset[] | null = null;
+  protected assetsFailed = false;
   protected loadingAssets = false;
   protected moreAssets = false;
 
   oninit(vnode: Mithril.Vnode<IImagePickerModalAttrs, this>) {
     super.oninit(vnode);
 
-    app.store
-      .find<HuntTemplate[]>('scavenger-hunt-templates')
-      .then((templates) => (this.templates = templates))
-      .catch(() => (this.templates = []))
-      .finally(() => m.redraw());
+    this.loadTemplates();
 
     if (this.attrs.selected?.startsWith('asset:')) {
       this.showTab('assets');
@@ -50,12 +48,11 @@ export default class ImagePickerModal extends Modal<IImagePickerModalAttrs> {
     return (
       <div className="Modal-body">
         <div className="ImagePicker-toolbar">
-          <div className="ImagePicker-tabs" role="tablist">
+          <div className="ImagePicker-tabs">
             {(['templates', 'assets'] as const).map((tab) => (
               <Button
                 className={classList('Button Button--link ImagePicker-tab', `ImagePicker-tab--${tab}`, { active: this.tab === tab })}
-                role="tab"
-                aria-selected={this.tab === tab}
+                aria-pressed={this.tab === tab ? 'true' : 'false'}
                 onclick={() => this.showTab(tab)}
               >
                 {app.translator.trans(`fof-scavenger-hunt.forum.dashboard.images.tabs.${tab}`)}
@@ -66,21 +63,20 @@ export default class ImagePickerModal extends Modal<IImagePickerModalAttrs> {
           <Button
             className={classList('Button ImagePicker-none', { active: this.attrs.selected === null })}
             icon="fas fa-ban"
-            aria-pressed={this.attrs.selected === null}
+            aria-pressed={this.attrs.selected === null ? 'true' : 'false'}
             onclick={() => this.select(null, null)}
           >
             {app.translator.trans('fof-scavenger-hunt.forum.dashboard.images.none')}
           </Button>
         </div>
 
-        <div className="ImagePicker-panel" role="tabpanel">
-          {this.tab === 'templates' ? this.templatesPanel() : this.assetsPanel()}
-        </div>
+        <div className="ImagePicker-panel">{this.tab === 'templates' ? this.templatesPanel() : this.assetsPanel()}</div>
       </div>
     );
   }
 
   protected templatesPanel(): Mithril.Children {
+    if (this.templatesFailed) return this.loadError(() => this.loadTemplates());
     if (!this.templates) return <LoadingIndicator />;
 
     return this.templates.map((template) => (
@@ -100,6 +96,7 @@ export default class ImagePickerModal extends Modal<IImagePickerModalAttrs> {
   }
 
   protected assetsPanel(): Mithril.Children {
+    if (this.assetsFailed) return this.loadError(() => this.loadAssets());
     if (!this.assets) return <LoadingIndicator />;
 
     if (!this.assets.length) {
@@ -124,7 +121,7 @@ export default class ImagePickerModal extends Modal<IImagePickerModalAttrs> {
         <button
           type="button"
           className={classList('ImagePicker-item', { 'ImagePicker-item--selected': selected })}
-          aria-pressed={selected}
+          aria-pressed={selected ? 'true' : 'false'}
           data-reference={reference}
           onclick={() => this.select(reference, url)}
         >
@@ -133,6 +130,27 @@ export default class ImagePickerModal extends Modal<IImagePickerModalAttrs> {
         </button>
       </li>
     );
+  }
+
+  protected loadError(retry: () => void): Mithril.Children {
+    return (
+      <div className="ImagePicker-error">
+        <p>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.images.load_failed')}</p>
+        <Button className="Button ImagePicker-retry" icon="fas fa-redo" onclick={retry}>
+          {app.translator.trans('fof-scavenger-hunt.forum.dashboard.images.retry')}
+        </Button>
+      </div>
+    );
+  }
+
+  protected loadTemplates(): void {
+    this.templatesFailed = false;
+
+    app.store
+      .find<HuntTemplate[]>('scavenger-hunt-templates')
+      .then((templates) => (this.templates = templates))
+      .catch(() => (this.templatesFailed = true))
+      .finally(() => m.redraw());
   }
 
   protected showTab(tab: Tab): void {
@@ -147,6 +165,7 @@ export default class ImagePickerModal extends Modal<IImagePickerModalAttrs> {
     const known = this.assets ?? [];
 
     this.loadingAssets = true;
+    this.assetsFailed = false;
 
     app.store
       .find<Asset[]>('scavenger-hunt-assets', { page: { offset: known.length } })
@@ -154,7 +173,8 @@ export default class ImagePickerModal extends Modal<IImagePickerModalAttrs> {
         this.assets = [...known, ...assets.filter((asset) => !known.includes(asset))];
         this.moreAssets = !!assets.payload?.links?.next;
       })
-      .catch(() => (this.assets ??= []))
+      // A failed first page offers a retry; a failed later page leaves "Load more" to try again.
+      .catch(() => (this.assetsFailed = !this.assets))
       .finally(() => {
         this.loadingAssets = false;
         m.redraw();

@@ -194,8 +194,10 @@
 }
 
 // Layers are placed in canvas coordinates, so the artwork never mirrors in RTL.
+// Layer z-indexes reach 1000 (core's header), so the canvas stacks them on their own.
 .CollectionView-canvas {
   position: relative;
+  isolation: isolate;
   width: 100%;
   max-width: 360px;
   aspect-ratio: 1;
@@ -658,6 +660,7 @@
 // Canvas coordinates, like .CollectionView-canvas: never mirrored in RTL.
 .LayerEditor-canvas {
   position: relative;
+  isolation: isolate;
   flex: 0 1 400px;
   max-width: 100%;
   aspect-ratio: 1;
@@ -765,6 +768,19 @@
   white-space: nowrap;
 }
 
+.LayerEditor-unplacedItem--noImage .LayerEditor-thumbnail {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--muted-color);
+}
+
+.LayerEditor-noImage {
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
 .LayerEditor-actions {
   display: flex;
   flex-wrap: wrap;
@@ -799,6 +815,7 @@
 
 .TemplateGallery-preview {
   position: relative;
+  isolation: isolate;
   width: 100%;
   aspect-ratio: 1;
   overflow: hidden;
@@ -895,6 +912,10 @@
   &.active {
     border: 2px solid var(--primary-color);
   }
+}
+
+.ImagePicker-error p {
+  margin-block-end: 10px;
 }
 
 .ImagePicker-groupTitle {

@@ -142,6 +142,8 @@ fof-scavenger-hunt:
           templates: Templates
           assets: Uploaded images
         empty: No images have been uploaded yet. Admins upload images in the admin panel.
+        load_failed: The images couldn't be loaded.
+        retry: Try again
         load_more: Load more
       schedule:
         enabled: Enabled
@@ -177,9 +179,11 @@ fof-scavenger-hunt:
       layout:
         heading: Arrange the collectable
         help: Drag a part to move it and pull its corner to resize it. Arrow keys move the selected part (hold Shift for bigger steps). Changes are kept only after you save the layout.
-        part_label: "{name}: left {x}%, top {y}%, width {width}%, layer {z}"
+        movable_part: movable part
+        position: "{name}: left {x}%, top {y}%, width {width}%, layer {z}"
         unplaced: Not on the canvas
         place: Place on canvas
+        no_image: No image yet
         forward: Bring forward
         backward: Send backward
         save: Save layout
@@ -218,11 +222,14 @@ fof-scavenger-hunt:
       daily_lookup_limit_help: Holds scripts to roughly human browsing speed.
     assets:
       title: Image library
+      tab: Images
       help: Images uploaded here can be used as the collectable or a part in any hunt.
       upload: Upload image
       upload_help: PNG, JPEG, GIF, WebP or SVG, up to 2 MB.
       empty: No images uploaded yet.
-      name_label: Image name
+      load_failed: The images couldn't be loaded.
+      retry: Try again
+      name_label: "Name of {name}"
       dimensions: "{width} × {height}"
       size_kb: "{size} KB"
       size_mb: "{size} MB"

@@ -72,7 +72,7 @@ export default class TemplateGalleryModal extends FormModal {
         <button
           type="button"
           role="radio"
-          aria-checked={this.chosen === null}
+          aria-checked={this.chosen === null ? 'true' : 'false'}
           className={classList('TemplateGallery-item', { 'TemplateGallery-item--chosen': this.chosen === null })}
           onclick={() => choose(null)}
         >
@@ -84,7 +84,7 @@ export default class TemplateGalleryModal extends FormModal {
           <button
             type="button"
             role="radio"
-            aria-checked={this.chosen === template}
+            aria-checked={this.chosen === template ? 'true' : 'false'}
             className={classList('TemplateGallery-item', { 'TemplateGallery-item--chosen': this.chosen === template })}
             onclick={() => choose(template)}
           >

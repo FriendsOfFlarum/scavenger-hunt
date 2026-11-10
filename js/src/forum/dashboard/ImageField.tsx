@@ -9,6 +9,7 @@ export interface IImageFieldAttrs extends ComponentAttrs {
   stream: Stream<string | null>;
   /** The URL of the saved reference. */
   url: string | null | undefined;
+  /** Space-separated ids, as for aria-labelledby. */
   labelledby?: string;
 }
 

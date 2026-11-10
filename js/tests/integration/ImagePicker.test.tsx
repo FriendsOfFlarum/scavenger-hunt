@@ -61,17 +61,24 @@ function asset(id: string, name: string) {
   };
 }
 
+type AssetPage = { data: object[]; next?: boolean } | 'error';
+
 // Fresh payloads per call: the store keeps pushed attributes by reference.
-function mockApi(assets: { data: object[]; next?: boolean }[] = [{ data: [asset('2', 'Gift'), asset('1', 'Bell')] }]) {
+function mockApi(assets: AssetPage[] = [{ data: [asset('2', 'Gift'), asset('1', 'Bell')] }], templates: ('ok' | 'error')[] = ['ok']) {
   let assetPage = 0;
+  let templateCall = 0;
 
   return jest.spyOn(app, 'request').mockImplementation(((options: { url: string; method?: string; body?: any }) => {
     if (options.url.includes('scavenger-hunt-templates')) {
+      if (templates[Math.min(templateCall++, templates.length - 1)] === 'error') return Promise.reject(new Error('500'));
+
       return Promise.resolve({ data: [template('winter', 'Build a Snowman', ['hat', 'nose']), template('spring', 'Flower pot', ['bloom'])] });
     }
 
     if (options.url.includes('scavenger-hunt-assets')) {
       const page = assets[Math.min(assetPage++, assets.length - 1)];
+
+      if (page === 'error') return Promise.reject(new Error('500'));
 
       return Promise.resolve({ data: page.data, links: page.next ? { next: 'https://example.com/api/scavenger-hunt-assets?page[offset]=2' } : {} });
     }
@@ -150,6 +157,79 @@ describe('ImagePickerModal', () => {
 
     expect(picker.find('.ImagePicker-item--selected')).toHaveLength(1);
     expect(picker).toHaveElement('.ImagePicker-item--selected[data-reference="template:winter/nose.svg"]');
+    expect(picker).toHaveElementAttr('[data-reference="template:winter/nose.svg"]', 'aria-pressed', 'true');
+    expect(picker).toHaveElementAttr('[data-reference="template:winter/hat.svg"]', 'aria-pressed', 'false');
+    expect(picker).toHaveElementAttr('.ImagePicker-none', 'aria-pressed', 'false');
+  });
+
+  it('marks "No image" as pressed when nothing is chosen', async () => {
+    mockApi();
+    const { picker } = await renderPicker(null);
+
+    expect(picker).toHaveElementAttr('.ImagePicker-none', 'aria-pressed', 'true');
+  });
+
+  it('switches between Templates and uploads with toggle buttons', async () => {
+    mockApi();
+    const { picker } = await renderPicker();
+
+    expect(picker).not.toHaveElement('[role="tablist"]');
+    expect(picker).not.toHaveElement('[role="tab"]');
+    expect(picker).not.toHaveElement('[role="tabpanel"]');
+    expect(picker).toHaveElementAttr('.ImagePicker-tab--templates', 'aria-pressed', 'true');
+    expect(picker).toHaveElementAttr('.ImagePicker-tab--assets', 'aria-pressed', 'false');
+
+    picker.click('.ImagePicker-tab--assets');
+    await settle(picker);
+
+    expect(picker).toHaveElementAttr('.ImagePicker-tab--templates', 'aria-pressed', 'false');
+    expect(picker).toHaveElementAttr('.ImagePicker-tab--assets', 'aria-pressed', 'true');
+  });
+
+  it('offers a retry when the Templates fail to load', async () => {
+    const request = mockApi(undefined, ['error', 'ok']);
+    const { picker } = await renderPicker();
+
+    expect(picker).toHaveElement('.ImagePicker-error');
+    expect(picker).not.toHaveElement('.ImagePicker-empty');
+    expect(picker).not.toHaveElement('.ImagePicker-group');
+
+    picker.click('.ImagePicker-retry');
+    await settle(picker);
+
+    expect(request).toHaveBeenCalledTimes(2);
+    expect(picker).not.toHaveElement('.ImagePicker-error');
+    expect(picker.find('.ImagePicker-group')).toHaveLength(2);
+  });
+
+  it('offers a retry when the uploaded images fail to load', async () => {
+    mockApi(['error', { data: [asset('1', 'Bell')] }]);
+    const { picker } = await renderPicker();
+
+    picker.click('.ImagePicker-tab--assets');
+    await settle(picker);
+
+    expect(picker).toHaveElement('.ImagePicker-error');
+    expect(picker).not.toHaveElement('.ImagePicker-empty');
+
+    picker.click('.ImagePicker-retry');
+    await settle(picker);
+
+    expect(picker).not.toHaveElement('.ImagePicker-error');
+    expect(picker.find('.ImagePicker-item').map((el) => el.getAttribute('data-reference'))).toEqual(['asset:1']);
+  });
+
+  it('keeps the uploaded images shown when loading more fails', async () => {
+    mockApi([{ data: [asset('3', 'Star')], next: true }, 'error']);
+    const { picker } = await renderPicker();
+
+    picker.click('.ImagePicker-tab--assets');
+    await settle(picker);
+    picker.click('.ImagePicker-more');
+    await settle(picker);
+
+    expect(picker.find('.ImagePicker-item')).toHaveLength(1);
+    expect(picker).toHaveElement('.ImagePicker-more');
   });
 
   it('opens on the uploaded images when the current image is an Asset', async () => {

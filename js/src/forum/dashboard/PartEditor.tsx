@@ -92,7 +92,9 @@ export default class PartEditor extends Component<PartEditorAttrs> {
           ) : (
             <Icon name="fas fa-puzzle-piece" className="PartEditor-image" />
           )}
-          <h4 className="PartEditor-title">{part.name()}</h4>
+          <h4 className="PartEditor-title" id={`part-${part.id()}-title`}>
+            {part.name()}
+          </h4>
           <div className="PartEditor-actions">
             <Button className="Button Button--primary" icon="fas fa-check" loading={this.saving} onclick={() => this.save()}>
               {app.translator.trans('fof-scavenger-hunt.forum.dashboard.save')}
@@ -149,7 +151,7 @@ export default class PartEditor extends Component<PartEditorAttrs> {
           <div className="PartEditor-fields">
             <div className="Form-group PartEditor-imageField">
               <label id={`part-${part.id()}-image`}>{app.translator.trans('fof-scavenger-hunt.forum.dashboard.parts.image')}</label>
-              <ImageField stream={this.image} url={part.imageUrl()} labelledby={`part-${part.id()}-image`} />
+              <ImageField stream={this.image} url={part.imageUrl()} labelledby={`part-${part.id()}-title part-${part.id()}-image`} />
             </div>
 
             {(['x', 'y', 'width', 'z'] as const).map((key) => (
