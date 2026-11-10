@@ -198,6 +198,8 @@ fof-scavenger-hunt:
         delete: Delete hiding place
         place_on_forum: Place on the forum
   admin:
+    dashboard_link: Open the hunt dashboard
+    dashboard_link_help: Hunts are created and run from the forum, by members with the Manage scavenger hunts permission.
     permissions:
       play: Collect scavenger hunt parts
       manage: Manage scavenger hunts

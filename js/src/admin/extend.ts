@@ -1,10 +1,22 @@
 import app from 'flarum/admin/app';
 import Extend from 'flarum/common/extenders';
+import Icon from 'flarum/common/components/Icon';
 import commonExtend from '../common/extend';
 
 export default [
   ...commonExtend,
   new Extend.Admin()
+    .customSetting(
+      () =>
+        m('.Form-group.ScavengerHuntAdmin-dashboardLink', [
+          m('a.Button', { href: app.forum.attribute<string>('baseUrl') + '/scavenger-hunt/dashboard' }, [
+            m(Icon, { name: 'fas fa-binoculars', className: 'Button-icon' }),
+            m('span.Button-label', app.translator.trans('fof-scavenger-hunt.admin.dashboard_link')),
+          ]),
+          m('.helpText', app.translator.trans('fof-scavenger-hunt.admin.dashboard_link_help')),
+        ]),
+      100
+    )
     .setting(() => ({
       setting: 'fof-scavenger-hunt.showHeaderIndicator',
       type: 'boolean',
