@@ -55,6 +55,32 @@ There are two permissions:
 - **Collect scavenger hunt parts** (Members by default)
 - **Manage scavenger hunts** (Moderators by default)
 
+### Serving uploaded images safely (recommended)
+
+Uploaded images are served from your forum's own domain, under `assets/scavenger-hunt/`. Uploaded SVGs are already cleaned, but you can add a second layer of protection: tell browsers to treat these files as plain images that can't run scripts or load anything else. Add one of these to your web server configuration and reload it. If Flarum is installed in a subfolder, put that folder in front of `/assets`.
+
+**nginx**, inside your Flarum `server` block. The `^~` makes this location win over the image block in Flarum's `.nginx.conf`, so it repeats that block's cache header:
+
+```nginx
+location ^~ /assets/scavenger-hunt/ {
+    add_header Content-Security-Policy "default-src 'none'; style-src 'unsafe-inline'; img-src data:; sandbox" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Cache-Control "max-age=2592000";
+    access_log off;
+}
+```
+
+**Apache** (2.4, with `mod_headers`), in your virtual host or in Flarum's `public/.htaccess`:
+
+```apache
+<If "%{REQUEST_URI} =~ m#^/assets/scavenger-hunt/#">
+    Header always set Content-Security-Policy "default-src 'none'; style-src 'unsafe-inline'; img-src data:; sandbox"
+    Header always set X-Content-Type-Options "nosniff"
+</If>
+```
+
+If your forum's assets are stored on S3 or served through a CDN, set the same two headers there for the `scavenger-hunt/` folder instead.
+
 ## Integrations
 
 All optional; each works once the other extension is enabled.
