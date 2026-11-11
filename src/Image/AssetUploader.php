@@ -20,9 +20,7 @@ use FoF\ScavengerHunt\Event\AssetUploaded;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Filesystem\Factory;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Intervention\Gif\Exceptions\DecoderException as GifDecoderException;
 use Intervention\Image\Decoders\BinaryImageDecoder;
-use Intervention\Image\Exceptions\DecoderException;
 use Intervention\Image\ImageManager;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
@@ -131,9 +129,11 @@ class AssetUploader
                 throw $this->invalid('asset_type_invalid');
             }
 
+            // Intervention's decoders and its GIF library each throw their own RuntimeException
+            // subclasses, and which ones a read declares differs between PHP versions.
             try {
                 $this->images->read($contents, BinaryImageDecoder::class);
-            } catch (DecoderException|GifDecoderException) {
+            } catch (RuntimeException) {
                 throw $this->invalid('asset_type_invalid');
             }
 
