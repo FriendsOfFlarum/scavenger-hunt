@@ -25,7 +25,8 @@ return Migration::createTable('fof_scavenger_encounters', function (Blueprint $t
     $table->dateTime('claimed_at')->nullable();
     $table->unsignedInteger('claim_ms')->nullable();
 
-    $table->index(['user_id', 'part_id', 'expires_at']);
+    // Named, because the generated name plus a table prefix passes MySQL's 64-character limit.
+    $table->index(['user_id', 'part_id', 'expires_at'], 'fof_scavenger_encounters_user_part_expires_index');
     $table->index(['part_id', 'claimed_at']);
     $table->foreign('part_id')->references('id')->on('fof_scavenger_parts')->cascadeOnDelete();
     $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
