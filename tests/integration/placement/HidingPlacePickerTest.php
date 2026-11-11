@@ -224,6 +224,28 @@ class HidingPlacePickerTest extends TestCase
     }
 
     #[Test]
+    public function the_search_window_is_the_last_page_level_place(): void
+    {
+        $this->app();
+        $this->loadTranslations();
+        $this->database()->table('posts')->delete();
+        $this->database()->table('discussions')->delete();
+
+        $taken = array_map(
+            fn (string $spot) => ['spot' => $spot, 'route' => 'index', 'contextType' => null, 'contextId' => null],
+            ['page.footer', 'page.corner', 'page.sidebar'],
+        );
+
+        $places = $this->suggest([2], $taken)[0]['places'];
+
+        $this->assertCount(1, $places);
+        $this->assertSame('search.modal', $places[0]['spot']);
+        $this->assertSame('index', $places[0]['route']);
+        $this->assertTrue($places[0]['fallback']);
+        $this->assertSame('Search window · All discussions page', $places[0]['label']);
+    }
+
+    #[Test]
     public function suggesting_for_more_parts_runs_no_more_queries(): void
     {
         $db = $this->app()->getContainer()->make(ConnectionInterface::class);

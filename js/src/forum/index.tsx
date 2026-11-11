@@ -113,6 +113,11 @@ app.initializers.add('fof-scavenger-hunt', () => {
     });
   }
 
+  // The search window is loaded on demand, so its spot is looked up the first time search is opened on a page.
+  extend('flarum/common/components/SearchModal', 'activeTabItems', function (items: ItemList<Mithril.Children>) {
+    items.add('scavengerHuntSpot', <HidingSpot spot="search.modal" className="HidingSpot-searchModal" />, -1000);
+  });
+
   // Core's Footer renders nothing; it is mounted on every page, so it hosts the footer and corner spots.
   override(Footer.prototype, 'view', function (original: () => Mithril.Children) {
     return [

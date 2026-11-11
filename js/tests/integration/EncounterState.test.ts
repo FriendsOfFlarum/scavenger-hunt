@@ -2,6 +2,7 @@ import bootstrapForum from '@flarum/jest-config/src/bootstrap/forum';
 import app from 'flarum/forum/app';
 import { jest } from '@jest/globals';
 import EncounterState from '../../src/forum/states/EncounterState';
+import Encounter from '../../src/common/models/Encounter';
 
 const hunt = { id: 1, slug: 'snowman', title: 'Snowman', partCount: 7, foundCount: 0, canClaim: true };
 
@@ -84,6 +85,28 @@ describe('EncounterState', () => {
 
     expect(request).toHaveBeenCalledTimes(2);
     expect(sentSpots(request, 1)).toEqual([{ spot: 'post.footer', contextType: 'post', contextId: 9 }]);
+  });
+
+  it('keeps a Part when its spot closes and opens again on the same page, without looking again', async () => {
+    app.store.models['scavenger-hunt-encounters'] = Encounter;
+    const request = jest
+      .spyOn(app, 'request')
+      .mockResolvedValue({
+        data: [{ type: 'scavenger-hunt-encounters', id: '1:search.modal::', attributes: { spot: 'search.modal', token: 'abc' } }],
+      } as never);
+    const state = new EncounterState();
+
+    state.pageChanged('index', {});
+    state.register({ spot: 'search.modal' });
+    await jest.advanceTimersByTimeAsync(500);
+
+    // The search window is closed, then opened again.
+    state.unregister({ spot: 'search.modal' });
+    state.register({ spot: 'search.modal' });
+    await jest.advanceTimersByTimeAsync(500);
+
+    expect(request).toHaveBeenCalledTimes(1);
+    expect(state.encounterAt({ spot: 'search.modal' })?.token()).toBe('abc');
   });
 
   it('reports every mounted spot again on a new page', async () => {

@@ -98,6 +98,7 @@ All optional; each works once the other extension is enabled.
 | `page.footer` | Footer, every page |
 | `page.corner` | Floating corner, every page |
 | `page.sidebar` | Index sidebar |
+| `search.modal` | Search window, every page (shown once a member opens search) |
 | `discussion.hero` | Discussion header |
 | `post.body-end` | End of a post |
 | `post.footer` | Post footer |

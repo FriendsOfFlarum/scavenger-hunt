@@ -84,6 +84,26 @@ class LookupTest extends TestCase
     }
 
     #[Test]
+    public function a_part_in_the_search_window_appears_only_once_search_is_opened(): void
+    {
+        $this->prepareDatabase([
+            'fof_scavenger_parts' => [$this->partRow(['id' => 3, 'hunt_id' => 1, 'name' => 'Search part'])],
+            'fof_scavenger_locations' => [$this->locationRow(['id' => 3, 'part_id' => 3, 'spot' => 'search.modal', 'route' => 'tags'])],
+        ]);
+
+        $partIds = fn (array $data) => array_map(fn (array $encounter) => $encounter['relationships']['part']['data']['id'], $data);
+
+        // The page alone, or search opened on another page, shows nothing.
+        $this->assertNotContains('3', $partIds($this->body($this->lookup(2, 'tags', [['spot' => 'page.corner']]))['data']));
+        $this->assertNotContains('3', $partIds($this->body($this->lookup(2, 'index', [['spot' => 'search.modal']]))['data']));
+
+        $data = $this->body($this->lookup(2, 'tags', [['spot' => 'search.modal']]))['data'];
+
+        $this->assertSame(['3'], $partIds($data));
+        $this->assertSame('search.modal', $data[0]['attributes']['spot']);
+    }
+
+    #[Test]
     public function a_found_part_does_not_appear_again(): void
     {
         $this->prepareDatabase([

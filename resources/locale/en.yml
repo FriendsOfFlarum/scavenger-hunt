@@ -262,6 +262,7 @@ fof-scavenger-hunt:
       page_footer: Page footer
       page_corner: Page corner (floating)
       page_sidebar: Page sidebar
+      search_modal: Search window
       discussion_hero: Discussion header
       post_body_end: End of a post
       post_footer: Post footer
@@ -298,6 +299,7 @@ fof-scavenger-hunt:
       page_footer: "Page footer · {page}"
       page_corner: "Page corner · {page}"
       page_sidebar: "Page sidebar · {page}"
+      search_modal: "Search window · {page}"
       pages:
         index: All discussions page
         tags: Tags page

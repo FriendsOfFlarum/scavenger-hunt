@@ -51,6 +51,9 @@ class HidingSpotsTest extends TestCase
         $this->assertTrue($spots->has('page.sidebar'));
         $this->assertSame('Page corner (floating)', $spots['page.corner']['attributes']['label']);
         $this->assertNull($spots['page.corner']['attributes']['contextType']);
+        $this->assertSame('Search window', $spots['search.modal']['attributes']['label']);
+        $this->assertNull($spots['search.modal']['attributes']['contextType']);
+        $this->assertNull($spots['search.modal']['attributes']['routes'], 'the search window opens from any page');
 
         $routes = array_column($body['meta']['routes'], 'name');
         $this->assertContains('index', $routes);

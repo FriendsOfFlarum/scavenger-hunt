@@ -68,6 +68,7 @@ return [
         ->add('page.footer', 'fof-scavenger-hunt.admin.spots.page_footer')
         ->add('page.corner', 'fof-scavenger-hunt.admin.spots.page_corner')
         ->add('page.sidebar', 'fof-scavenger-hunt.admin.spots.page_sidebar')
+        ->add('search.modal', 'fof-scavenger-hunt.admin.spots.search_modal')
         ->add('discussion.hero', 'fof-scavenger-hunt.admin.spots.discussion_hero', ['discussion'], 'discussion', HidingSpot\Constraint\IsPageDiscussion::class)
         ->add('post.body-end', 'fof-scavenger-hunt.admin.spots.post_body_end', ['discussion'], 'post', HidingSpot\Constraint\PostInPageDiscussion::class)
         ->add('post.footer', 'fof-scavenger-hunt.admin.spots.post_footer', ['discussion'], 'post', HidingSpot\Constraint\PostInPageDiscussion::class)

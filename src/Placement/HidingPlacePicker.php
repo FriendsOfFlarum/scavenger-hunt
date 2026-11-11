@@ -50,11 +50,13 @@ class HidingPlacePicker
 
     /**
      * Page-level spots on specific pages, for when the forum has too little visible content.
+     * The search window comes last: members only see it once they open search.
      */
     protected const FALLBACK_SPOTS = [
         'page.footer' => 'page_footer',
         'page.corner' => 'page_corner',
         'page.sidebar' => 'page_sidebar',
+        'search.modal' => 'search_modal',
     ];
 
     protected const FALLBACK_ROUTES = ['index', 'tags'];
