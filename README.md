@@ -38,7 +38,7 @@ php flarum cache:clear
 Hunt managers (moderators and admins by default) open **Scavenger hunts** from the session menu or the index sidebar.
 
 1. **New hunt** → pick a template (or Blank) and give it a title. There are twelve templates: spring, summer, autumn, winter, Easter, Ramadan, Thanksgiving, Christmas, New Year, Halloween, a treasure chest for promotions, and a birthday cake for your forum's anniversary. Templates carry no dates, since seasons and moving holidays differ between forums.
-2. **Details**: the title, description, and the collectable's images. Pick any template image or an image uploaded in the admin panel.
+2. **Details**: the title, description, and the collectable's images. Pick any template image or an uploaded image, or upload one from the picker if you're allowed to upload hunt images. The picker says what each image should be and flags uploaded images that don't fit; see [Making your own artwork](#making-your-own-artwork).
 3. **Parts & locations**: give each part an image, a placement mode, a hint for fixed parts, and one or more hiding places. **Hide the parts for me** proposes a specific place for every part that has none (a post, a discussion, a user card or a tag tile that the hunt's audience can see; three places for assigned and wandering parts). Review the list, pick another place or choose one yourself for any part, then save. The same option is a checkbox when you create a hunt from a template. Arrange the collectable by dragging parts on the canvas, resizing them from the corner handle and changing their stacking order, then **Save layout**. **Place on the forum** switches on **hide it here** mode: every hiding spot on the forum is outlined, and clicking one hides the part there.
 4. **Rewards**: a message revealed only to finishers, and a group finishers join automatically. Only members who can edit user groups can choose the group, because joining it grants its permissions.
 5. **Schedule & audience**: enable the hunt, optionally set when it starts and ends, and choose whether guests can see parts.
@@ -51,9 +51,24 @@ In the admin panel you can:
 - set the number of parts per page, the claim window, and the per-minute and per-day lookup limits;
 - manage the **image library**: upload PNG, JPEG, GIF, WebP or SVG images up to 2 MB for hunt managers to use, rename them, and delete the ones no hunt or part uses. Uploaded SVGs are cleaned of scripts, event handlers and references to other sites.
 
-There are two permissions:
+There are three permissions:
 - **Collect scavenger hunt parts** (Members by default)
 - **Manage scavenger hunts** (Moderators by default)
+- **Upload hunt images** (Moderators by default): upload images from the hunt dashboard's image picker. Anyone other than an admin can upload up to 30 images an hour. Renaming and deleting images stays in the admin panel.
+
+## Making your own artwork
+
+A hunt needs a picture to build on and one image for each part. As members find the parts, they appear on the picture. The **Artwork guide**, linked from the image picker, the layer editor and the admin image library, shows this with the winter template taken apart.
+
+| Image | What it should be | Why |
+|---|---|---|
+| Collectable picture | Square, at least 800 × 800 pixels | The collection is drawn on a square canvas up to 360 pixels wide, or 720 on high-density screens. |
+| Part images | Transparent background, cropped close to the piece, at least 256 pixels on the longer side (PNG, WebP or SVG) | Parts are layered on the picture, placed and sized in the layer editor. Members also see a part on its own, about 40 pixels across, where it's hidden. |
+| Completed picture (optional) | Square, the same size as the collectable picture | Shown once a member finds every part. Without one, the picture with every part in place is shown. |
+
+Every image can be PNG, JPEG, GIF, WebP or SVG, up to 2 MB. Uploaded SVGs lose scripts, links to other files and web fonts, so convert text to outlines before uploading.
+
+Images that don't fit aren't refused. The image picker marks uploaded images that are **Not square**, **Small** or have a **Solid background** for what you're choosing, and the layer editor warns when a placed part has a solid background. The quickest start is a template: create the hunt from one, then replace single pieces with your own, drawn at the same scale as the picture.
 
 ### Serving uploaded images safely (recommended)
 

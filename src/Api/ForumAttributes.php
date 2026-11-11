@@ -16,6 +16,7 @@ use Flarum\Api\Schema;
 use Flarum\User\User;
 use FoF\ScavengerHunt\Access\HuntAccess;
 use FoF\ScavengerHunt\HuntMap\HuntMapRepository;
+use FoF\ScavengerHunt\Permission;
 use Illuminate\Database\ConnectionInterface;
 
 /**
@@ -44,6 +45,9 @@ class ForumAttributes
             Schema\Boolean::make('scavengerHuntCanAwardGroups')
                 ->visible(fn (object $forum, Context $context) => $this->access->canManage($context->getActor()))
                 ->get(fn (object $forum, Context $context) => $context->getActor()->hasPermission('user.editGroups')),
+            Schema\Boolean::make('scavengerHuntCanUploadImages')
+                ->visible(fn (object $forum, Context $context) => $this->access->canManage($context->getActor()))
+                ->get(fn (object $forum, Context $context) => $context->getActor()->hasPermission(Permission::UPLOAD_IMAGES)),
         ];
     }
 

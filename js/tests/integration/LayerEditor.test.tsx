@@ -8,6 +8,7 @@ import PartEditor from '../../src/forum/dashboard/PartEditor';
 import type Hunt from '../../src/common/models/Hunt';
 import type Part from '../../src/common/models/Part';
 import type { PartLayer } from '../../src/common/models/Part';
+import { backgroundCheck } from '../../src/common/utils/artworkFit';
 
 beforeAll(() => {
   bootstrapForum();
@@ -16,6 +17,11 @@ beforeAll(() => {
   app.translator.addTranslations({
     'fof-scavenger-hunt.forum.dashboard.layout.position': '{name}: left {x}%, top {y}%, width {width}%, layer {z}',
   });
+});
+
+beforeEach(() => {
+  // jsdom has no canvas; tests that care stub a result of their own.
+  jest.spyOn(backgroundCheck, 'isSolid').mockResolvedValue(null);
 });
 
 afterEach(() => {
@@ -334,6 +340,30 @@ describe('LayerEditor', () => {
     expect(() => editor.trigger(layerSelector(parts[0]), 'pointerup', { pointerId: 1, clientX: 140, clientY: 120 } as never)).not.toThrow();
 
     expect(editor.first('.LayerEditor-status').textContent).toBe('Part 1: left 20%, top 15%, width 20%, layer 1');
+  });
+
+  it('warns when the selected Part has a solid background, and links to the Artwork guide', async () => {
+    const check = jest.spyOn(backgroundCheck, 'isSolid').mockImplementation((url: string) => Promise.resolve(url.endsWith('/0.svg')));
+    const { hunt, parts } = setup([
+      { x: 10, y: 10, width: 20, z: 1 },
+      { x: 50, y: 50, width: 10, z: 2 },
+    ]);
+    const editor = render(hunt, parts);
+
+    expect(editor).toHaveElement('.LayerEditor-guide');
+
+    editor.trigger(layerSelector(parts[0]), 'focus', {} as Event);
+    await settle(editor);
+    expect(editor).toHaveElement('.LayerEditor-solidBackground');
+
+    editor.trigger(layerSelector(parts[1]), 'focus', {} as Event);
+    await settle(editor);
+    expect(editor).not.toHaveElement('.LayerEditor-solidBackground');
+
+    // Each image is checked once.
+    editor.trigger(layerSelector(parts[0]), 'focus', {} as Event);
+    await settle(editor);
+    expect(check.mock.calls.filter(([url]) => url.endsWith('/0.svg'))).toHaveLength(1);
   });
 
   it('brings the selected Part forward past its neighbour and sends it back', async () => {

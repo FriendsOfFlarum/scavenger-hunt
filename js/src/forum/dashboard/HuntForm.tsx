@@ -90,7 +90,13 @@ export default class HuntForm extends Component<HuntFormAttrs> {
       </div>,
       <div className="Form-group HuntForm-image">
         <label id="hunt-image">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.details.image')}</label>
-        <ImageField stream={this.image} url={this.attrs.hunt.imageUrl()} labelledby="hunt-image" template={this.attrs.hunt.template()} />
+        <ImageField
+          stream={this.image}
+          url={this.attrs.hunt.imageUrl()}
+          labelledby="hunt-image"
+          template={this.attrs.hunt.template()}
+          purpose="collectable"
+        />
       </div>,
       <div className="Form-group HuntForm-completedImage">
         <label id="hunt-completed-image">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.details.completed_image')}</label>
@@ -99,6 +105,7 @@ export default class HuntForm extends Component<HuntFormAttrs> {
           url={this.attrs.hunt.completedImageUrl()}
           labelledby="hunt-completed-image"
           template={this.attrs.hunt.template()}
+          purpose="completed"
         />
         <div className="helpText">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.details.completed_image_help')}</div>
       </div>,

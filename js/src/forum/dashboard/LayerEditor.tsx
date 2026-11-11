@@ -9,6 +9,8 @@ import type Part from '../../common/models/Part';
 import type { PartLayer } from '../../common/models/Part';
 import toast from '../utils/toast';
 import { bringForward, defaultLayer, layerStyle, layersEqual, moveBy, pointerDelta, resizeBy, sendBackward, type CanvasSize } from './layerMaths';
+import showArtworkGuide from '../../common/utils/showArtworkGuide';
+import { backgroundCheck } from '../../common/utils/artworkFit';
 
 export interface ILayerEditorAttrs extends ComponentAttrs {
   hunt: Hunt;
@@ -56,6 +58,7 @@ function capturePointer(element: HTMLElement, pointerId: number, capture: boolea
 export default class LayerEditor<CustomAttrs extends ILayerEditorAttrs = ILayerEditorAttrs> extends Component<CustomAttrs> {
   protected changes: Record<string, Change> = {};
   protected aspects: Record<string, number> = {};
+  protected solid: Record<string, boolean | null | undefined> = {};
   protected selected: string | null = null;
   protected drag: Drag | null = null;
   protected saving = false;
@@ -78,6 +81,9 @@ export default class LayerEditor<CustomAttrs extends ILayerEditorAttrs = ILayerE
         <p className="helpText" id={helpId}>
           {app.translator.trans('fof-scavenger-hunt.forum.dashboard.layout.help')}
         </p>
+        <Button className="Button Button--link LayerEditor-guide" icon="fas fa-palette" onclick={() => showArtworkGuide()}>
+          {app.translator.trans('fof-scavenger-hunt.lib.artwork.guide_link')}
+        </Button>
 
         <div className="LayerEditor-body">
           <div className="LayerEditor-canvas" onpointerdown={(e: PointerEvent) => this.deselect(e)}>
@@ -203,8 +209,31 @@ export default class LayerEditor<CustomAttrs extends ILayerEditorAttrs = ILayerE
             {app.translator.trans('fof-scavenger-hunt.forum.dashboard.layout.backward')}
           </Button>
         </div>
+        {this.hasSolidBackground(part) && (
+          <p className="LayerEditor-solidBackground">
+            <Icon name="fas fa-exclamation-triangle" /> {app.translator.trans('fof-scavenger-hunt.lib.artwork.solid_background_hint')}
+          </p>
+        )}
       </div>
     );
+  }
+
+  /** Whether the Part's image covers what's underneath it. Checked once per image, in the background. */
+  protected hasSolidBackground(part: Part): boolean {
+    const url = part.imageUrl();
+
+    if (!url) return false;
+
+    if (!(url in this.solid)) {
+      this.solid[url] = undefined;
+
+      backgroundCheck.isSolid(url).then((solid) => {
+        this.solid[url] = solid;
+        if (solid) m.redraw();
+      });
+    }
+
+    return this.solid[url] === true;
   }
 
   /** Parts drawn on the canvas. */

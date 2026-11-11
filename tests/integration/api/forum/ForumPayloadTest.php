@@ -89,6 +89,15 @@ class ForumPayloadTest extends TestCase
         $this->assertFalse($attributes['scavengerHunts'][0]['canClaim']);
         $this->assertFalse($attributes['scavengerHuntCanAwardGroups'], 'reward groups follow core\'s user.editGroups');
         $this->assertTrue($this->forum(1)['scavengerHuntCanAwardGroups']);
+        $this->assertTrue($attributes['scavengerHuntCanUploadImages'], 'moderators can upload images by default');
+    }
+
+    #[Test]
+    public function only_hunt_managers_are_told_whether_they_can_upload_images(): void
+    {
+        $this->assertArrayNotHasKey('scavengerHuntCanUploadImages', $this->forum(2));
+        $this->assertArrayNotHasKey('scavengerHuntCanUploadImages', $this->forum(null));
+        $this->assertTrue($this->forum(1)['scavengerHuntCanUploadImages']);
     }
 
     #[Test]

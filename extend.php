@@ -38,6 +38,10 @@ return [
         ->jsDirectory(__DIR__.'/js/dist/admin')
         ->css(__DIR__.'/resources/less/admin.less'),
 
+    // Lazy chunks shared by the forum and admin, such as the Artwork guide.
+    (new Extend\Frontend('common'))
+        ->jsDirectory(__DIR__.'/js/dist/common'),
+
     new Extend\Locales(__DIR__.'/resources/locale'),
 
     (new Extend\ServiceProvider())
@@ -157,6 +161,9 @@ return [
 
     (new Extend\ApiResource(ForumResource::class))
         ->fields(Api\ForumAttributes::class),
+
+    (new Extend\ErrorHandling())
+        ->status(Image\UploadLimitReached::TYPE, 429),
 
     (new Extend\ThrottleApi())
         ->set('fof-scavenger-hunt.lookups', Lookup\LookupThrottler::class),

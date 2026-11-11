@@ -1,4 +1,7 @@
 // FoF Scavenger Hunt — forum styles.
+
+@import "common/artwork.less";
+
 // Chrome uses core variables only; themes retune the game through the --scavenger-* variables.
 
 :root {
@@ -854,6 +857,21 @@
   margin-bottom: 15px;
 }
 
+.LayerEditor-guide {
+  margin: 0 0 10px;
+  padding: 0;
+}
+
+.LayerEditor-solidBackground {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--alert-color, var(--text-color));
+
+  .icon {
+    margin-right: 4px;
+  }
+}
+
 .LayerEditor-zButtons {
   display: flex;
   flex-wrap: wrap;
@@ -998,6 +1016,35 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.ImagePicker-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 6px;
+  margin: 0 0 10px;
+
+  .Button {
+    padding: 0;
+  }
+}
+
+.ImagePicker-upload {
+  margin-bottom: 12px;
+}
+
+.ImagePicker-new {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.ImagePicker-warnings {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px;
 }
 
 .ImagePicker-toolbar {

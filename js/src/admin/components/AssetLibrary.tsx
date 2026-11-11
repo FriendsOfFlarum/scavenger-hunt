@@ -2,12 +2,11 @@ import app from 'flarum/admin/app';
 import Component from 'flarum/common/Component';
 import Button from 'flarum/common/components/Button';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
-import type { ApiPayloadSingle } from 'flarum/common/Store';
 import type Mithril from 'mithril';
 import type Asset from '../../common/models/Asset';
+import uploadAsset, { ACCEPTED_IMAGE_TYPES } from '../../common/utils/uploadAsset';
 import AssetCard from './AssetCard';
-
-const ACCEPTED_TYPES = 'image/png,image/jpeg,image/gif,image/webp,image/svg+xml';
+import showArtworkGuide from '../../common/utils/showArtworkGuide';
 
 export default class AssetLibrary extends Component {
   protected assets: Asset[] = [];
@@ -26,12 +25,18 @@ export default class AssetLibrary extends Component {
     return (
       <div className="AssetLibrary">
         <p className="helpText">{app.translator.trans('fof-scavenger-hunt.admin.assets.help')}</p>
+        <div className="AssetLibrary-guide">
+          <p className="helpText">{app.translator.trans('fof-scavenger-hunt.admin.assets.summary')}</p>
+          <Button className="Button Button--link AssetLibrary-guideLink" icon="fas fa-palette" onclick={() => showArtworkGuide()}>
+            {app.translator.trans('fof-scavenger-hunt.lib.artwork.guide_link')}
+          </Button>
+        </div>
 
         <div className="AssetLibrary-toolbar">
           <input
             className="AssetLibrary-fileInput"
             type="file"
-            accept={ACCEPTED_TYPES}
+            accept={ACCEPTED_IMAGE_TYPES}
             hidden
             onchange={(e: Event) => this.upload(e.target as HTMLInputElement)}
           />
@@ -98,29 +103,34 @@ export default class AssetLibrary extends Component {
 
     if (!file || this.uploading) return;
 
-    const body = new FormData();
-    body.append('file', file);
     input.value = '';
 
     this.uploading = true;
     m.redraw();
 
-    // Type and size errors come back as a 422, which core's request handling shows as an alert.
-    app
-      .request<ApiPayloadSingle>({
-        method: 'POST',
-        url: `${app.forum.attribute('apiUrl')}/scavenger-hunt/assets`,
-        serialize: (raw: FormData) => raw,
-        body,
-      })
-      .then((payload) => {
-        this.assets = [app.store.pushPayload<Asset>(payload), ...this.assets];
+    uploadAsset(file)
+      .then((asset) => {
+        this.assets = [asset, ...this.assets];
+        this.confirm(asset);
       })
       .catch(() => {})
       .finally(() => {
         this.uploading = false;
         m.redraw();
       });
+  }
+
+  /** Names the size, the first thing to check against the artwork guide. */
+  protected confirm(asset: Asset): void {
+    const width = asset.width();
+    const height = asset.height();
+
+    app.alerts.show(
+      { type: 'success' },
+      width && height
+        ? app.translator.trans('fof-scavenger-hunt.admin.assets.uploaded_size', { name: asset.name(), width, height })
+        : app.translator.trans('fof-scavenger-hunt.admin.assets.uploaded', { name: asset.name() })
+    );
   }
 
   protected remove(asset: Asset): void {

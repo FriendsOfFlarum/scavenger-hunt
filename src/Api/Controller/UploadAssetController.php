@@ -19,6 +19,7 @@ use Flarum\Http\RequestUtil;
 use Flarum\Locale\TranslatorInterface;
 use FoF\ScavengerHunt\Api\Resource\AssetResource;
 use FoF\ScavengerHunt\Image\AssetUploader;
+use FoF\ScavengerHunt\Permission;
 use Illuminate\Support\Arr;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -28,7 +29,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use function Tobyz\JsonApiServer\json_api_response;
 
 /**
- * `POST /api/scavenger-hunt/assets`: a multipart upload (field `file`) by an admin, answered
+ * `POST /api/scavenger-hunt/assets`: a multipart upload (field `file`) by someone allowed to upload images, answered
  * with the new `scavenger-hunt-assets` resource.
  */
 class UploadAssetController implements RequestHandlerInterface
@@ -44,7 +45,7 @@ class UploadAssetController implements RequestHandlerInterface
     {
         $actor = RequestUtil::getActor($request);
         $actor->assertRegistered();
-        $actor->assertAdmin();
+        $actor->assertCan(Permission::UPLOAD_IMAGES);
 
         $file = Arr::get($request->getUploadedFiles(), 'file');
 

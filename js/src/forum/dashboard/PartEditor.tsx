@@ -163,6 +163,7 @@ export default class PartEditor extends Component<PartEditorAttrs> {
                 url={part.imageUrl()}
                 labelledby={`part-${part.id()}-title part-${part.id()}-image`}
                 template={this.attrs.template}
+                purpose="part"
               />
             </div>
 

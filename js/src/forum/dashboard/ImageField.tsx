@@ -3,6 +3,7 @@ import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import Button from 'flarum/common/components/Button';
 import Icon from 'flarum/common/components/Icon';
 import type Stream from 'flarum/common/utils/Stream';
+import type { ArtworkPurpose } from '../../common/utils/artworkFit';
 
 export interface IImageFieldAttrs extends ComponentAttrs {
   /** The image reference the parent form saves. */
@@ -13,6 +14,8 @@ export interface IImageFieldAttrs extends ComponentAttrs {
   labelledby?: string;
   /** The key of the Hunt's Template, which the picker lists first. */
   template?: string | null;
+  /** What the image is for, which the picker's hint and warnings follow. */
+  purpose: ArtworkPurpose;
 }
 
 export default class ImageField extends Component<IImageFieldAttrs> {
@@ -43,6 +46,7 @@ export default class ImageField extends Component<IImageFieldAttrs> {
     app.modal.show(() => import('./ImagePickerModal'), {
       selected: this.attrs.stream(),
       template: this.attrs.template,
+      purpose: this.attrs.purpose,
       onselect: (reference: string | null, url: string | null) => this.select(reference, url),
     });
   }

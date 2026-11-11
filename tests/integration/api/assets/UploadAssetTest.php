@@ -11,6 +11,8 @@
 
 namespace FoF\ScavengerHunt\Tests\integration\api\assets;
 
+use Carbon\Carbon;
+use Flarum\Group\PermissionCache;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
 use FoF\ScavengerHunt\Tests\integration\InteractsWithAssets;
@@ -232,23 +234,84 @@ class UploadAssetTest extends TestCase
         $this->assertSame(str_repeat('a', 100), $this->body($response)['data']['attributes']['name']);
     }
 
-    public static function notAdmins(): array
+    public static function withoutUploadPermission(): array
     {
         return [
             'guest' => [null, 401],
             'member' => [2, 403],
-            'hunt manager' => [3, 403],
         ];
     }
 
     #[Test]
-    #[DataProvider('notAdmins')]
-    public function only_admins_can_upload(?int $userId, int $status): void
+    #[DataProvider('withoutUploadPermission')]
+    public function only_those_allowed_to_upload_images_can_upload(?int $userId, int $status): void
     {
         $response = $this->upload($userId, $this->rasterImage('png'));
 
         $this->assertEquals($status, $response->getStatusCode(), (string) $response->getBody());
         $this->assertSame(0, $this->database()->table('fof_scavenger_assets')->count());
         $this->assertSame([], $this->assetsDisk()->allFiles('scavenger-hunt'));
+    }
+
+    #[Test]
+    public function moderators_can_upload_images_by_default(): void
+    {
+        $response = $this->upload(3, $this->rasterImage('png'), 'Snowball.png');
+
+        $this->assertEquals(201, $response->getStatusCode(), (string) $response->getBody());
+        $this->assertSame(3, (int) $this->database()->table('fof_scavenger_assets')->value('user_id'));
+    }
+
+    #[Test]
+    public function a_hunt_manager_without_the_upload_permission_cannot_upload(): void
+    {
+        $this->app();
+        $this->database()->table('group_permission')->where('permission', 'fof-scavenger-hunt.uploadImages')->delete();
+        // Query-builder writes fire no model events, so the moderators' cached permission set is still stale.
+        $this->app()->getContainer()->make(PermissionCache::class)->flush();
+
+        $response = $this->upload(3, $this->rasterImage('png'));
+
+        $this->assertEquals(403, $response->getStatusCode(), (string) $response->getBody());
+        $this->assertSame(0, $this->database()->table('fof_scavenger_assets')->count());
+    }
+
+    #[Test]
+    public function uploaders_who_are_not_admins_get_30_uploads_an_hour(): void
+    {
+        $rows = [];
+
+        for ($id = 1; $id <= 30; $id++) {
+            $rows[] = $this->assetRow(['id' => $id, 'user_id' => 3, 'created_at' => Carbon::now()->subMinutes(59)->toDateTimeString()]);
+        }
+
+        // An upload from more than an hour ago no longer counts.
+        $rows[] = $this->assetRow(['id' => 31, 'user_id' => 3, 'created_at' => Carbon::now()->subMinutes(61)->toDateTimeString()]);
+
+        $this->prepareDatabase(['fof_scavenger_assets' => $rows]);
+
+        $response = $this->upload(3, $this->rasterImage('png'));
+
+        $this->assertEquals(429, $response->getStatusCode(), (string) $response->getBody());
+        $this->assertSame(31, $this->database()->table('fof_scavenger_assets')->count());
+        $this->assertSame([], $this->assetsDisk()->allFiles('scavenger-hunt'));
+
+        $this->database()->table('fof_scavenger_assets')->where('id', 1)->update(['created_at' => Carbon::now()->subMinutes(61)->toDateTimeString()]);
+
+        $this->assertEquals(201, $this->upload(3, $this->rasterImage('png'))->getStatusCode());
+    }
+
+    #[Test]
+    public function admins_have_no_upload_limit(): void
+    {
+        $rows = [];
+
+        for ($id = 1; $id <= 30; $id++) {
+            $rows[] = $this->assetRow(['id' => $id, 'user_id' => 1, 'created_at' => Carbon::now()->subMinutes(5)->toDateTimeString()]);
+        }
+
+        $this->prepareDatabase(['fof_scavenger_assets' => $rows]);
+
+        $this->assertEquals(201, $this->upload(1, $this->rasterImage('png'))->getStatusCode());
     }
 }

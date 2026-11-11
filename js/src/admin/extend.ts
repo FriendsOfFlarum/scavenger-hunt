@@ -76,5 +76,14 @@ export default [
       }),
       'moderate',
       50
+    )
+    .permission(
+      () => ({
+        icon: 'fas fa-upload',
+        label: app.translator.trans('fof-scavenger-hunt.admin.permissions.upload_images'),
+        permission: 'fof-scavenger-hunt.uploadImages',
+      }),
+      'moderate',
+      49
     ),
 ] satisfies object[];

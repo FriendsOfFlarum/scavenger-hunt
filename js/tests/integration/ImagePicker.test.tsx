@@ -10,6 +10,7 @@ import HuntForm from '../../src/forum/dashboard/HuntForm';
 import PartEditor from '../../src/forum/dashboard/PartEditor';
 import type Hunt from '../../src/common/models/Hunt';
 import type Part from '../../src/common/models/Part';
+import { backgroundCheck } from '../../src/common/utils/artworkFit';
 
 beforeAll(() => {
   bootstrapForum();
@@ -44,7 +45,7 @@ function template(key: string, title: string, parts: string[]) {
   };
 }
 
-function asset(id: string, name: string) {
+function asset(id: string, name: string, width = 400, height = 300) {
   return {
     type: 'scavenger-hunt-assets',
     id,
@@ -52,8 +53,8 @@ function asset(id: string, name: string) {
       name,
       url: `https://example.com/assets/scavenger-hunt/${id}.png`,
       mimeType: 'image/png',
-      width: 400,
-      height: 300,
+      width,
+      height,
       size: 2048,
       createdAt: '2026-11-10T12:00:00+00:00',
       isInUse: false,
@@ -95,10 +96,10 @@ async function settle(tree: { redraw: () => void }) {
   tree.redraw();
 }
 
-async function renderPicker(selected: string | null = null, template: string | null = null) {
+async function renderPicker(selected: string | null = null, template: string | null = null, purpose?: string) {
   const onselect = jest.fn();
   const animateHide = jest.fn();
-  const picker = mq(ImagePickerModal, { state: app.modal, animateShow: () => {}, animateHide, selected, onselect, template });
+  const picker = mq(ImagePickerModal, { state: app.modal, animateShow: () => {}, animateHide, selected, onselect, template, purpose });
 
   await settle(picker);
 
@@ -269,7 +270,9 @@ describe('ImagePickerModal', () => {
     await settle(picker);
 
     expect(picker).toHaveElement('.ImagePicker-empty');
+    expect(picker).toContainRaw('fof-scavenger-hunt.forum.dashboard.images.empty_ask_admin');
     expect(picker).not.toHaveElement('.ImagePicker-item');
+    expect(picker).not.toHaveElement('.ImagePicker-uploadButton');
   });
 
   it('loads more uploaded images when there is a next page', async () => {
@@ -294,6 +297,93 @@ function pick(show: ReturnType<typeof captureShow>, reference: string | null, ur
   const attrs = show.mock.calls[show.mock.calls.length - 1][1] as { onselect: (reference: string | null, url: string | null) => void };
   attrs.onselect(reference, url);
 }
+
+describe('ImagePickerModal guidance', () => {
+  beforeEach(() => {
+    // jsdom has no canvas; tests that care stub a result of their own.
+    jest.spyOn(backgroundCheck, 'isSolid').mockResolvedValue(null);
+  });
+
+  afterEach(() => {
+    app.forum.pushAttributes({ scavengerHuntCanUploadImages: false });
+  });
+
+  it.each(['collectable', 'completed', 'part'])('says what a %s image should be, with a link to the Artwork guide', async (purpose) => {
+    mockApi();
+    const { picker } = await renderPicker(null, null, purpose);
+
+    expect(picker).toContainRaw(`fof-scavenger-hunt.lib.artwork.hints.${purpose}`);
+
+    const show = jest.spyOn(app.modal, 'show').mockResolvedValue(undefined as never);
+    picker.click('.ImagePicker-guide');
+
+    // Stacked on the picker, so closing the guide goes back to it.
+    expect(show.mock.calls[0][2]).toBe(true);
+  });
+
+  it('gives no hint when it is not told what the image is for', async () => {
+    mockApi();
+    const { picker } = await renderPicker();
+
+    expect(picker).not.toHaveElement('.ImagePicker-hint');
+  });
+
+  it('warns about uploaded pictures that are not square or too small, without blocking them', async () => {
+    mockApi([{ data: [asset('2', 'Wide', 1600, 900), asset('1', 'Square', 1000, 1000)] }]);
+    const { picker, onselect } = await renderPicker(null, null, 'collectable');
+
+    picker.click('.ImagePicker-tab--assets');
+    await settle(picker);
+
+    expect(picker.find('[data-reference="asset:2"] .ArtworkWarning').map((el) => el.className)).toEqual([
+      'ArtworkWarning ArtworkWarning--not_square',
+    ]);
+    expect(picker).not.toHaveElement('[data-reference="asset:1"] .ArtworkWarning');
+
+    picker.click('[data-reference="asset:2"]');
+    expect(onselect).toHaveBeenCalledWith('asset:2', 'https://example.com/assets/scavenger-hunt/2.png');
+  });
+
+  it('warns about Part images with a solid background', async () => {
+    jest.spyOn(backgroundCheck, 'isSolid').mockImplementation((url: string) => Promise.resolve(url.endsWith('/2.png')));
+    mockApi([{ data: [asset('2', 'Boxed', 400, 400), asset('1', 'Cut out', 400, 400)] }]);
+    const { picker } = await renderPicker(null, null, 'part');
+
+    picker.click('.ImagePicker-tab--assets');
+    await settle(picker);
+    await settle(picker);
+
+    expect(picker).toHaveElement('[data-reference="asset:2"] .ArtworkWarning--solid_background');
+    expect(picker).not.toHaveElement('[data-reference="asset:1"] .ArtworkWarning');
+  });
+
+  it('lets those allowed to upload add an image, which is marked but not chosen', async () => {
+    app.forum.pushAttributes({ scavengerHuntCanUploadImages: true });
+    const request = mockApi([{ data: [] }]);
+    const { picker, onselect } = await renderPicker(null, null, 'part');
+
+    picker.click('.ImagePicker-tab--assets');
+    await settle(picker);
+
+    expect(picker).toContainRaw('fof-scavenger-hunt.forum.dashboard.images.empty_can_upload');
+
+    request.mockImplementation(((options: { url: string; body: FormData }) => {
+      expect(options.url).toContain('/scavenger-hunt/assets');
+      expect((options.body.get('file') as File).name).toBe('star.png');
+
+      return Promise.resolve({ data: asset('9', 'Star') });
+    }) as never);
+
+    const input = picker.first('.ImagePicker-fileInput') as HTMLInputElement;
+    Object.defineProperty(input, 'files', { value: [new File(['x'], 'star.png', { type: 'image/png' })] });
+    picker.trigger('.ImagePicker-fileInput', 'change', { target: input } as unknown as Event);
+    await settle(picker);
+
+    expect(picker.find('.ImagePicker-item').map((el) => el.getAttribute('data-reference'))).toEqual(['asset:9']);
+    expect(picker).toHaveElement('[data-reference="asset:9"] .ImagePicker-new');
+    expect(onselect).not.toHaveBeenCalled();
+  });
+});
 
 describe('ImageField', () => {
   it('shows the saved image, then the picked one, and stores the picked reference', () => {
@@ -345,7 +435,11 @@ describe('saving the chosen image', () => {
     const request = mockApi();
     const show = captureShow();
     const part = app.store.pushPayload<Part>({
-      data: { type: 'scavenger-hunt-parts', id: '1', attributes: { name: 'Hat', mode: 'fixed', sort: 0, image: 'template:winter/hat.svg', imageUrl: null, layer: null } },
+      data: {
+        type: 'scavenger-hunt-parts',
+        id: '1',
+        attributes: { name: 'Hat', mode: 'fixed', sort: 0, image: 'template:winter/hat.svg', imageUrl: null, layer: null },
+      },
     });
     jest.spyOn(part, 'locations').mockReturnValue([]);
 
@@ -364,7 +458,11 @@ describe('saving the chosen image', () => {
   it('PartEditor saves null once the image is removed', async () => {
     const request = mockApi();
     const part = app.store.pushPayload<Part>({
-      data: { type: 'scavenger-hunt-parts', id: '2', attributes: { name: 'Nose', mode: 'fixed', sort: 0, image: 'template:winter/nose.svg', imageUrl: null, layer: null } },
+      data: {
+        type: 'scavenger-hunt-parts',
+        id: '2',
+        attributes: { name: 'Nose', mode: 'fixed', sort: 0, image: 'template:winter/nose.svg', imageUrl: null, layer: null },
+      },
     });
     jest.spyOn(part, 'locations').mockReturnValue([]);
 
@@ -384,7 +482,15 @@ describe('saving the chosen image', () => {
       data: {
         type: 'scavenger-hunts',
         id: '1',
-        attributes: { title: 'Snowman', slug: 'snowman', description: null, image: 'template:winter/base.svg', completedImage: null, imageUrl: null, completedImageUrl: null },
+        attributes: {
+          title: 'Snowman',
+          slug: 'snowman',
+          description: null,
+          image: 'template:winter/base.svg',
+          completedImage: null,
+          imageUrl: null,
+          completedImageUrl: null,
+        },
       },
     });
 
@@ -419,12 +525,20 @@ describe('saving the chosen image', () => {
     mq(PartEditor, { part, spots: [], routes: [], ondeleted: () => {}, template: 'halloween' }).click('.PartEditor-imageField .ImageField-choose');
 
     expect(show.mock.calls.map((call) => (call[1] as { template?: string | null }).template)).toEqual(['halloween', 'halloween']);
+    expect(show.mock.calls.map((call) => (call[1] as { purpose?: string }).purpose)).toEqual(['completed', 'part']);
+
+    mq(HuntForm, { hunt, section: 'details' }).click('.HuntForm-image .ImageField-choose');
+    expect((show.mock.calls[2][1] as { purpose?: string }).purpose).toBe('collectable');
   });
 
   it('HuntForm leaves the images alone on the Schedule tab', async () => {
     const request = mockApi();
     const hunt = app.store.pushPayload<Hunt>({
-      data: { type: 'scavenger-hunts', id: '2', attributes: { title: 'Tree', slug: 'tree', image: 'template:christmas/base.svg', isEnabled: false, guestsCanSee: true } },
+      data: {
+        type: 'scavenger-hunts',
+        id: '2',
+        attributes: { title: 'Tree', slug: 'tree', image: 'template:christmas/base.svg', isEnabled: false, guestsCanSee: true },
+      },
     });
 
     const form = mq(HuntForm, { hunt, section: 'schedule' });

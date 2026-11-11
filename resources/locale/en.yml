@@ -160,7 +160,10 @@ fof-scavenger-hunt:
         tabs:
           templates: Templates
           assets: Uploaded images
-        empty: No images have been uploaded yet. Admins upload images in the admin panel.
+        empty_can_upload: No images have been uploaded yet. Upload one with the button above.
+        empty_ask_admin: No images have been uploaded yet. Ask an admin to upload them; the artwork guide says what to send.
+        upload: Upload image
+        just_uploaded: Just uploaded
         load_failed: The images couldn't be loaded.
         retry: Try again
         load_more: Load more
@@ -226,6 +229,7 @@ fof-scavenger-hunt:
     permissions:
       play: Collect scavenger hunt parts
       manage: Manage scavenger hunts
+      upload_images: Upload hunt images
     settings:
       show_header_indicator: Show progress in the header
       show_header_indicator_help: A basket in the header shows members how many parts they have found.
@@ -243,6 +247,9 @@ fof-scavenger-hunt:
       title: Image library
       tab: Images
       help: Images uploaded here can be used as the collectable or a part in any hunt.
+      summary: "Collectable pictures: square, at least 800 × 800 pixels. Part images: transparent background, cropped close to the piece."
+      uploaded: "Uploaded {name}."
+      uploaded_size: "Uploaded {name} ({width} × {height} pixels)."
       upload: Upload image
       upload_help: PNG, JPEG, GIF, WebP or SVG, up to 2 MB.
       empty: No images uploaded yet.
@@ -288,6 +295,34 @@ fof-scavenger-hunt:
     asset_type_invalid: Upload a PNG, JPEG, GIF, WebP or SVG image.
     asset_too_large: Images can be up to 2 MB.
   lib:
+    artwork:
+      guide_link: Artwork guide
+      guide_title: Artwork guide
+      intro: A hunt needs a picture to build on and one image for each part. As members find the parts, they appear on the picture.
+      example_caption: "The winter template: its picture, three of its parts, and the finished snowman."
+      example_picture: Picture
+      example_finished: Finished
+      collectable_heading: Collectable picture
+      collectable_body: The background the parts are placed on. Use a square image at least 800 × 800 pixels. It's shown up to 360 pixels wide, so keep the details large.
+      parts_heading: Part images
+      parts_body: "One image for each part, with a transparent background and cropped close to the piece: PNG, WebP or SVG, at least 256 pixels on the longer side. You place and size each part on the picture in the layer editor. Members also see a part on its own, about 40 pixels across, where it's hidden, so it should be recognisable that small."
+      completed_heading: Completed picture (optional)
+      completed_body: Shown once a member has found every part. Use a square image the same size as the collectable picture. Without one, the picture with every part in place is shown.
+      files_heading: Files
+      files_body: "PNG, JPEG, GIF, WebP or SVG, up to 2 MB each. SVG files are cleaned when they're uploaded: scripts, links to other files and web fonts are removed, so convert text to outlines first."
+      tips_heading: Tips
+      tip_template: The quickest start is a template. Create the hunt from one, then replace single pieces with your own.
+      tip_scale: Draw the picture and the parts at the same scale, so each part looks right at its real size on the picture.
+      hints:
+        collectable: "Collectable picture: square, at least 800 × 800 pixels."
+        completed: "Completed picture: square, the same size as the collectable picture."
+        part: "Part image: transparent background, cropped close to the piece."
+      warnings:
+        not_square: Not square
+        small: "Small ({width} × {height})"
+        solid_background: Solid background
+      solid_background_hint: This image has a solid background, so it covers whatever is underneath it. Use a version with a transparent background.
+      upload_limit: You've uploaded as many images as an hour allows. Try again later.
     place_labels:
       post_footer: "Post footer · post #{number} in {discussion}"
       post_body_end: "End of post · post #{number} in {discussion}"

@@ -15,4 +15,5 @@ final class Permission
 {
     public const PLAY = 'fof-scavenger-hunt.play';
     public const MANAGE = 'fof-scavenger-hunt.manage';
+    public const UPLOAD_IMAGES = 'fof-scavenger-hunt.uploadImages';
 }

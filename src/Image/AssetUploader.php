@@ -36,6 +36,9 @@ class AssetUploader
 {
     public const MAX_BYTES = 2 * 1024 * 1024;
 
+    /** Uploads an hour for anyone but admins. The endpoint stores files, so even trusted uploaders get a ceiling. */
+    public const HOURLY_LIMIT = 30;
+
     // Bounds what decoding a raster image can allocate, as core's image validator does.
     protected const MAX_PIXELS = 24_000_000;
 
@@ -57,6 +60,10 @@ class AssetUploader
 
     public function upload(UploadedFileInterface $file, User $actor): Asset
     {
+        if (! $actor->isAdmin() && $this->uploadsInLastHour($actor) >= self::HOURLY_LIMIT) {
+            throw new UploadLimitReached();
+        }
+
         if ($file->getError() === UPLOAD_ERR_INI_SIZE || $file->getError() === UPLOAD_ERR_FORM_SIZE) {
             throw $this->invalid('asset_too_large');
         }
@@ -142,6 +149,14 @@ class AssetUploader
         [$width, $height] = $this->svg->dimensions($clean);
 
         return [$clean, 'svg', 'image/svg+xml', $width, $height];
+    }
+
+    protected function uploadsInLastHour(User $actor): int
+    {
+        return Asset::query()
+            ->where('user_id', $actor->id)
+            ->where('created_at', '>', Carbon::now()->subHour())
+            ->count();
     }
 
     protected function name(?string $filename): string
