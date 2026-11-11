@@ -122,6 +122,21 @@ fof-scavenger-hunt:
         group_locked_help: Only members who can edit user groups can choose the reward group.
         message: Reward message
         message_help: Revealed only to members who complete the hunt — a thank-you, a promo code, a link. Formatting works as in posts.
+      hide_for_me:
+        button: Hide the parts for me
+        gallery_checkbox: Hide the parts for me once the hunt is created
+        title: Hide the parts for me
+        keep_current: "{count, plural, one {Keeping its current place} other {Keeping its # current places}}"
+        pick_for_me: Pick for me
+        pick_another: Pick another
+        choose_myself: Choose myself
+        open: Open
+        use_these_places: Use these places
+        cancel: Cancel
+        fallback_note: "This forum doesn't have enough public content for specific places yet, so some Parts go in general places on a page. You can change any of them."
+        nothing_to_hide: Every Part already has places. Use Pick for me on any Part to replace them.
+        load_failed: The suggestions couldn't be loaded.
+        retry: Retry
       gallery:
         title: Start a new hunt
         blank: Blank
@@ -272,6 +287,20 @@ fof-scavenger-hunt:
     asset_type_invalid: Upload a PNG, JPEG, GIF, WebP or SVG image.
     asset_too_large: Images can be up to 2 MB.
   lib:
+    place_labels:
+      post_footer: "Post footer · post #{number} in {discussion}"
+      post_body_end: "End of post · post #{number} in {discussion}"
+      discussion_hero: "Discussion header · {discussion}"
+      discussion_list_item: "Discussion list · {discussion}"
+      user_card: "User card · {user}"
+      user_sidebar: "Profile sidebar · {user}"
+      tags_tile: "Tag tile · {tag}"
+      page_footer: "Page footer · {page}"
+      page_corner: "Page corner · {page}"
+      page_sidebar: "Page sidebar · {page}"
+      pages:
+        index: All discussions page
+        tags: Tags page
     templates:
       winter:
         title: Build a Snowman

@@ -150,7 +150,9 @@ return [
     new Extend\ApiResource(Api\Resource\AssetResource::class),
 
     (new Extend\Routes('api'))
-        ->post('/scavenger-hunt/assets', 'fof-scavenger-hunt.assets.upload', Api\Controller\UploadAssetController::class),
+        ->post('/scavenger-hunt/assets', 'fof-scavenger-hunt.assets.upload', Api\Controller\UploadAssetController::class)
+        ->post('/scavenger-hunts/{id:\d+}/hiding-suggestions', 'fof-scavenger-hunt.hiding-suggestions', Api\Controller\SuggestHidingPlacesController::class)
+        ->post('/scavenger-hunts/{id:\d+}/hiding-places', 'fof-scavenger-hunt.hiding-places', Api\Controller\ApplyHidingPlacesController::class),
 
     (new Extend\ApiResource(ForumResource::class))
         ->fields(Api\ForumAttributes::class),

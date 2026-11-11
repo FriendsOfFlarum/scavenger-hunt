@@ -1100,6 +1100,149 @@
   line-clamp: 2;
 }
 
+.ScavengerDashboard-partsActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block-end: 20px;
+}
+
+.HidePartsModal-error p,
+.HidePartsModal-fallback,
+.HidePartsModal-nothing {
+  margin-block-end: 10px;
+}
+
+.HidePartsModal-rows,
+.HidePartsModal-placeList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.HidePartsModal-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) minmax(0, 3fr);
+  align-items: start;
+  gap: 12px;
+  padding-block: 12px;
+  border-block-end: 1px solid var(--control-bg);
+
+  &:last-child {
+    border-block-end: 0;
+  }
+}
+
+.HidePartsModal-part {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.HidePartsModal-image {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  font-size: 28px;
+  color: var(--muted-color);
+}
+
+.HidePartsModal-partText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.HidePartsModal-mode {
+  font-size: 12px;
+  color: var(--muted-color);
+}
+
+.HidePartsModal-places {
+  min-width: 0;
+}
+
+.HidePartsModal-keep,
+.HidePartsModal-place {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.HidePartsModal-place + .HidePartsModal-place {
+  margin-block-start: 8px;
+  padding-block-start: 8px;
+  border-block-start: 1px dashed var(--control-bg);
+}
+
+.HidePartsModal-placeLabel,
+.HidePartsModal-keepLabel {
+  flex: 1 1 200px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.HidePartsModal-fields {
+  display: grid;
+  flex: 1 1 100%;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+
+  > * {
+    min-width: 0;
+  }
+}
+
+.HidePartsModal-placeActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.HidePartsModal-placeActions .Button,
+.HidePartsModal-pickForMe,
+.HidePartsModal-footer .Button {
+  min-height: 24px;
+}
+
+.HidePartsModal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+// Phones: each Part's places go under it, and a place's actions under its label.
+@media @phone {
+  .HidePartsModal-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .HidePartsModal-place,
+  .HidePartsModal-keep {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .HidePartsModal-placeLabel,
+  .HidePartsModal-keepLabel {
+    flex-basis: auto;
+  }
+
+  .HidePartsModal-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .HidePartsModal-footer .Button {
+    flex: 1 1 auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .HiddenPart {
     animation: none;

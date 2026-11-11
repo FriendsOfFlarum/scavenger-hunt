@@ -32,6 +32,8 @@ export default class HuntDashboardPage extends Page {
   protected routes: PageRoute[] = [];
   protected tab: Tab = 'details';
   protected addingPart = false;
+  /** Bumped per Part when its Locations are replaced elsewhere, so its editor starts again from the saved ones. */
+  protected revisions: Record<string, number> = {};
 
   oninit(vnode: Mithril.Vnode) {
     super.oninit(vnode);
@@ -44,6 +46,7 @@ export default class HuntDashboardPage extends Page {
     }
 
     const id = m.route.param('id');
+    const hideParts = !!m.route.param('hide');
 
     Promise.all([
       app.store.find<Hunt>('scavenger-hunts', id, { include: 'parts,parts.locations,rewardGroup' }),
@@ -56,6 +59,11 @@ export default class HuntDashboardPage extends Page {
 
       app.setTitle(hunt.title());
       m.redraw();
+
+      if (hideParts) {
+        this.replaceUrl({});
+        this.hideParts();
+      }
     });
   }
 
@@ -144,9 +152,16 @@ export default class HuntDashboardPage extends Page {
       return (
         <div className="ScavengerDashboard-parts">
           <LayerEditor hunt={this.hunt} parts={this.parts} />
+          {this.parts.length > 0 && (
+            <div className="ScavengerDashboard-partsActions">
+              <Button className="Button ScavengerDashboard-hideParts" icon="fas fa-wand-magic-sparkles" onclick={() => this.hideParts()}>
+                {app.translator.trans('fof-scavenger-hunt.forum.dashboard.hide_for_me.button')}
+              </Button>
+            </div>
+          )}
           {this.parts.map((part) => (
             <PartEditor
-              key={part.id()}
+              key={`${part.id()}-${this.revisions[part.id()!] ?? 0}`}
               part={part}
               spots={this.spots}
               routes={this.routes}
@@ -179,8 +194,25 @@ export default class HuntDashboardPage extends Page {
   protected setTab(tab: Tab): void {
     this.tab = tab;
 
-    const params = { ...m.route.param(), tab };
+    this.replaceUrl({ tab });
+  }
+
+  /** Mithril keeps the params it routed with, so the one-off `hide` flag is dropped here every time. */
+  protected replaceUrl(changes: Record<string, string>): void {
+    const params = { ...m.route.param(), ...changes };
+    delete params.hide;
+
     window.history.replaceState(null, '', app.route('fof-scavenger-hunt.dashboard.hunt', params));
+  }
+
+  protected hideParts(): void {
+    app.modal.show(() => import('./HidePartsModal'), {
+      hunt: this.hunt,
+      parts: this.parts,
+      spots: this.spots,
+      routes: this.routes,
+      onsaved: (partIds: string[]) => partIds.forEach((id) => (this.revisions[id] = (this.revisions[id] ?? 0) + 1)),
+    });
   }
 
   protected addPart(): void {

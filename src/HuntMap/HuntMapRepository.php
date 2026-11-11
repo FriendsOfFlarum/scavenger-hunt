@@ -38,6 +38,10 @@ class HuntMapRepository
      */
     protected const MAX_TTL = 3600;
 
+    protected int $deferring = 0;
+
+    protected bool $forgetPending = false;
+
     public function __construct(
         protected Repository $cache,
         protected HidingSpotRegistry $spots,
@@ -78,10 +82,39 @@ class HuntMapRepository
 
     public function forget(): void
     {
+        if ($this->deferring > 0) {
+            $this->forgetPending = true;
+
+            return;
+        }
+
         $this->cache->add(self::GENERATION_KEY, 0);
         $this->cache->increment(self::GENERATION_KEY);
         $this->cache->forget(self::CACHE_KEY);
         $this->cache->forget(self::SUMMARY_KEY);
+    }
+
+    /**
+     * Runs a batch of changes, collecting the invalidations they cause into one at the end.
+     *
+     * @template T
+     * @param callable(): T $callback
+     * @return T
+     */
+    public function forgetOnce(callable $callback): mixed
+    {
+        $this->deferring++;
+
+        try {
+            return $callback();
+        } finally {
+            $this->deferring--;
+
+            if ($this->deferring === 0 && $this->forgetPending) {
+                $this->forgetPending = false;
+                $this->forget();
+            }
+        }
     }
 
     /**

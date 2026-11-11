@@ -16,6 +16,7 @@ export default class TemplateGalleryModal extends FormModal {
   protected failed = false;
   protected chosen: HuntTemplate | null = null;
   protected huntTitle!: Stream<string>;
+  protected hideParts = false;
 
   oninit(vnode: Mithril.Vnode) {
     super.oninit(vnode);
@@ -55,6 +56,15 @@ export default class TemplateGalleryModal extends FormModal {
           <label for="scavenger-new-hunt-title">{app.translator.trans('fof-scavenger-hunt.forum.dashboard.gallery.hunt_title')}</label>
           <input id="scavenger-new-hunt-title" className="FormControl" bidi={this.huntTitle} required />
         </div>
+
+        {this.chosen && (
+          <div className="Form-group TemplateGallery-hideParts">
+            <label className="checkbox">
+              <input type="checkbox" checked={this.hideParts} onchange={(e: Event) => (this.hideParts = (e.target as HTMLInputElement).checked)} />
+              {app.translator.trans('fof-scavenger-hunt.forum.dashboard.hide_for_me.gallery_checkbox')}
+            </label>
+          </div>
+        )}
 
         <div className="Form-group">
           <Button type="submit" className="Button Button--primary" loading={this.loading} disabled={!this.huntTitle().trim()}>
@@ -149,8 +159,13 @@ export default class TemplateGalleryModal extends FormModal {
       .createRecord<Hunt>('scavenger-hunts')
       .save(attributes, { errorHandler: this.onerror.bind(this) })
       .then((hunt) => {
-        this.hide();
-        m.route.set(app.route('fof-scavenger-hunt.dashboard.hunt', { id: hunt.id(), tab: 'parts' }));
+        const params: Record<string, unknown> = { id: hunt.id(), tab: 'parts' };
+
+        // The new Hunt's dashboard opens the review once it has loaded.
+        if (this.chosen && this.hideParts) params.hide = 1;
+
+        // No hide(): the new page closes this modal. Animating out first can leave core unable to close the next modal.
+        m.route.set(app.route('fof-scavenger-hunt.dashboard.hunt', params));
       })
       .catch(() => {
         this.loading = false;

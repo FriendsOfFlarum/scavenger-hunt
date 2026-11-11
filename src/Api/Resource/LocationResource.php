@@ -14,12 +14,11 @@ namespace FoF\ScavengerHunt\Api\Resource;
 use Flarum\Api\Endpoint;
 use Flarum\Api\Resource\AbstractDatabaseResource;
 use Flarum\Api\Schema;
-use Flarum\Foundation\ValidationException;
-use Flarum\Locale\TranslatorInterface;
 use FoF\ScavengerHunt\Event;
 use FoF\ScavengerHunt\HidingSpot\HidingSpotRegistry;
 use FoF\ScavengerHunt\Location;
 use FoF\ScavengerHunt\Permission;
+use FoF\ScavengerHunt\Placement\LocationValidator;
 use Illuminate\Database\Eloquent\Builder;
 use Tobyz\JsonApiServer\Context as OriginalContext;
 
@@ -30,7 +29,7 @@ class LocationResource extends AbstractDatabaseResource
 {
     public function __construct(
         protected HidingSpotRegistry $spots,
-        protected TranslatorInterface $translator,
+        protected LocationValidator $validator,
     ) {
     }
 
@@ -97,33 +96,7 @@ class LocationResource extends AbstractDatabaseResource
 
     public function saving(object $model, OriginalContext $context): ?object
     {
-        $spot = $this->spots->get($model->spot) ?? throw $this->invalid('spot', 'spot_unknown');
-
-        if ($model->route !== null && (! $this->spots->isPageRoute($model->route) || ! $spot->allowsRoute($model->route))) {
-            throw $this->invalid('route', 'route_not_allowed');
-        }
-
-        if ($spot->context === null) {
-            if ($model->context_type !== null || $model->context_id !== null) {
-                throw $this->invalid('contextType', 'context_mismatch');
-            }
-
-            return $model;
-        }
-
-        if ($model->context_type !== null && $model->context_type !== $spot->context) {
-            throw $this->invalid('contextType', 'context_mismatch');
-        }
-
-        $model->context_type = $spot->context;
-
-        if ($model->context_id !== null) {
-            $class = $this->spots->contextModel($spot->context);
-
-            if ($class === null || ! $class::query()->whereKey($model->context_id)->exists()) {
-                throw $this->invalid('contextId', 'context_not_found');
-            }
-        }
+        $this->validator->validate($model);
 
         return $model;
     }
@@ -145,10 +118,5 @@ class LocationResource extends AbstractDatabaseResource
     public function deleted(object $model, OriginalContext $context): void
     {
         $this->events->dispatch(new Event\LocationDeleted($model, $context->getActor()));
-    }
-
-    protected function invalid(string $field, string $key): ValidationException
-    {
-        return new ValidationException([$field => $this->translator->trans("fof-scavenger-hunt.api.$key")]);
     }
 }

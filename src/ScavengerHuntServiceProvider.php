@@ -13,6 +13,7 @@ namespace FoF\ScavengerHunt;
 
 use Flarum\Foundation\AbstractServiceProvider;
 use FoF\ScavengerHunt\HidingSpot\HidingSpotRegistry;
+use FoF\ScavengerHunt\HuntMap\HuntMapRepository;
 use FoF\ScavengerHunt\Image\ImageReference;
 use FoF\ScavengerHunt\Lookup\NativeRandomSource;
 use FoF\ScavengerHunt\Lookup\RandomSource;
@@ -43,6 +44,9 @@ class ScavengerHuntServiceProvider extends AbstractServiceProvider
         ));
 
         $this->container->bind(RandomSource::class, NativeRandomSource::class);
+
+        // Shared, so a batch of changes can invalidate the map once (HuntMapRepository::forgetOnce).
+        $this->container->singleton(HuntMapRepository::class);
 
         // Shared, so one resource can scope the progress another resource's fields read.
         $this->container->singleton(ActorProgress::class);
