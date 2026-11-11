@@ -155,8 +155,9 @@ class HuntResource extends AbstractDatabaseResource
             Schema\Str::make('completedImageUrl')
                 ->nullable()
                 ->get(fn (Hunt $hunt, Context $context) => $this->images->url($hunt->completed_image, $context)),
+            // reorder(): core's grouped count keeps the relation's ORDER BY sort, which PostgreSQL rejects.
             Schema\Integer::make('partCount')
-                ->countRelation('parts'),
+                ->countRelation('parts', fn (Builder $query) => $query->reorder()),
             Schema\Integer::make('finisherCount')
                 ->countRelation('completions'),
             Schema\Integer::make('foundCount')

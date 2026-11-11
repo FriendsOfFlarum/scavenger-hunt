@@ -142,7 +142,9 @@ class ScavengerHuntDataTest extends TestCase
     #[Test]
     public function anonymizing_removes_encounters_and_keeps_finds_and_completions(): void
     {
-        $this->processErasure(ErasureRequest::MODE_ANONYMIZATION);
+        // Called directly: flarum/gdpr's user anonymizer sets other extensions' NOT NULL columns
+        // (fof/gamification's users.votes) to null, which only MySQL accepts.
+        $this->dataType(2)->anonymize();
 
         $this->assertSame([[4, 4]], $this->rowsOf('fof_scavenger_encounters'));
         $this->assertSame([[1, 2], [2, 2], [3, 4]], $this->rowsOf('fof_scavenger_finds'));

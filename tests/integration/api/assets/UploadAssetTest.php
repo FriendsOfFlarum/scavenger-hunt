@@ -118,6 +118,18 @@ class UploadAssetTest extends TestCase
     }
 
     #[Test]
+    #[DataProvider('rasterTypes')]
+    public function a_damaged_image_is_rejected(string $type, string $mimeType): void
+    {
+        // The header still reads, so only decoding the whole file finds the damage.
+        $full = $this->rasterImage($type, 40, 40);
+        $response = $this->upload(1, substr($full, 0, intdiv(strlen($full), 2)), "damaged.$type", $mimeType);
+
+        $this->assertEquals(422, $response->getStatusCode(), (string) $response->getBody());
+        $this->assertSame(0, $this->database()->table('fof_scavenger_assets')->count());
+    }
+
+    #[Test]
     public function a_bmp_is_rejected(): void
     {
         $response = $this->upload(1, $this->rasterImage('bmp'), 'image.bmp', 'image/bmp');

@@ -83,6 +83,10 @@ class SchemaTest extends TestCase
     {
         $this->app();
 
+        if ($this->database()->getDriverName() === 'sqlite') {
+            $this->markTestSkipped('flarum/testing turns foreign keys off on SQLite, so nothing cascades.');
+        }
+
         Hunt::query()->findOrFail(1)->delete();
 
         foreach (['parts', 'locations', 'encounters', 'finds', 'completions'] as $table) {

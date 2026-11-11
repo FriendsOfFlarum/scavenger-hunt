@@ -34,14 +34,15 @@ trait InteractsWithHunts
         $this->app()->getContainer()->make(LocaleManager::class)->addTranslations('en', __DIR__.'/../../resources/locale/en.yml');
     }
 
+    // Every row needs a password: only MySQL's non-strict mode lets a NOT NULL column be left out.
     protected function moderatorUser(): array
     {
-        return ['id' => 3, 'username' => 'moderator', 'email' => 'moderator@machine.local', 'is_email_confirmed' => 1];
+        return ['id' => 3, 'username' => 'moderator', 'password' => '$2y$10$LO59tiT7uggl6Oe23o/O6.utnF6ipngYjvMvaxo1TciKqBttDNKim', 'email' => 'moderator@machine.local', 'is_email_confirmed' => 1];
     }
 
     protected function secondMember(): array
     {
-        return ['id' => 4, 'username' => 'member2', 'email' => 'member2@machine.local', 'is_email_confirmed' => 1];
+        return ['id' => 4, 'username' => 'member2', 'password' => '$2y$10$LO59tiT7uggl6Oe23o/O6.utnF6ipngYjvMvaxo1TciKqBttDNKim', 'email' => 'member2@machine.local', 'is_email_confirmed' => 1];
     }
 
     protected function moderatorMembership(): array

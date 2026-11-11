@@ -54,7 +54,7 @@ class CandidatePoolTest extends TestCase
             'users' => [
                 $this->normalUser(),
                 $this->secondMember(),
-                ['id' => 5, 'username' => 'oldtimer', 'email' => 'oldtimer@machine.local', 'is_email_confirmed' => 1],
+                ['id' => 5, 'username' => 'oldtimer', 'password' => '$2y$10$LO59tiT7uggl6Oe23o/O6.utnF6ipngYjvMvaxo1TciKqBttDNKim', 'email' => 'oldtimer@machine.local', 'is_email_confirmed' => 1],
             ],
             Discussion::class => [
                 $this->discussionRow(1, ['title' => 'Public chat']),
