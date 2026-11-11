@@ -30,8 +30,11 @@ composer require fof/scavenger-hunt:"*"
 ```sh
 composer update fof/scavenger-hunt
 php flarum migrate
+php flarum assets:publish
 php flarum cache:clear
 ```
+
+`assets:publish` copies the template artwork to your forum's assets storage (local or S3), so templates added or changed in an update show up. The admin dashboard's Clear cache button also does this, but `php flarum cache:clear` doesn't.
 
 ## Running a hunt
 
