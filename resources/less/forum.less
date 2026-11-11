@@ -1196,6 +1196,18 @@
   > * {
     min-width: 0;
   }
+
+  // Core's Select sizes to its content, so its caret would land outside a narrow field.
+  .Select {
+    display: block;
+    width: 100%;
+  }
+
+  .Select-input,
+  .FormControl {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 .HidePartsModal-placeActions {
@@ -1227,6 +1239,10 @@
   .HidePartsModal-keep {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .HidePartsModal-keep {
+    align-items: flex-start;
   }
 
   .HidePartsModal-placeLabel,
